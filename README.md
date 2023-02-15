@@ -30,14 +30,14 @@ sudo apt install glfw<br>
 
 <h4>Открываем консоль:</h4>
 
-cd {директория в котором будет находиться проект}<br>
-git clone {url}<br> 
-cd {путь до директории build-debug}<br>
+(1) cd {директория в котором будет находиться проект}<br>
+(2) git clone {url}<br> 
+(3) cd {путь до директории build-debug}<br>
 <p>
-Если нет это деректории: в CLion-e зайти в CMakeLists.txt, нажать reload, создасться эта директория и сделать этот шаг<br>
+Если нет это деректории: в CLion-e зайти в CMakeLists.txt, нажать reload, создасться эта директория и сделать шаг (3)<br>
 </p>
-conan install<br>
-conan install —build=missing ..<br>
+(4) conan install<br>
+(5) conan install —build=missing ..<br>
 
 <h3>2.</h3>
 Запускать сам проект из CLion-a<br><br><br>

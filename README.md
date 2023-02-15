@@ -35,6 +35,7 @@ sudo apt install glfw<br>
 (3) cd {путь до директории build-debug}<br>
 <p>
 Если нет это деректории: в CLion-e зайти в CMakeLists.txt, нажать reload, создасться эта директория и сделать шаг (3)<br>
+После в нижнем меню CLion-a открыть вкладку CMake и пересобрать проект (кнопка кружочка со стрелками)
 </p>
 (4) pip install conan <-- (для этой команды нужен установленный питон)<br>
 (5) conan install --build=missing ..<br>

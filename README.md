@@ -31,7 +31,7 @@ sudo apt install glfw<br>
 <h4>Открываем консоль:</h4>
 
 (1) cd {директория в котором будет находиться проект}<br>
-(2) git clone {url}<br> 
+(2) git clone https://github.com/DmitriyVlasovDV1/CppRMRT.git<br> 
 (3) cd {путь до директории build-debug}<br>
 <p>
 Если нет это деректории: в CLion-e зайти в CMakeLists.txt, нажать reload, создасться эта директория и сделать шаг (3)<br>

@@ -1,4 +1,4 @@
-#include "def.h" // Should be in all *.h files
+#include "def.hpp" // Should be in all *.hpp files (for now it's right info)
 
 // Project namespace
 namespace cgsg {
@@ -105,13 +105,11 @@ int main() {
     // glfw initialization
     if (!glfwInit())
         assert("error in glfw initialization");
-#if MODE == 1
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
 #endif
 
     // Create our window (pointer)

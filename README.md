@@ -37,7 +37,7 @@ sudo apt install glfw<br>
 Если нет это деректории: в CLion-e зайти в CMakeLists.txt, нажать reload, создасться эта директория и сделать шаг (3)<br>
 </p>
 (4) pip install conan <-- (для этой команды нужен установленный питон)<br>
-(5) conan install —build=missing ..<br>
+(5) conan install --build=missing ..<br>
 
 <h3>2.</h3>
 Запускать сам проект из CLion-a<br><br><br>

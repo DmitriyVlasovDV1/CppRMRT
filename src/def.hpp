@@ -15,6 +15,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
+#include <memory>
 
 // Typedefs (only for our convenience)
 typedef unsigned char uchar;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(glut_test)
+project(HSE_project)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -12,8 +12,8 @@ set(SOURCE_FILES src/def.h src/main.cpp)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-add_executable(glut_test ${SOURCE_FILES})
+add_executable(HSE_project ${SOURCE_FILES})
 
-target_include_directories(glut_test PUBLIC -I/${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(glut_test PUBLIC GLEW::glew glfw)
+target_include_directories(HSE_project PUBLIC -I/${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(HSE_project PUBLIC GLEW::glew glfw)
 

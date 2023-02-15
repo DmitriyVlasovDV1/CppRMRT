@@ -33,6 +33,9 @@ sudo apt install glfw<br>
 cd {директория в котором будет находиться проект}<br>
 git clone {url}<br> 
 cd {путь до директории build-debug}<br>
+<p>
+Если нет это деректории: в CLion-e зайти в CMakeLists.txt, нажать reload, создасться эта директория и сделать этот шаг<br>
+</p>
 conan install<br>
 conan install —build=missing ..<br>
 

@@ -4,6 +4,12 @@ project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 20)
 
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    execute_process(COMMAND pip install conan)
+    execute_process(COMMAND conan remove --locks)
+    execute_process(COMMAND conan install --build=missing ..)
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()

@@ -10,6 +10,8 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     execute_process(COMMAND conan install --build=missing ..)
 endif()
 
+set(CONAN_DISABLE_CHECK_COMPILER 1)
+
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()

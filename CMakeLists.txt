@@ -13,7 +13,7 @@ find_package(glfw3 REQUIRED)
 find_package(GLEW REQUIRED)
 
 file(GLOB SOURCE_FILES src/*.cpp)
-file(GLOB HEADER_FILES src/*.cpp)
+file(GLOB HEADER_FILES src/*.hpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

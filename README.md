@@ -1,33 +1,13 @@
-<h1>Чтобы запустить проект (на CLion): просто скачайте и все будет ок</h1>
-<h3>1.</h3> Установка всех библиотек и тп:
+<h1>Проблемы при запуске</h1>
+<h2>MacOS:</h2>
 <p>
-<em>
---> OpenGL/glsl (glew 2.2.0 latest) (для реализации рендера),<br>
---> GLFW 3.3.8 (latest) (для создания окна),<br>
---> conan (пакетный менеджер для сборки проекта на MacOS/Linux/Windows)<br>
-</em>
+Если компилятор не знает что такое GLEW -- в консоле: brew install glew
 </p>
+<h2>Windows:</h2>
 <p>
-
-<h4>Для MacOS:</h4>
-<p>
-brew install glew<br>
-brew install glfw<br>
+Их не должно быть
 </p>
-
-<h4>Для Windows:</h4>
+<h2>Unix not apple:</h2>
 <p>
-гайд: https://medium.com/@bhargav.chippada/how-to-setup-opengl-on-mingw-w64-in-windows-10-64-bits-b77f350cea7e
-(удачи + gl установлен по дефолту примерно всегда)
+Пока не тестили
 </p>
-
-<h4>Для Linux:</h4>
-<p>
-sudo apt install glew<br>
-sudo apt install glfw<br>
-Не проверяли работоспособность этих команд - у вас есть возможность разобраться самим, если не сработает)
-</p>
-
-<h3>2.</h3>
-Запускать сам проект из CLion-a<br><br><br>
-<strong>На данный момент у тебя все должно работать</strong> - если нет --> гг

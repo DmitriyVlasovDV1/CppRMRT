@@ -1,8 +1,8 @@
-#ifndef GLUT_TEST_DEF_H
-#define GLUT_TEST_DEF_H
+#ifndef DEF_H
+#define DEF_H
 
-// Include realization of using libraries
-#include <GL/glew.h>
+// Include header files of using libraries
+#include <GLEW/glew.h>
 #include <GLFW/glfw3.h>
 
 // All useful includes
@@ -15,10 +15,9 @@
 #include <cmath>
 #include <algorithm>
 #include <cassert>
-#include <memory>
 
 // Typedefs (only for our convenience)
 typedef unsigned char uchar;
 typedef unsigned int uint;
 
-#endif // GLUT_TEST_DEF_H
+#endif // DEF_H

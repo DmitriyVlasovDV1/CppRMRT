@@ -1,13 +1,15 @@
-<h1>Проблемы при запуске</h1>
+<h1>Run issues:</h1>
 <h2>MacOS:</h2>
 <p>
-Если компилятор не знает что такое GLEW -- в консоле: brew install glew
+If compiler does not know what is 'glew' --> run in console: brew install glew<br>
+(now this step is not really needed, because in CMake file this command will run automatically)
 </p>
 <h2>Windows:</h2>
 <p>
-Их не должно быть
+If you have 64-bit system - you probably do not have any problems
 </p>
 <h2>Unix not apple:</h2>
 <p>
-Если компилятор не знает что такое GLEW -- в консоле: sudo apt-get install libglew-dev
+If compiler does not know what is 'glew' --> run in console: sudo apt-get install libglew-dev<br>
+(we do not check this point)
 </p>

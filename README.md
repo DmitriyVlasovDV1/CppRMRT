@@ -9,5 +9,5 @@
 </p>
 <h2>Unix not apple:</h2>
 <p>
-Пока не тестили
+Если компилятор не знает что такое GLEW -- в консоле: sudo apt-get install libglew-dev
 </p>

@@ -7,7 +7,7 @@ Also you need to install brew for this --> instruction: https://brew.sh/
 </p>
 <h2>Windows:</h2>
 <p>
-If you have 64-bit system - you probably do not have any problems
+If you have 64-bit system - you probably do not have any problems; 32-bits systems are not supported.
 </p>
 <h2>Unix not apple:</h2>
 <p>

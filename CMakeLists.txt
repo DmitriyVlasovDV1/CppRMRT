@@ -13,6 +13,8 @@ find_package(OpenGL REQUIRED)
 
 # maybe all unix-systems need this way linking libraries
 if(APPLE)
+    # brew is needed for this command
+    execute_process(COMMAND brew install glew)
     # maybe all unix-systems need this way linking glew
     find_package(GLEW REQUIRED)
     link_directories(lib/macos)

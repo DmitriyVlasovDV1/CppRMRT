@@ -60,7 +60,7 @@ namespace cgsg {
 int main() {
     // glfw initialization
     if (!glfwInit())
-        assert("error in glfw initialization");
+        assert("Error in glfw initialization");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -72,14 +72,14 @@ int main() {
     GLFWwindow * window = glfwCreateWindow(400, 400, "SK4", nullptr, nullptr);
     if (!window) {
         glfwTerminate();
-        assert("error in glfw window creation");
+        assert("Error in glfw window creation");
     }
     // Attach OpenGL context to the created window thread
     glfwMakeContextCurrent(window);
 
     // Initialization of OpenGL
     if (!glewInit())
-        assert("error in glew initialization");
+        assert("Error in glew initialization");
 
     // Debug information (OpenGL/glsl version)
     ::std::cout << "OpenGL: " << glGetString(GL_VERSION) << "\n";

@@ -14,6 +14,7 @@
 #include <unordered_set>
 #include <cmath>
 #include <algorithm>
+#include <memory>
 #include <cassert>
 
 // Typedefs (only for our convenience)

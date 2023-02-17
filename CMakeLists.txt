@@ -13,9 +13,6 @@ find_package(OpenGL REQUIRED)
 
 if (APPLE)
     message(STATUS ">>> Apple detected")
-    # brew is needed for this commands
-    execute_process(COMMAND brew update)
-    execute_process(COMMAND brew install glew)
     find_package(GLEW REQUIRED)
     link_directories(lib/macos)
     set(GLFW_LIBRARIES libglfw.3.dylib libglfw3.a)
@@ -29,10 +26,9 @@ elseif (MSVC OR MSYS OR MINGW)
 
 elseif (UNIX AND NOT APPLE)
     message(STATUS ">>> Linux detected")
-    execute_process(COMMAND sudo apt update)
-    execute_process(COMMAND sudo apt install libglew-dev libglfw3 libglfw3-dev)
     set(GLFW_LIBRARIES glfw GL glut GLU)
     set(GLEW_LIBRARIES GLEW)
+
 else ()
     message(FATAL_ERROR "Not support this system (use MacOS/Linux/Windows)")
 endif ()

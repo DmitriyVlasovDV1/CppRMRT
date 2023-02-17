@@ -11,29 +11,30 @@ file(GLOB HEADER_FILES src/*.hpp)
 
 find_package(OpenGL REQUIRED)
 
-# maybe all unix-systems need this way linking libraries
 if(APPLE)
     message(STATUS ">>> Apple detected")
-    # brew is needed for this command
+    # brew is needed for this commands
+    execute_process(COMMAND brew update)
     execute_process(COMMAND brew install glew)
-    # maybe all unix-systems need this way linking glew
     find_package(GLEW REQUIRED)
     link_directories(lib/macos)
     set(GLFW_LIBRARIES libglfw.3.dylib libglfw3.a)
     set(GLEW_LIBRARIES GLEW::GLEW)
-endif()
 
-if(MSVC OR MSYS OR MINGW)
+elseif(MSVC OR MSYS OR MINGW)
     message(STATUS ">>> Windows detected")
     link_directories(lib/windows)
     set(GLFW_LIBRARIES libglfw3.a)
     set(GLEW_LIBRARIES glew32s glew32 opengl32)
-endif()
 
-if(UNIX AND NOT APPLE)
+elseif(UNIX AND NOT APPLE)
     message(STATUS ">>> Linux detected")
+    execute_process(COMMAND sudo apt update)
+    execute_process(COMMAND sudo apt install libglew-dev libglfw3 libglfw3-dev)
     set(GLFW_LIBRARIES glfw GL glut GLU)
     set(GLEW_LIBRARIES GLEW)
+else()
+    message(FATAL_ERROR "Not support this system (use MacOS/Linux/Windows)")
 endif()
 
 # not needed for unix-system (for windows it's 'must have')

@@ -6,8 +6,17 @@ set(CMAKE_CXX_STANDARD 20)
 
 include_directories(include)
 
-file(GLOB SOURCE_FILES src/*.cpp)
-file(GLOB HEADER_FILES src/*.hpp)
+file(GLOB SOURCE_FILES
+        src/main.cpp
+        src/render/render.cpp
+        src/render/shaders/shader.cpp
+        src/units/SK4/test_unit.cpp)
+file(GLOB HEADER_FILES
+        src/def.hpp
+        src/render/render.hpp
+        src/render/primitives/primitive.hpp
+        src/render/shaders/shader.hpp
+        src/units/SK4/test_unit.hpp)
 
 find_package(OpenGL REQUIRED)
 
@@ -33,8 +42,15 @@ else ()
     message(FATAL_ERROR "Not support this system (use MacOS/Linux/Windows)")
 endif ()
 
+
 # not needed for unix-system (for windows it's 'must have')
 add_compile_definitions(GLEW_STATIC)
+
+# for detecting memory leaks
+add_compile_options(-fsanitize=address)
+add_compile_options(-fsanitize=undefined)
+add_link_options(-fsanitize=address)
+add_link_options(-fsanitize=undefined)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

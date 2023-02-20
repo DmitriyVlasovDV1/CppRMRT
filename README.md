@@ -23,7 +23,7 @@ If you have 64-bit system - you probably do not have any problems; 32-bits syste
 
 <h3>Unix (not apple):</h3>
 <p>
-If compiler does not know what is 'glew'/'glfw'; -> run in console:
+If compiler does not know what is 'glew'/'glfw' -> run in console:
 
 `sudo apt update`
 

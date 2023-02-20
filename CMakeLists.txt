@@ -47,10 +47,10 @@ endif ()
 add_compile_definitions(GLEW_STATIC)
 
 # for detecting memory leaks
-add_compile_options(-fsanitize=address)
-add_compile_options(-fsanitize=undefined)
-add_link_options(-fsanitize=address)
-add_link_options(-fsanitize=undefined)
+#add_compile_options(-fsanitize=address)
+#add_compile_options(-fsanitize=undefined)
+#add_link_options(-fsanitize=address)
+#add_link_options(-fsanitize=undefined)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

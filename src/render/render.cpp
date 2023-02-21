@@ -105,7 +105,7 @@ render::~render() {
  * RETURNS:
  *   (shader *) - not-owning pointer to the created shader.
  */
-shader *render::shaderAdd(const ::std::string &shaderPath) {
+shader *render::addShader(const ::std::string &shaderPath) {
     if (shadersArray[shaderPath]) return shadersArray[shaderPath];
     shadersArray[shaderPath] = new shader(shaderPath);
     return shadersArray[shaderPath];
@@ -126,14 +126,15 @@ shader *render::shaderAdd(const ::std::string &shaderPath) {
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-primitive *render::primitiveAdd(
+primitive *render::addPrimitive(
     const ::std::string &shaderPath,
     const ::std::vector<float> &vertexBuffer,
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBuffer
 ) {
     primitivesArray.emplace_back(new primitive(
-        shaderAdd(shaderPath), vertexBuffer, vertexBufferFormat, indexBuffer
+        addShader(shaderPath)->getShaderProgramId(), vertexBuffer,
+        vertexBufferFormat, indexBuffer
     ));
     return primitivesArray.back();
 }  // End of 'render::primitiveAdd' function
@@ -141,9 +142,9 @@ primitive *render::primitiveAdd(
 /* Get time function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (float) - time.
+ *   (float &) - time.
  */
-[[nodiscard]] float render::getTime() const {
+[[nodiscard]] float &render::getTime() {
     return time;
 }  // End of 'getTime' function
 
@@ -152,7 +153,7 @@ primitive *render::primitiveAdd(
  * RETURNS:
  *   (float) - delta time.
  */
-[[nodiscard]] float render::getDeltaTime() const {
+[[nodiscard]] float &render::getDeltaTime() {
     return deltaTime;
 }  // End of 'getDeltaTime' function
 

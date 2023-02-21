@@ -11,6 +11,7 @@ file(GLOB SOURCE_FILES
         src/render/render.cpp
         src/render/scenes/scene.cpp
         src/render/primitives/primitive.cpp
+        src/render/primitives/vertex_array.cpp
         src/render/shaders/shader.cpp
         src/units/SK4/test_unit.cpp)
 file(GLOB HEADER_FILES
@@ -18,6 +19,7 @@ file(GLOB HEADER_FILES
         src/render/render.hpp
         src/render/scenes/scene.hpp
         src/render/primitives/primitive.hpp
+        src/render/primitives/vertex_array.hpp
         src/render/shaders/shader.hpp
         src/units/SK4/test_unit.hpp)
 

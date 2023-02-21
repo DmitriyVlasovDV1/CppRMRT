@@ -14,9 +14,10 @@ void testUnit::initUnit() {
 
     for (int j = 0; j < 3; j++)
         indexBuffer[j] = j;
-    render::renderInstance.primitiveAdd(
+    auto unitPrimitive = render::renderInstance.addPrimitive(
         "test", vertexBuffer, "v3v3", indexBuffer
     );
+    unitPrimitive->shaderAddUniform1f(&render::renderInstance.getTime(), "time");
 }  // End of 'testUnit::initUnit' function
 
 /* Unit response override function.

@@ -77,5 +77,6 @@ void scene::sceneResponse() {
 scene::~scene() {
     for (auto &[unitName, unitInstance] : unitsArray)
         delete unitInstance;
+    ::std::cout << "Clear scene" << ::std::endl;
 }  // End of 'scene::~scene' function
 }  // namespace hse

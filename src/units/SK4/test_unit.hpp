@@ -8,9 +8,6 @@
 namespace hse {
 // Test unit class declaration
 class testUnit final : public unit {
-    uint vertexArrayId{}, vertexBufferId{}, indexBufferId{};
-    uint testProgramId{};
-
 public:
     // Class constructor
     explicit testUnit() = default;

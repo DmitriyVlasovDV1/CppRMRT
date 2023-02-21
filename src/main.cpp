@@ -22,7 +22,6 @@
     mainScene->addUnit("Test unit", new hse::testUnit());
 
     hse::render::renderInstance.addScene("Main scene", mainScene);
-    mainScene->setSceneStatus(true);
     hse::render::renderInstance.response();
 
     //    int *a = new int[100];

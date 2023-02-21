@@ -92,7 +92,6 @@ shader::shader(const ::std::string &shaderPath) {
  * RETURNS: None.
  */
 void shader::shaderApply() const {
-    glUseProgram(shaderProgramId);
     int uniformLocation;
     for (auto &[uniformName, uniformValue] : shaderUniform1i) {
         uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
@@ -136,12 +135,12 @@ void shader::shaderAddUniform1f(float uniformValue, const char *uniformName) {
 /* Add uniform to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       float *uniformValue;
+ *       const float *uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
  * RETURNS: None.
  */
-void shader::shaderAddUniform3fv(float *uniformValue, const char *uniformName) {
+void shader::shaderAddUniform3fv(const float *uniformValue, const char *uniformName) {
     shaderUniform3fv[uniformName] = uniformValue;
 }  // End of 'shader::shaderAddUniform3fv' function
 
@@ -163,5 +162,6 @@ shader::~shader() {
         }
     if (shaderProgramId != 0) glDeleteProgram(shaderProgramId);
     shaderProgramId = 0;
+    ::std::cout << "Clear shader" << ::std::endl;
 }  // End of 'shader::~shader' function
 }  // namespace hse

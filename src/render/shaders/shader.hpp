@@ -30,7 +30,7 @@ private:
                                                                // vector
                                                                // uniforms
 
-public:
+private:
     // Class default constructor
     explicit shader();
 
@@ -45,6 +45,7 @@ public:
      */
     explicit shader(const ::std::string &shaderPath);
 
+public:
     /* Apply shader function.
      * ARGUMENTS: None.
      * RETURNS: None.
@@ -74,13 +75,17 @@ public:
     /* Add uniform to the shader function.
      * ARGUMENTS:
      *   - uniform value:
-     *       float *uniformValue;
+     *       const float *uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void shaderAddUniform3fv(float *uniformValue, const char *uniformName);
+    void shaderAddUniform3fv(
+        const float *uniformValue,
+        const char *uniformName
+    );
 
+private:
     // Class destructor
     ~shader();
 

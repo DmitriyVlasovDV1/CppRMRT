@@ -37,13 +37,23 @@ class vertexArray {
             ::std::string format_,
             int sizeOfBuffer_
         );
+
+        /* Buffer assignment operator function.
+         * ARGUMENTS:
+         *   - buffer to assign:
+         *       const buffer &other;
+         * RETURNS:
+         *   (buffer &) - this;
+         * NOTE: This operator is needed for using map.
+         */
+        buffer &operator=(const buffer &other);
     };
 
-    ::std::map<::std::string, buffer> Buffers = {
-        {"vertex", buffer(0, GL_ARRAY_BUFFER, "v3v3", 0)},
-        {"index", buffer(0, GL_ELEMENT_ARRAY_BUFFER, "v1", 0)}};  // All buffers
-                                                                  // in vertex
-                                                                  // array
+    ::std::vector<buffer> Buffers = {
+        buffer(0, GL_ARRAY_BUFFER, "v3v3", 0),
+        buffer(0, GL_ELEMENT_ARRAY_BUFFER, "v1", 0)};  // All buffers
+    // in vertex
+    // array
 
 public:
     // Class default constructor
@@ -81,8 +91,10 @@ class primitive {
     // Friend classes
     friend class render;
 
-    vertexArray primitiveVertexArrayInstance;  // Vertex array instance
-    shader *primitiveShader{};                 // Primitive's shader instance
+    ::std::unique_ptr<vertexArray> primitiveVertexArrayInstance{};  // Vertex
+                                                                    // array
+                                                                    // instance
+    shader *primitiveShader{};  // Primitive's shader instance
 
     // Class default constructor
     explicit primitive() = default;
@@ -112,6 +124,9 @@ class primitive {
      * RETURNS: None.
      */
     void primitiveDraw();
+
+    // Class destructor
+    ~primitive();
 };  // End fo 'primitive' class
 }  // namespace hse
 

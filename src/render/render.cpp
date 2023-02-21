@@ -75,11 +75,12 @@ void render::response() {
 
         // Response all units
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         for (auto &[sceneName, sceneInstance] : scenesArray)
             if (sceneInstance->getSceneStatus()) sceneInstance->sceneResponse();
 
         // Render
+        for (auto &primitive : primitivesArray)
+            primitive->primitiveDraw();
 
         glfwSwapBuffers(windowInstance);
         glfwPollEvents();
@@ -88,8 +89,13 @@ void render::response() {
 
 // Class destructor
 render::~render() {
+    for (auto &primitive : primitivesArray)
+        delete primitive;
+    for (auto &[shaderName, shaderInstance] : shadersArray)
+        delete shaderInstance;
     glfwDestroyWindow(windowInstance);
     glfwTerminate();
+    ::std::cout << "Clear render" << ::std::endl;
 }  // End of 'render::~render' function
 
 /* Add shader function.

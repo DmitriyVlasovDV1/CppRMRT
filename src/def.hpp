@@ -18,6 +18,12 @@
 #include <unordered_set>
 #include <vector>
 
+// Project namespace
+namespace hse {
+// Primitive class forward declaration
+class primitive;
+}  // namespace hse
+
 // Typedefs (only for our convenience)
 typedef unsigned char uchar;
 typedef unsigned int uint;

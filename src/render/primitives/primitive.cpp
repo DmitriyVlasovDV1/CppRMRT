@@ -24,6 +24,23 @@ vertexArray::buffer::buffer(
       sizeOfBuffer(sizeOfBuffer_) {
 }  // End of 'vertexArray::buffer::buffer' function
 
+/* Buffer assignment operator function.
+ * ARGUMENTS:
+ *   - buffer to assign:
+ *       const buffer &other;
+ * RETURNS:
+ *   (buffer &) - this;
+ * NOTE: This operator is needed for using map.
+ */
+vertexArray::buffer &vertexArray::buffer::operator=(const buffer &other) {
+    id = other.id;
+    type = other.type;
+    format = other.format;
+    sizeOfBuffer = other.sizeOfBuffer;
+    data = other.data;
+    return *this;
+}  // End of 'buffer::operator=' function
+
 /* Class constructor.
  * ARGUMENTS:
  *   - vertex buffer data:
@@ -40,13 +57,15 @@ vertexArray::vertexArray(
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBuffer
 ) {
-    Buffers["vertex"].data = (void *)vertexBuffer.data();
-    Buffers["vertex"].sizeOfBuffer = static_cast<int>(vertexBuffer.size());
-    Buffers["index"].data = (void *)indexBuffer.data();
-    Buffers["index"].sizeOfBuffer = static_cast<int>(indexBuffer.size());
-    glGenBuffers(1, &vertexArrayId);
+    Buffers[0].data = (void *)&vertexBuffer[0];
+    Buffers[0].sizeOfBuffer =
+        static_cast<int>(vertexBuffer.size()) * Buffers[0].sizeOfElement;
+    Buffers[1].data = (void *)&indexBuffer[0];
+    Buffers[1].sizeOfBuffer =
+        static_cast<int>(indexBuffer.size()) * Buffers[1].sizeOfElement;
+    glGenVertexArrays(1, &vertexArrayId);
     glBindVertexArray(vertexArrayId);
-    for (auto &[bufferName, buffer] : Buffers) {
+    for (auto &buffer : Buffers) {
         if (!buffer.sizeOfBuffer) continue;
         glGenBuffers(1, &buffer.id);
         glBindBuffer(buffer.type, buffer.id);
@@ -54,7 +73,7 @@ vertexArray::vertexArray(
             buffer.type, buffer.sizeOfBuffer, buffer.data, GL_STATIC_DRAW
         );
     }
-    glBindBuffer(Buffers["vertex"].type, Buffers["vertex"].id);
+    glBindBuffer(Buffers[0].type, Buffers[0].id);
     ::std::vector<int> vertexBufferOffsets;
     int vertexBufferStride = 0;
     for (auto &sign : vertexBufferFormat)
@@ -62,12 +81,8 @@ vertexArray::vertexArray(
             vertexBufferOffsets.push_back(sign - '0');
             vertexBufferStride += sign - '0';
         }
-    vertexBufferStride *= Buffers["vertex"].sizeOfElement;  // Stride is
-                                                            // measured by bytes
-    // type: "v3v3"
-    // VB:     |{ppp|ccc}|{ppp|ccc}|{ppp|ccc}|{ppp|ccc}|
-    // stride:  {.......}
-    // offset:  {...}
+    vertexBufferStride *= Buffers[0].sizeOfElement;  // Stride is
+                                                     // measured by bytes
     int localOffset = 0;
     for (int offsetNumber = 0; offsetNumber < vertexBufferOffsets.size();
          offsetNumber++) {
@@ -76,6 +91,8 @@ vertexArray::vertexArray(
             vertexBufferStride, (void *)static_cast<intptr_t>(localOffset)
         );
         glEnableVertexAttribArray(offsetNumber);
+        localOffset +=
+            vertexBufferOffsets[offsetNumber] * Buffers[0].sizeOfElement;
     }
     glBindVertexArray(0);
 }  // End of 'vertexArray::vertexArray' function
@@ -86,21 +103,25 @@ vertexArray::vertexArray(
  */
 void vertexArray::drawVertexArray() {
     glBindVertexArray(vertexArrayId);
-    if (Buffers["index"].sizeOfBuffer) {
-        glBindBuffer(Buffers["index"].type, Buffers["index"].id);
-        glDrawElements(GL_TRIANGLE_STRIP, 3, GL_UNSIGNED_INT, nullptr);
-    } else {
-        glBindBuffer(Buffers["vertex"].type, Buffers["vertex"].id);
-        glDrawArrays(GL_TRIANGLES, 0, Buffers["vertex"].sizeOfBuffer);
-    }
+    glBindBuffer(Buffers[0].type, Buffers[0].id);
+    if (Buffers[1].sizeOfBuffer) {
+        glBindBuffer(Buffers[1].type, Buffers[1].id);
+        glDrawElements(
+            GL_TRIANGLE_STRIP,
+            Buffers[0].sizeOfBuffer / Buffers[0].sizeOfElement, GL_UNSIGNED_INT,
+            nullptr
+        );
+    } else
+        glDrawArrays(
+            GL_TRIANGLES, 0, Buffers[0].sizeOfBuffer / Buffers[0].sizeOfElement
+        );
     glBindVertexArray(0);
-    glUseProgram(0);
 }  // End of 'vertexArray::drawVertexArray' function
 
 // Class destructor
 vertexArray::~vertexArray() {
     glBindVertexArray(vertexArrayId);
-    for (auto &[bufferName, buffer] : Buffers) {
+    for (auto &buffer : Buffers) {
         glBindBuffer(buffer.type, 0);
         glDeleteBuffers(1, &buffer.id);
     }
@@ -128,8 +149,9 @@ primitive::primitive(
     const ::std::vector<int> &indexBuffer
 )
     : primitiveShader(primitiveShader_) {
-    primitiveVertexArrayInstance =
-        vertexArray(vertexBuffer, vertexBufferFormat, indexBuffer);
+    primitiveVertexArrayInstance = ::std::make_unique<vertexArray>(
+        vertexBuffer, vertexBufferFormat, indexBuffer
+    );
 }  // End of 'primitive::primitive' function
 
 /* Draw primitive function.
@@ -137,7 +159,14 @@ primitive::primitive(
  * RETURNS: None.
  */
 void primitive::primitiveDraw() {
+    glUseProgram(primitiveShader->getShaderProgramId());
     primitiveShader->shaderApply();
-    primitiveVertexArrayInstance.drawVertexArray();
+    primitiveVertexArrayInstance->drawVertexArray();
+    glUseProgram(0);
 }  // End of 'primitive::primitiveDraw' function
+
+// Class destructor
+primitive::~primitive() {
+    ::std::cout << "Clear primitive" << ::std::endl;
+}  // End of 'primitive::~primitive' function
 }  // namespace hse

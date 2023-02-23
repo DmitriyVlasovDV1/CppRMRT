@@ -2,6 +2,7 @@
 
 #include "render/render.hpp"
 #include "units/SK4/test_unit.hpp"
+#include "units/DV1/rm_shd_unit.hpp"
 
 // Main program function
     int main() {
@@ -19,7 +20,7 @@
     hse::render::renderInstance.init(600, 600);
 
     auto mainScene = ::std::make_unique<hse::scene>();
-    mainScene->addUnit("Test unit", new hse::testUnit());
+    //mainScene->addUnit("Rm shd unit", new hse::rmShdUnit());
 
     hse::render::renderInstance.addScene("Main scene", mainScene);
     hse::render::renderInstance.response();

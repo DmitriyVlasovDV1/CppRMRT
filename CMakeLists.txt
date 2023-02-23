@@ -12,14 +12,16 @@ file(GLOB SOURCE_FILES
         src/render/scenes/scene.cpp
         src/render/primitives/primitive.cpp
         src/render/shaders/shader.cpp
-        src/units/SK4/test_unit.cpp)
+        src/units/SK4/test_unit.cpp
+        src/units/DV1/rm_shd_unit.cpp)
 file(GLOB HEADER_FILES
         src/def.hpp
         src/render/render.hpp
         src/render/scenes/scene.hpp
         src/render/primitives/primitive.hpp
         src/render/shaders/shader.hpp
-        src/units/SK4/test_unit.hpp)
+        src/units/SK4/test_unit.hpp
+        src/units/DV1/rm_shd_unit.hpp)
 
 find_package(OpenGL REQUIRED)
 
@@ -55,6 +57,6 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/units/DV1/rm_shd_unit.cpp src/units/DV1/rm_shd_unit.hpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

@@ -26,6 +26,8 @@ void render::frameBufferSizeCallback(
     int width,
     int height
 ) {
+    renderInstance.windowWidth = width;
+    renderInstance.windowHeight = height;
     glViewport(0, 0, width, height);
 }  // End of 'framebuffer_size_callback' function
 

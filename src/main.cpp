@@ -1,11 +1,10 @@
 #include "def.hpp"
-
 #include "render/render.hpp"
 #include "units/SK4/test_unit.hpp"
 #include "units/DV1/rm_shd_unit.hpp"
 
 // Main program function
-    int main() {
+int main() {
     // Glfw initialization and its version setting
     {
         if (!glfwInit()) assert("Error in glfw initialization");

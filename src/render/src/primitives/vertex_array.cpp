@@ -1,5 +1,6 @@
-#include "primitive.hpp"
+#include "vertex_array.hpp"
 
+// Project namespace
 namespace hse {
 /* Class constructor.
  * ARGUMENTS:
@@ -23,23 +24,6 @@ vertexArray::buffer::buffer(
       format(std::move(format_)),
       sizeOfBuffer(sizeOfBuffer_) {
 }  // End of 'vertexArray::buffer::buffer' function
-
-/* Buffer assignment operator function.
- * ARGUMENTS:
- *   - buffer to assign:
- *       const buffer &other;
- * RETURNS:
- *   (buffer &) - this;
- * NOTE: This operator is needed for using map.
- */
-vertexArray::buffer &vertexArray::buffer::operator=(const buffer &other) {
-    id = other.id;
-    type = other.type;
-    format = other.format;
-    sizeOfBuffer = other.sizeOfBuffer;
-    data = other.data;
-    return *this;
-}  // End of 'buffer::operator=' function
 
 /* Class constructor.
  * ARGUMENTS:
@@ -83,6 +67,7 @@ vertexArray::vertexArray(
         }
     vertexBufferStride *= Buffers[0].sizeOfElement;  // Stride is
                                                      // measured by bytes
+    Buffers[0].sizeOfVertex = vertexBufferStride;
     int localOffset = 0;
     for (int offsetNumber = 0; offsetNumber < vertexBufferOffsets.size();
          offsetNumber++) {
@@ -108,12 +93,12 @@ void vertexArray::drawVertexArray() {
         glBindBuffer(Buffers[1].type, Buffers[1].id);
         glDrawElements(
             GL_TRIANGLE_STRIP,
-            Buffers[0].sizeOfBuffer / Buffers[0].sizeOfElement, GL_UNSIGNED_INT,
+            Buffers[0].sizeOfBuffer / Buffers[0].sizeOfVertex, GL_UNSIGNED_INT,
             nullptr
         );
     } else
         glDrawArrays(
-            GL_TRIANGLES, 0, Buffers[0].sizeOfBuffer / Buffers[0].sizeOfElement
+            GL_TRIANGLES, 0, Buffers[0].sizeOfBuffer / Buffers[0].sizeOfVertex
         );
     glBindVertexArray(0);
 }  // End of 'vertexArray::drawVertexArray' function
@@ -127,46 +112,6 @@ vertexArray::~vertexArray() {
     }
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &vertexArrayId);
+    ::std::cout << "Clear vertex buffer" << ::std::endl;
 }  // End of 'vertexArray::~vertexArray' function
-
-/* Class constructor.
- * ARGUMENTS:
- *   - primitive's shader pointer:
- *       shader *primitiveShader_;
- *   - vertex buffer data:
- *       const ::std::vector<float> &vertexBuffer;
- *   - vertex buffer format:
- *       const ::std::string &vertexBufferFormat;
- *   - index buffer data:
- *       const ::std::vector<int> &indexBuffer;
- * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
- * position, color, normal, texture coordinate.
- */
-primitive::primitive(
-    shader *primitiveShader_,
-    const ::std::vector<float> &vertexBuffer,
-    const ::std::string &vertexBufferFormat,
-    const ::std::vector<int> &indexBuffer
-)
-    : primitiveShader(primitiveShader_) {
-    primitiveVertexArrayInstance = ::std::make_unique<vertexArray>(
-        vertexBuffer, vertexBufferFormat, indexBuffer
-    );
-}  // End of 'primitive::primitive' function
-
-/* Draw primitive function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-void primitive::primitiveDraw() {
-    glUseProgram(primitiveShader->getShaderProgramId());
-    primitiveShader->shaderApply();
-    primitiveVertexArrayInstance->drawVertexArray();
-    glUseProgram(0);
-}  // End of 'primitive::primitiveDraw' function
-
-// Class destructor
-primitive::~primitive() {
-    ::std::cout << "Clear primitive" << ::std::endl;
-}  // End of 'primitive::~primitive' function
 }  // namespace hse

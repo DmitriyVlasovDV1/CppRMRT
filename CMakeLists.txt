@@ -9,17 +9,19 @@ include_directories(include)
 file(GLOB SOURCE_FILES
         src/main.cpp
         src/render/render.cpp
-        src/render/scenes/scene.cpp
-        src/render/primitives/primitive.cpp
-        src/render/shaders/shader.cpp
+        src/render/src/scenes/scene.cpp
+        src/render/src/primitives/primitive.cpp
+        src/render/src/primitives/vertex_array.cpp
+        src/render/src/shaders/shader.cpp
         src/units/SK4/test_unit.cpp
         src/units/DV1/rm_shd_unit.cpp)
 file(GLOB HEADER_FILES
         src/def.hpp
         src/render/render.hpp
-        src/render/scenes/scene.hpp
-        src/render/primitives/primitive.hpp
-        src/render/shaders/shader.hpp
+        src/render/src/scenes/scene.hpp
+        src/render/src/primitives/primitive.hpp
+        src/render/src/primitives/vertex_array.hpp
+        src/render/src/shaders/shader.hpp
         src/units/SK4/test_unit.hpp
         src/units/DV1/rm_shd_unit.hpp)
 
@@ -28,14 +30,15 @@ find_package(OpenGL REQUIRED)
 if (APPLE)
     message(STATUS ">>> Apple detected")
     find_package(GLEW REQUIRED)
-    link_directories(lib/macos)
+    link_directories(bin/GLFW/macos)
     set(GLFW_LIBRARIES libglfw.3.dylib libglfw3.a)
     set(GLEW_LIBRARIES GLEW::GLEW)
 
 elseif (MSVC OR MSYS OR MINGW)
     message(STATUS ">>> Windows detected")
-    link_directories(lib/windows)
+    link_directories(bin/GLFW/windows)
     set(GLFW_LIBRARIES libglfw3.a)
+    link_directories(bin/GLEW/windows)
     set(GLEW_LIBRARIES glew32s glew32 opengl32)
 
 elseif (UNIX AND NOT APPLE)
@@ -57,6 +60,6 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/units/DV1/rm_shd_unit.cpp src/units/DV1/rm_shd_unit.hpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

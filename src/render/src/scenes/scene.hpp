@@ -1,7 +1,7 @@
 #ifndef SCENE_HPP
 #define SCENE_HPP
 
-#include "../../def.hpp"
+#include "../../../def.hpp"
 
 namespace hse {
 // Unit class declaration

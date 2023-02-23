@@ -2,8 +2,8 @@
 #define DEF_HPP
 
 // Include header files of using libraries
-#include <GLEW/glew.h>
-#include <GLFW/glfw3.h>
+#include <glew.h>
+#include <glfw3.h>
 
 // All useful includes
 #include <algorithm>

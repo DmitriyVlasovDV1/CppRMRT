@@ -10,7 +10,7 @@ void rmShdUnit::initUnit() {
 
     for (int j = 0; j < 3; j++)
         indexBuffer[j] = j;
-    render::renderInstance.primitiveAdd(
+    render::renderInstance.addPrimitive(
         "rm", vertexBuffer, "v3v3", indexBuffer
     );
 }  // End of 'testUnit::initUnit' function

@@ -2,9 +2,9 @@
 #define RENDER_HPP
 
 #include "../def.hpp"
-#include "primitives/primitive.hpp"
-#include "scenes/scene.hpp"
-#include "shaders/shader.hpp"
+#include "src/primitives/primitive.hpp"
+#include "src/scenes/scene.hpp"
+#include "src/shaders/shader.hpp"
 
 // Project namespace
 namespace hse {
@@ -14,14 +14,16 @@ public:
     static render renderInstance;  // Render instance
 
 private:
+    // Source containers
     ::std::map<::std::string, ::std::unique_ptr<scene>> scenesArray;  // Scenes
                                                                       // map
     ::std::map<::std::string, shader *> shadersArray;  // All shader's programs
                                                        // array
+    ::std::vector<primitive *> primitivesArray;        // All primitives array
 
-    ::std::vector<primitive *> primitivesArray;  // All primitives array
-    uint windowWidth{},                          // Window width
-        windowHeight{};                          // Window height
+    // Render public variables (can be received by methods)
+    uint windowWidth{},            // Window width
+        windowHeight{};            // Window height
     GLFWwindow *windowInstance{};  // Window instance (for now we can have only
                                    // one window)
     float time{}, deltaTime{};     // Time and delta time per frame
@@ -91,7 +93,7 @@ public:
      * RETURNS:
      *   (shader *) - not-owning pointer to the created shader.
      */
-    shader *shaderAdd(const ::std::string &shaderPath);
+    shader *addShader(const ::std::string &shaderPath);
 
     /* Add primitive function.
      * ARGUMENTS:
@@ -108,7 +110,7 @@ public:
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    primitive *primitiveAdd(
+    primitive *addPrimitive(
         const ::std::string &shaderPath,
         const ::std::vector<float> &vertexBuffer,
         const ::std::string &vertexBufferFormat = "v3v3",
@@ -120,14 +122,14 @@ public:
      * RETURNS:
      *   (float) - time.
      */
-    [[nodiscard]] float getTime() const;
+    [[nodiscard]] float &getTime();
 
     /* Get delta time function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (float) - delta time.
      */
-    [[nodiscard]] float getDeltaTime() const;
+    [[nodiscard]] float &getDeltaTime();
 
     /* Get window width function.
      * ARGUMENTS: None.

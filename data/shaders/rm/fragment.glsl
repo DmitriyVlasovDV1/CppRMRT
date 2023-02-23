@@ -67,11 +67,11 @@ float SDF_plane(vec3 p, Plane plane)
 }
 
 
-float SDF_scene()
+float SDF_scene(vec3 pos)
 {
     float sdf = max_dist;
     for (int i = 0; i < sphere_buffer.spheres.length(); i++) {
-        sdf = min(sdf, SDF_sphere(sphere_buffer.spheres[i]));
+        sdf = min(sdf, SDF_sphere(pos, sphere_buffer.spheres[i]));
     }
     // TODO other figures
 
@@ -85,7 +85,7 @@ Material trace(vec3 org, vec3 dir)
     while (t < max_dist)
     {
         vec3 pos = org + dir * t;
-        float sdf = SDF_scene();
+        float sdf = SDF_scene(pos);
 
         if (sdf < eps)
         {

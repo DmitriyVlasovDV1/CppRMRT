@@ -20,7 +20,7 @@ shader::shader(const ::std::string &shaderPath) {
     static std::ifstream shaderFile;
     ::std::string shaderSource;
     for (auto &[name, type, id] : shaders) {
-        fullShaderPath = "../bin/shaders/" + shaderPath + "/" + name + ".glsl";
+        fullShaderPath = "../data/shaders/" + shaderPath + "/" + name + ".glsl";
         shaderFile.open(fullShaderPath);
         if (!shaderFile.is_open()) {
             assert("Error in shader's path");
@@ -86,63 +86,6 @@ shader::shader(const ::std::string &shaderPath) {
         shaderProgramId = 0;
     }
 }  // End of 'shader::shader' function
-
-/* Apply shader function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-void shader::shaderApply() const {
-    int uniformLocation;
-    for (auto &[uniformName, uniformValue] : shaderUniform1i) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1) glUniform1i(uniformLocation, uniformValue);
-    }
-    for (auto &[uniformName, uniformValue] : shaderUniform1f) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1) glUniform1f(uniformLocation, uniformValue);
-    }
-    for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1)
-            glUniform3fv(uniformLocation, 1, uniformValue);
-    }
-}  // End of 'shader::shaderApply' function
-
-/* Add uniform to the shader function.
- * ARGUMENTS:
- *   - uniform value:
- *       int uniformValue;
- *   - uniform name on the shader:
- *       const char *uniformName;
- * RETURNS: None.
- */
-void shader::shaderAddUniform1i(int uniformValue, const char *uniformName) {
-    shaderUniform1i[uniformName] = uniformValue;
-}  // End of 'shader::shaderAddUniform1i' function
-
-/* Add uniform to the shader function.
- * ARGUMENTS:
- *   - uniform value:
- *       float uniformValue;
- *   - uniform name on the shader:
- *       const char *uniformName;
- * RETURNS: None.
- */
-void shader::shaderAddUniform1f(float uniformValue, const char *uniformName) {
-    shaderUniform1f[uniformName] = uniformValue;
-}  // End of 'shader::shaderAddUniform1f' function
-
-/* Add uniform to the shader function.
- * ARGUMENTS:
- *   - uniform value:
- *       const float *uniformValue;
- *   - uniform name on the shader:
- *       const char *uniformName;
- * RETURNS: None.
- */
-void shader::shaderAddUniform3fv(const float *uniformValue, const char *uniformName) {
-    shaderUniform3fv[uniformName] = uniformValue;
-}  // End of 'shader::shaderAddUniform3fv' function
 
 /* Get shader id function.
  * ARGUMENTS: None.

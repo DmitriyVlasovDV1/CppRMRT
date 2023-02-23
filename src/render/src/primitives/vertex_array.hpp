@@ -1,12 +1,15 @@
-#ifndef PRIMITIVE_HPP
-#define PRIMITIVE_HPP
+#ifndef VERTEX_ARRAY_HPP
+#define VERTEX_ARRAY_HPP
 
-#include "../../def.hpp"
-#include "../shaders/shader.hpp"
+#include "../../../def.hpp"
 
+// Project namespace
 namespace hse {
 // Vertex buffer class declaration
 class vertexArray {
+    // Friend classes
+    friend class primitive;
+
     uint vertexArrayId{};  // Vertex array id
 
     struct buffer {
@@ -14,6 +17,7 @@ class vertexArray {
         int type{};                   // Type of buffer
         ::std::string format;         // Buffer format
         int sizeOfBuffer{};           // Buffer size in bytes
+        int sizeOfVertex{};           // One vertex size in bytes
         void *data{};                 // Buffer data pointer
         const int sizeOfElement = 4;  // Size of 1 element of buffer
 
@@ -37,25 +41,13 @@ class vertexArray {
             ::std::string format_,
             int sizeOfBuffer_
         );
-
-        /* Buffer assignment operator function.
-         * ARGUMENTS:
-         *   - buffer to assign:
-         *       const buffer &other;
-         * RETURNS:
-         *   (buffer &) - this;
-         * NOTE: This operator is needed for using map.
-         */
-        buffer &operator=(const buffer &other);
-    };
+    };  // End of 'buffer' class
 
     ::std::vector<buffer> Buffers = {
         buffer(0, GL_ARRAY_BUFFER, "v3v3", 0),
-        buffer(0, GL_ELEMENT_ARRAY_BUFFER, "v1", 0)};  // All buffers
-    // in vertex
-    // array
+        buffer(0, GL_ELEMENT_ARRAY_BUFFER, "v1", 0)};  // All buffers in vertex
+                                                       // array
 
-public:
     // Class default constructor
     explicit vertexArray() = default;
 
@@ -85,49 +77,6 @@ public:
     // Class destructor
     ~vertexArray();
 };  // End of 'vertexArray' class
-
-// Primitive class declaration
-class primitive {
-    // Friend classes
-    friend class render;
-
-    ::std::unique_ptr<vertexArray> primitiveVertexArrayInstance{};  // Vertex
-                                                                    // array
-                                                                    // instance
-    shader *primitiveShader{};  // Primitive's shader instance
-
-    // Class default constructor
-    explicit primitive() = default;
-
-    /* Class constructor.
-     * ARGUMENTS:
-     *   - primitive's shader pointer:
-     *       shader *primitiveShader_;
-     *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBuffer;
-     *   - vertex buffer format:
-     *       const ::std::string &vertexBufferFormat;
-     *   - index buffer data:
-     *       const ::std::vector<int> &indexBuffer;
-     * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
-     * position, color, normal, texture coordinate.
-     */
-    explicit primitive(
-        shader *primitiveShader_,
-        const ::std::vector<float> &vertexBuffer,
-        const ::std::string &vertexBufferFormat = "v3v3",
-        const ::std::vector<int> &indexBuffer = ::std::vector<int>()
-    );
-
-    /* Draw primitive function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    void primitiveDraw();
-
-    // Class destructor
-    ~primitive();
-};  // End fo 'primitive' class
 }  // namespace hse
 
-#endif  // PRIMITIVE_HPP
+#endif  // VERTEX_ARRAY_HPP

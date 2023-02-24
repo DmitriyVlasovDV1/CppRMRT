@@ -51,6 +51,14 @@ void primitive::primitiveDraw() {
                 uniformLocation, uniformPair.second, *uniformPair.first
             );
     }
+    for (auto &[uniformName, uniformPair] : shaderUniform3fv) {
+        uniformLocation =
+            glGetUniformLocation(primitiveShaderProgramId, uniformName);
+        if (uniformLocation != -1)
+            glUniform3fv(
+                uniformLocation, uniformPair.second, *uniformPair.first
+            );
+    }
     primitiveVertexArrayInstance->drawVertexArray();
     glUseProgram(0);
 }  // End of 'primitive::primitiveDraw' function

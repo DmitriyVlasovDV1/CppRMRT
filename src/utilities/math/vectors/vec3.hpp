@@ -1,6 +1,8 @@
 #ifndef VEC3_HPP
 #define VEC3_HPP
 
+#include <cmath>
+
 #include "../math_def.hpp"
 
 // Math module namespace
@@ -47,8 +49,8 @@ public:
      * RETURNS:
      *   (float) - vector's length.
      */
-    inline constexpr float operator!() const {
-        return sqrt(x * x + y * y + z * z);
+    inline float operator!() const {
+        return ::std::sqrt(x * x + y * y + z * z);
     }  // End of 'operator!' function
 
     /* Get vector length squared function.
@@ -75,7 +77,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator>(const vec3 &other) const {
+    inline bool operator>(const vec3 &other) const {
         return x > other.x ||
                (x == other.x && (y > other.y || (y == other.y && z > other.z)));
     }  // End of 'operator>' function
@@ -87,7 +89,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator<(const vec3 &other) const {
+    inline bool operator<(const vec3 &other) const {
         return x < other.x ||
                (x == other.x && (y < other.y || (y == other.y && z < other.z)));
     }  // End of 'operator<' function
@@ -99,7 +101,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator==(const vec3 &other) const {
+    inline bool operator==(const vec3 &other) const {
         return x == other.x && y == other.y && z == other.z;
     }  // End of 'operator==' function
 
@@ -110,7 +112,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator!=(const vec3 &other) const {
+    inline bool operator!=(const vec3 &other) const {
         return !(*this == other);
     }  // End of 'operator!=' function
 
@@ -291,7 +293,7 @@ public:
      * RETURNS:
      *   (dword) - color from vector;
      */
-    inline constexpr dword toDword() const {
+    inline dword toDword() const {
         vec3 tmp = this->normalizing();
         return (static_cast<int>(tmp.z * 255) << 0) |
                (static_cast<int>(tmp.y * 255) << 8) |

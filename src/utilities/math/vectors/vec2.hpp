@@ -37,7 +37,7 @@ public:
      * RETURNS:
      *   (float *) - float pointer to the vector.
      */
-    inline explicit constexpr operator float *() {
+    inline explicit operator float *() {
         return &x;
     }  // End of 'operator float *' function
 
@@ -46,7 +46,7 @@ public:
      * RETURNS:
      *   (float *) - const float pointer to the vector.
      */
-    inline explicit constexpr operator const float *() const {
+    inline explicit operator const float *() const {
         return &x;
     }  // End of 'operator const float *' function
 
@@ -55,8 +55,8 @@ public:
      * RETURNS:
      *   (float) - vector's length.
      */
-    inline constexpr float operator!() const {
-        return sqrt(x * x + y * y);
+    inline float operator!() const {
+        return ::std::sqrt(x * x + y * y);
     }  // End of 'operator!' function
 
     /* Get vector length squared function.
@@ -64,7 +64,7 @@ public:
      * RETURNS:
      *   (float) - vector's length squared.
      */
-    inline constexpr float operator$() const {
+    inline float operator$() const {
         return x * x + y * y;
     }  // End of 'operator!' function
 
@@ -83,7 +83,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator>(const vec2 &other) const {
+    inline bool operator>(const vec2 &other) const {
         return x > other.x || (x == other.x && y > other.y);
     }  // End of 'operator>' function
 
@@ -94,7 +94,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator<(const vec2 &other) const {
+    inline bool operator<(const vec2 &other) const {
         return x < other.x || (x == other.x && y < other.y);
     }  // End of 'operator<' function
 
@@ -105,7 +105,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator==(const vec2 &other) const {
+    inline bool operator==(const vec2 &other) const {
         return x == other.x && y == other.y;
     }  // End of 'operator==' function
 
@@ -116,7 +116,7 @@ public:
      * RETURNS:
      *   (bool) - result of compare.
      */
-    inline constexpr bool operator!=(const vec2 &other) const {
+    inline bool operator!=(const vec2 &other) const {
         return !(*this == other);
     }  // End of 'operator!=' function
 

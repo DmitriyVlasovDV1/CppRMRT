@@ -18,6 +18,11 @@ void testUnit::init() {
     unitPrimitive->setRenderType(buffer::renderType::LINES);
     unitPrimitive->addUniform(&size, "size");
     unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
+
+    // One of the tests
+    ::math::matr4 M(1, 2, 3, 4, 4, 3, 2, 1, 2, 3, 4, 1, 4, 1, 2, 3);
+    M.inverse();
+    M.print();
 }  // End of 'testUnit::initUnit' function
 
 /* Unit response override function.
@@ -25,7 +30,7 @@ void testUnit::init() {
  * RETURNS: None.
  */
 void testUnit::response() {
-    unitPrimitive->setRenderType(buffer::renderType::TRIANGLES);
+    unitPrimitive->setRenderType(buffer::renderType::LINES);
 }  // End of 'testUnit::responseUnit' function
 
 // Class override destructor

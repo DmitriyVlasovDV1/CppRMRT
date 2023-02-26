@@ -18,6 +18,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "utilities/math/math.hpp"
+
 // Project namespace
 namespace hse {
 // Primitive class forward declaration

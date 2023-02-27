@@ -15,13 +15,9 @@ int main() {
 #endif
     }
 
-    hse::render::renderInstance.init(600, 600);
-
-    auto mainScene = new hse::scene();
-    mainScene->addUnit("Test unit", new hse::testUnit());
-
-    hse::render::renderInstance.createScene("Main scene", mainScene);
-    hse::render::renderInstance.response();
+    ::hse::render::renderInstance.init(600, 600);
+    ::hse::render::renderInstance.addUnit("Test unit", new hse::testUnit());
+    ::hse::render::renderInstance.response();
 
     return 0;
 }  // End of 'main' function

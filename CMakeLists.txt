@@ -9,15 +9,20 @@ include_directories(include)
 file(GLOB SOURCE_FILES
         src/main.cpp
         src/render/render.cpp
-        src/render/src/scenes/scene.cpp
+        src/render/src/units/unit.cpp
         src/render/src/buffers/buffer.cpp
         src/render/src/primitives/primitive.cpp
         src/render/src/shaders/shader.cpp
         src/units/SK4/test_unit.cpp)
 file(GLOB HEADER_FILES
+        src/utilities/math/math.hpp
+        src/utilities/math/math_def.hpp
+        src/utilities/math/vectors/vec3.hpp
+        src/utilities/math/vectors/vec2.hpp
+        src/utilities/math/matrices/matr4.hpp
         src/def.hpp
         src/render/render.hpp
-        src/render/src/scenes/scene.hpp
+        src/render/src/units/unit.hpp
         src/render/src/buffers/buffer.hpp
         src/render/src/primitives/primitive.hpp
         src/render/src/shaders/shader.hpp

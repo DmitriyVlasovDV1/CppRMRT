@@ -16,16 +16,9 @@ int main() {
 #endif
     }
 
-    hse::render::renderInstance.init(800, 800);
-
-    auto mainScene = ::std::make_unique<hse::scene>();
-    mainScene->addUnit("Rm shd unit", new hse::rmShdUnit());
-
-    hse::render::renderInstance.addScene("Main scene", mainScene);
-    hse::render::renderInstance.response();
-
-    //    int *a = new int[100];
-    //    a[99] = 1;
+    ::hse::render::renderInstance.init(600, 600);
+    ::hse::render::renderInstance.addUnit("Test unit", new hse::testUnit());
+    ::hse::render::renderInstance.response();
 
     return 0;
 }  // End of 'main' function

@@ -2,27 +2,29 @@
 #define PRIMITIVE_HPP
 
 #include "../../../def.hpp"
+#include "../buffers/buffer.hpp"
 #include "../shaders/shader.hpp"
-#include "vertex_array.hpp"
 
 namespace hse {
 // Primitive class declaration
 class primitive {
     // Friend classes
-    friend class render;
+    friend class unit;
 
-    vertexArray *primitiveVertexArrayInstance{};  // Vertex array instance
-    uint primitiveShaderProgramId{};              // Primitive's shader instance
+    buffer::renderType renderingType;  // Rendering type
+    vertexArray *vertexArrayInstance;  // Vertex array instance
+    uint shaderProgramId;              // Primitive's shader instance
+    bool isVisible;                    // Visibility flag
 
     ::std::map<const char *, int *> shaderUniform1i;    // Shader's int uniforms
     ::std::map<const char *, float *> shaderUniform1f;  // Shader's float
                                                         // uniforms
     ::std::map<const char *, ::std::pair<float **, int>>
-        shaderUniform3fv;  // Shader's float 3-component vector uniforms + count
-                           // of these vectors
+        shaderUniform3fv;  // Shader's float 3-component vector uniforms
+    // + count of these vectors
 
     // Class default constructor
-    explicit primitive() = default;
+    explicit primitive();
 
     /* Class constructor.
      * ARGUMENTS:
@@ -34,6 +36,8 @@ class primitive {
      *       const ::std::string &vertexBufferFormat;
      *   - index buffer data:
      *       const ::std::vector<int> &indexBuffer;
+     *   - primitive's rendering type:
+     *       renderType type_;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
@@ -41,38 +45,84 @@ class primitive {
         uint primitiveShaderProgramId_,
         const ::std::vector<float> &vertexBuffer,
         const ::std::string &vertexBufferFormat = "v3v3",
-        const ::std::vector<int> &indexBuffer = ::std::vector<int>()
+        const ::std::vector<int> &indexBuffer = ::std::vector<int>(),
+        buffer::renderType type_ = buffer::renderType::TRIANGLES
+    );
+
+    /* Class constructor.
+     * ARGUMENTS:
+     *   - primitive's shader program id:
+     *       uint primitiveShaderProgramId_;
+     *   - vertex array:
+     *       vertexArray *vertexArrayInstance_;
+     *   - primitive's rendering type:
+     *       renderType type_.
+     */
+    explicit primitive(
+        uint primitiveShaderProgramId_,
+        vertexArray *vertexArrayInstance_,
+        buffer::renderType type_ = buffer::renderType::TRIANGLES
     );
 
     /* Draw primitive function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void primitiveDraw();
+    void render() const;
 
     // Class destructor
     ~primitive();
 
 public:
-    /* Add uniform to the shader function.
+    /* Get primitive rendering type function.
+     * ARGUMENTS: None.
+     * RETURNS:
+     *   (buffer::renderType) - rendering type.
+     */
+    buffer::renderType getRenderType() const;
+
+    /* Set primitive rendering type function.
      * ARGUMENTS:
-     *   - uniform value:
-     *       int *uniformValue;
-     *   - uniform name on the shader:
-     *       const char *uniformName;
+     *   - new rendering type:
+     *       buffer::renderType type_:
      * RETURNS: None.
      */
-    void shaderAddUniform1i(int *uniformValue, const char *uniformName);
+    void setRenderType(buffer::renderType type_);
+
+    /* Get primitive's visibility flag function.
+     * ARGUMENTS: None.
+     * RETURNS:
+     *   (bool) - visibility flag.
+     */
+    bool getVisibility() const;
+
+    /* Set primitive's visibility flag function.
+     * ARGUMENTS:
+     *   - new flag:
+     *       bool isVisible_;
+     * RETURNS: None.
+     */
+    void setVisibility(bool isVisible_);
 
     /* Add uniform to the shader function.
      * ARGUMENTS:
      *   - uniform value:
-     *       float *uniformValue;
+     *       const int *uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void shaderAddUniform1f(float *uniformValue, const char *uniformName);
+    void addUniform(const int *uniformValue, const char *uniformName);
+
+    /* Add uniform to the shader function.
+     * ARGUMENTS:
+     *   - uniform value:
+     *       const float *uniformValue;
+     *   - uniform name on the shader:
+     *       const char *uniformName;
+     * RETURNS: None.
+     */
+    void addUniform(const float *uniformValue, const char *uniformName);
 
     /* Add uniform to the shader function.
      * ARGUMENTS:
@@ -84,12 +134,12 @@ public:
      *       int uniformCount;
      * RETURNS: None.
      */
-    void shaderAddUniform3fv(
-        float **uniformValue,
+    void addUniform(
+        const float **uniformValue,
         const char *uniformName,
-        int uniformCount
+        int uniformCount = 1
     );
-};  // End fo 'primitive' class
+};  // End of 'primitive' class
 }  // namespace hse
 
 #endif  // PRIMITIVE_HPP

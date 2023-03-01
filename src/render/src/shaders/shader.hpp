@@ -8,9 +8,9 @@ namespace hse {
 // Shader class definition
 class shader {
     // Friend classes
-    friend class render;
+    friend class unit;
 
-    uint shaderProgramId;  // Shader program id
+    uint programId;  // Shader program id
 
     struct {
         const char *name;  // Shader name

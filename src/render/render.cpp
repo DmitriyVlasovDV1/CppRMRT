@@ -4,31 +4,6 @@
 namespace hse {
 render render::renderInstance;
 
-/* Class constructor.
- * ARGUMENTS:
- *   - window width and height:
- *       uint windowWidth, windowHeight;
- */
-[[maybe_unused]] render::render(uint windowWidth_, uint windowHeight_) {
-    init(windowWidth_, windowHeight_);
-}  // End of 'render::render' function
-
-/* Resize window callback-function.
- * ARGUMENTS:
- *   - window instance:
- *       GLFWwindow *window;
- *   - window width and height:
- *       int width, height;
- * RETURNS: None.
- */
-void render::frameBufferSizeCallback(
-    GLFWwindow *window,
-    int width,
-    int height
-) {
-    glViewport(0, 0, width, height);
-}  // End of 'framebuffer_size_callback' function
-
 /* Initialized glew/glfw function.
  * ARGUMENTS: None.
  * RETURNS: None.
@@ -52,7 +27,6 @@ void render::init(uint windowWidth_, uint windowHeight_) {
     ::std::cout << "Shader language: "
                 << glGetString(GL_SHADING_LANGUAGE_VERSION) << ::std::endl;
     glClearColor(0.3f, 0.5f, 0.7f, 1.0f);
-    time = 0;
     glfwSetTime(time);
 }  // End of 'render::init' function
 
@@ -63,6 +37,10 @@ void render::init(uint windowWidth_, uint windowHeight_) {
  *   If we want to create several windows - let's do it in far-far future.
  */
 void render::response() {
+    // Initializing units
+    for (auto &[unitName, unitInstance] : unitsArray)
+        unitInstance->init();
+    // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
         deltaTime = static_cast<float>(glfwGetTime()) - time;
@@ -73,14 +51,13 @@ void render::response() {
                 .c_str()
         );
 
-        // Response all units
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        for (auto &[sceneName, sceneInstance] : scenesArray)
-            if (sceneInstance->getSceneStatus()) sceneInstance->sceneResponse();
-
-        // Render
-        for (auto &primitive : primitivesArray)
-            primitive->primitiveDraw();
+        // Render all added and visible units
+        for (auto &[unitName, unitInstance] : unitsArray)
+            if (unitInstance->getVisibility()) {
+                unitInstance->response();
+                glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+                unitInstance->render();
+            }
 
         glfwSwapBuffers(windowInstance);
         glfwPollEvents();
@@ -89,107 +66,104 @@ void render::response() {
 
 // Class destructor
 render::~render() {
-    for (auto &primitive : primitivesArray)
-        delete primitive;
-    for (auto &[shaderName, shaderInstance] : shadersArray)
-        delete shaderInstance;
+    for (auto &[unitName, unitInstance] : unitsArray) {
+        unitInstance->clear();
+        delete unitInstance;
+    }
     glfwDestroyWindow(windowInstance);
     glfwTerminate();
     ::std::cout << "Clear render" << ::std::endl;
 }  // End of 'render::~render' function
-
-/* Add shader function.
- * ARGUMENTS:
- *   - path to shader's realization (read shader class constructor note)
- *       const ::std::string &shaderPath;
- * RETURNS:
- *   (shader *) - not-owning pointer to the created shader.
- */
-shader *render::addShader(const ::std::string &shaderPath) {
-    if (shadersArray[shaderPath]) return shadersArray[shaderPath];
-    shadersArray[shaderPath] = new shader(shaderPath);
-    return shadersArray[shaderPath];
-}  // End of 'render::shaderAdd' function
-
-/* Add primitive function.
- * ARGUMENTS:
- *   - path to primitive's shader:
- *       const ::std::string &shaderPath;
- *   - vertex buffer data:
- *       const ::std::vector<float> &vertexBuffer;
- *   - vertex buffer format:
- *       const ::std::string &vertexBufferFormat;
- *   - index buffer data:
- *       const ::std::vector<int> &indexBuffer;
- * RETURNS:
- *   (primitive *) - not-owning pointer to the created primitive;
- * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
- * position, color, normal, texture coordinate.
- */
-primitive *render::addPrimitive(
-    const ::std::string &shaderPath,
-    const ::std::vector<float> &vertexBuffer,
-    const ::std::string &vertexBufferFormat,
-    const ::std::vector<int> &indexBuffer
-) {
-    primitivesArray.emplace_back(new primitive(
-        addShader(shaderPath)->getShaderProgramId(), vertexBuffer,
-        vertexBufferFormat, indexBuffer
-    ));
-    return primitivesArray.back();
-}  // End of 'render::primitiveAdd' function
 
 /* Get time function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (float &) - time.
  */
-[[nodiscard]] float &render::getTime() {
+[[nodiscard]] const float &render::getTime() const {
     return time;
 }  // End of 'getTime' function
 
 /* Get delta time function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (float) - delta time.
+ *   (const float &) - delta time.
  */
-[[nodiscard]] float &render::getDeltaTime() {
+[[nodiscard]] const float &render::getDeltaTime() const {
     return deltaTime;
 }  // End of 'getDeltaTime' function
 
 /* Get window width function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (uint) - window width.
+ *   (const uint &) - window width.
  */
-uint render::getWindowWidth() const {
+[[nodiscard]] const uint &render::getWindowWidth() const {
     return windowWidth;
 }  // End of 'render::getWindowWidth' function
 
 /* Get window height function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (uint) - window height.
+ *   (const uint &) - window height.
  */
-uint render::getWindowHeight() const {
+[[nodiscard]] const uint &render::getWindowHeight() const {
     return windowHeight;
 }  // End of 'render::getWindowHeight' function
 
-/* Add scene instance to scene's array function.
+/* Add unit instance to the unit's array function.
  * ARGUMENTS:
- *   - scene name:
- *       const ::std::string &sceneName;
- *   - scene instance:
- *       ::std::unique_ptr<scene> sceneInstance;
+ *   - unit name:
+ *       const ::std::string &unitName;
+ *   - unit instance:
+ *       unit *unitInstance;
  * RETURNS: None.
  * NOTE:
- *   Returns value may be changed to (scene *) - not-owning pointer to the
- * scene, if we want to be able to copy scenes.
+ *   Returns value may be changed to (unit *) - not-owning pointer to
+ * the scene, if we want to be able to copy scenes.
  */
-void render::addScene(
-    const ::std::string &sceneName,
-    ::std::unique_ptr<scene> &sceneInstance
-) {
-    scenesArray[sceneName] = ::std::move(sceneInstance);
+void render::addUnit(const ::std::string &unitName, unit *unitInstance) {
+    unitsArray[unitName] = unitInstance;
 }  // End of 'render::addScene' function
+
+// Class default constructors
+render::render()
+    : windowWidth(0),
+      windowHeight(0),
+      windowInstance(nullptr),
+      time(0),
+      deltaTime(0) {
+}  // End of 'render::render' function
+
+/* Class constructor.
+ * ARGUMENTS:
+ *   - window width and height:
+ *       uint windowWidth, windowHeight;
+ */
+[[maybe_unused]] render::render(uint windowWidth_, uint windowHeight_)
+    : windowWidth(0),
+      windowHeight(0),
+      windowInstance(nullptr),
+      time(0),
+      deltaTime(0) {
+    init(windowWidth_, windowHeight_);
+}  // End of 'render::render' function
+
+/* Resize window callback-function.
+ * ARGUMENTS:
+ *   - window instance:
+ *       GLFWwindow *window;
+ *   - window width and height:
+ *       int width, height;
+ * RETURNS: None.
+ */
+void render::frameBufferSizeCallback(
+    GLFWwindow *window,
+    int width,
+    int height
+) {
+    renderInstance.windowWidth = width;
+    renderInstance.windowHeight = height;
+    glViewport(0, 0, width, height);
+}  // End of 'framebuffer_size_callback' function
 }  // namespace hse

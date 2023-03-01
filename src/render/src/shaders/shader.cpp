@@ -2,7 +2,7 @@
 
 namespace hse {
 // Class default constructor
-shader::shader() : shaderProgramId(0) {
+shader::shader() : programId(0) {
 }  // End of 'shader::shader' function
 
 /* Class constructor.
@@ -56,20 +56,20 @@ shader::shader(const ::std::string &shaderPath) {
         }
     }
     if (isError) return;
-    shaderProgramId = glCreateProgram();
-    if (shaderProgramId == 0) {
+        programId = glCreateProgram();
+    if (programId == 0) {
         isError = true;
         assert("Error in creating shader program");
     } else {
         for (auto &[name, type, id] : shaders)
-            if (id != 0) glAttachShader(shaderProgramId, id);
-        glLinkProgram(shaderProgramId);
+            if (id != 0) glAttachShader(programId, id);
+        glLinkProgram(programId);
         int linkStatus;
-        glGetProgramiv(shaderProgramId, GL_LINK_STATUS, &linkStatus);
+        glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus);
         if (!linkStatus) {
             char logBuffer[999];
             glGetProgramInfoLog(
-                shaderProgramId, sizeof(logBuffer), &linkStatus, logBuffer
+                    programId, sizeof(logBuffer), &linkStatus, logBuffer
             );
             ::std::cout << "Error in linking: " << fullShaderPath
                         << ::std::endl;
@@ -79,11 +79,11 @@ shader::shader(const ::std::string &shaderPath) {
     if (isError) {
         for (auto &[name, type, id] : shaders)
             if (id != 0) {
-                if (shaderProgramId != 0) glDetachShader(shaderProgramId, id);
+                if (programId != 0) glDetachShader(programId, id);
                 glDeleteShader(id);
             }
-        if (shaderProgramId != 0) glDeleteProgram(shaderProgramId);
-        shaderProgramId = 0;
+        if (programId != 0) glDeleteProgram(programId);
+        programId = 0;
     }
 }  // End of 'shader::shader' function
 
@@ -93,18 +93,18 @@ shader::shader(const ::std::string &shaderPath) {
  *   (uint) - shader id;
  */
 [[nodiscard]] uint shader::getShaderProgramId() const {
-    return shaderProgramId;
+    return programId;
 }  // End of 'shader::getShaderProgramId' function
 
 // Class destructor
 shader::~shader() {
     for (auto &[name, type, id] : shaders)
         if (id != 0) {
-            if (shaderProgramId != 0) glDetachShader(shaderProgramId, id);
+            if (programId != 0) glDetachShader(programId, id);
             glDeleteShader(id);
         }
-    if (shaderProgramId != 0) glDeleteProgram(shaderProgramId);
-    shaderProgramId = 0;
+    if (programId != 0) glDeleteProgram(programId);
+        programId = 0;
     ::std::cout << "Clear shader" << ::std::endl;
 }  // End of 'shader::~shader' function
 }  // namespace hse

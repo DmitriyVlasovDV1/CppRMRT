@@ -8,6 +8,9 @@
 namespace hse {
 // Test unit class declaration
 class testUnit final : public unit {
+    primitive *unitPrimitive;
+    int size = 10;
+
 public:
     // Class constructor
     explicit testUnit() = default;
@@ -16,13 +19,13 @@ public:
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void initUnit() final;
+    void init() final;
 
     /* Unit response override function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void responseUnit() final;
+    void response() final;
 
     // Class override destructor
     ~testUnit() final;

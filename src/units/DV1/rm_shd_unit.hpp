@@ -13,6 +13,7 @@ class rmShdUnit final : public unit {
 private:
     int *frameW;
     int *frameH;
+    uint shdId;
 public:
     // Class constructor
     explicit rmShdUnit() = default;

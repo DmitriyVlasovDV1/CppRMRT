@@ -16,10 +16,10 @@ int main() {
 #endif
     }
 
-    hse::render::renderInstance.init(600, 600);
+    hse::render::renderInstance.init(800, 800);
 
     auto mainScene = ::std::make_unique<hse::scene>();
-    //mainScene->addUnit("Rm shd unit", new hse::rmShdUnit());
+    mainScene->addUnit("Rm shd unit", new hse::rmShdUnit());
 
     hse::render::renderInstance.addScene("Main scene", mainScene);
     hse::render::renderInstance.response();

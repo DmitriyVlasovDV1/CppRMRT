@@ -262,6 +262,10 @@ public:
         A[3][0] = A30; A[3][1] = A31; A[3][2] = A32; A[3][3] = A33;
     } /* End of 'matr' function */
 
+    void copy( const matr &M ) {
+        memcpy(A, M.A, sizeof(A));
+    } /* End of 'matr' function */
+
     /* Class constructor.
        * ARGUMENTS:
        *   - matrix elements:

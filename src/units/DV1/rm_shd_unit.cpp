@@ -141,7 +141,7 @@ public:
 
 
 
-void rmShdUnit::initUnit() {
+void rmShdUnit::init() {
     /*
     for (char ch = 'a'; ch != 'z'; ch++)
         std::cout << ch << " " << int(ch) << std::endl;
@@ -160,19 +160,16 @@ void rmShdUnit::initUnit() {
 
     for (int j = 0; j < 6; j++)
         indexBuffer[j] = j;
-    auto unitPrimitive = render::renderInstance.addPrimitive(
+    auto unitPrimitive = createPrimitive(
         "rm", vertexBuffer, "v3", indexBuffer
     );
     frameH = new int{static_cast<int>(render::renderInstance.getWindowHeight())};
     frameW = new int{static_cast<int>(render::renderInstance.getWindowWidth())};
-    unitPrimitive->shaderAddUniform1f(&render::renderInstance.getTime(), "time");
-    unitPrimitive->shaderAddUniform1i(frameH, "frame_h");
-    unitPrimitive->shaderAddUniform1i(frameW, "frame_w");
 
 }  // End of 'testUnit::initUnit' function
 
 //std::vector<uint> parseFigures(const std::string &str, )
-void rmShdUnit::responseUnit() {
+void rmShdUnit::response() {
     static bool flag = false;
     if (flag)
         return;

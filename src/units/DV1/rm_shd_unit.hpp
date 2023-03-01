@@ -18,9 +18,9 @@ public:
     // Class constructor
     explicit rmShdUnit() = default;
 
-    void initUnit() final;
+    void init() final;
 
-    void responseUnit() final;
+    void response() final;
 
     ~rmShdUnit() final;
 };  // End of 'rmShdUnit' class

@@ -81,6 +81,13 @@ void primitive::render() const {
                 uniformLocation, uniformPair.second, *uniformPair.first
             );
     }
+    for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
+        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+        if (uniformLocation != -1)
+            glUniformMatrix4fv(
+                uniformLocation, uniformPair.second, GL_FALSE, uniformPair.first
+            );
+    }
     vertexArrayInstance->render(renderingType);
     glUseProgram(0);
 }  // End of 'primitive::primitiveDraw' function
@@ -170,6 +177,15 @@ void primitive::addUniform(
 ) {
     shaderUniform3fv[uniformName] = {
         const_cast<float **>(uniformValue), uniformCount};
+}  // End of 'shader::shaderAddUniform3fv' function
+
+void primitive::addUniform4fv(
+    const float *uniformValue,
+    const char *uniformName,
+    int uniformCount
+) {
+    shaderUniform4fv[uniformName] = {
+        const_cast<float *>(uniformValue), uniformCount};
 }  // End of 'shader::shaderAddUniform3fv' function
 
 }  // namespace hse

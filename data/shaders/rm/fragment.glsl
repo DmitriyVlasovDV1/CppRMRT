@@ -59,6 +59,8 @@ struct Box
  * SSBO's
  *****/
 
+uniform mat4 matrs[100];
+
 layout(binding = 2, std430) buffer SphereBuffer
 {
     Sphere spheres[];
@@ -78,7 +80,7 @@ struct mystr {
 
 layout(binding = 4, std430) buffer MatricesBuffer
 {
-    mystr matrices[];
+    mat4 matrices[];
 } matrices_buffer;
 
 layout(binding = 5, std430) buffer FiguresBuffer
@@ -86,14 +88,20 @@ layout(binding = 5, std430) buffer FiguresBuffer
     int figures[];
 } figures_buffer;
 
+struct Surface {
+    Material mtl;
+    float sdf;
+};
+
+layout(binding = 6, std430) buffer SymbolsBuffer
+{
+    Surface symbols[];
+} symbols_buffer;
+
 /*****
  * SDF's
  *****/
 
-struct Surface {
-    float sdf;
-    Material mtl;
-};
 
 Surface unite(Surface a, Surface b)
 {
@@ -143,8 +151,8 @@ Surface SDF_box(vec3 p, Box box)
 }
 
 
-Surface symbols[256];
-int operations[256];
+Surface symbols[128];
+int operations[5];
 int len = figures_buffer.figures.length();
 
 Surface SDF_scene(vec3 pos)
@@ -156,7 +164,7 @@ Surface SDF_scene(vec3 pos)
     int op_pos = 0;
     int matr_pos = 0;
 
-
+    Surface tmp;
     int i = 0;
     while (i < len) {
         int code = figures_buffer.figures[i];
@@ -166,26 +174,22 @@ Surface SDF_scene(vec3 pos)
         case code_m:
             ind = figures_buffer.figures[i + 1];
             i++;
-            mystr tmp = (matrices_buffer.matrices[ind]);
-            cur_matr = mat4(tmp.a00, tmp.a01, tmp.a02, tmp.a03,
-                            tmp.a10, tmp.a11, tmp.a12, tmp.a13,
-                            tmp.a20, tmp.a21, tmp.a22, tmp.a23,
-                            tmp.a30, tmp.a31, tmp.a32, tmp.a33);
+            cur_matr *= matrices_buffer.matrices[0];
 
-            matr_pos = ind;
             break;
         case code_s:
             ind = figures_buffer.figures[i + 1];
             i++;
             pos_matr = (cur_matr * vec4(pos, 1)).xyz;
-            symbols[symb_pos]= SDF_sphere(pos_matr, sphere_buffer.spheres[ind]);
+            pos_matr = pos;
+            symbols[symb_pos] = SDF_sphere(pos_matr, sphere_buffer.spheres[ind]);
             symb_pos++;
             break;
         case code_b:
-
-            int ind = figures_buffer.figures[i + 1];
+            ind = figures_buffer.figures[i + 1];
             i++;
             pos_matr = (cur_matr * vec4(pos, 1)).xyz;
+            pos_matr = pos; // Delete for matrices!!!!!!!!!!!!!11
             symbols[symb_pos] = SDF_box(pos_matr, box_buffer.boxes[ind]);
             symb_pos++;
             break;
@@ -198,28 +202,22 @@ Surface SDF_scene(vec3 pos)
             op_pos++;
             break;
         case code_U:
-            operations[op_pos] = code_U;
-            op_pos++;
+            symb_pos--;
+            Surface prev = symbols[symb_pos];
+            while (symbols[symb_pos - 1].sdf != -max_dist)
+            {
+                Surface b = prev;
+                symb_pos--;
+                Surface a = symbols[symb_pos];
+                prev = unite(a, b);
+            }
+            //symbols[symb_pos - 1] = prev; ///  WTF???
+            return prev; /// ???
             break;
         case code_E:
-            symb_pos--;
-            Surface b = symbols[symb_pos];
-            symb_pos--;
-            Surface a = symbols[symb_pos];
-
-            op_pos--;
-            int last_op = operations[op_pos];
-            switch (last_op) {
-            case code_S:
-                symbols[symb_pos] = sub(a, b);
-                break;
-            case code_I:
-                symbols[symb_pos] = inter(a, b);
-                break;
-            case code_U:
-                symbols[symb_pos] = unite(a, b);
-                break;
-            }
+            Surface srf;
+            srf.sdf = -max_dist;
+            symbols[symb_pos] = srf;
             symb_pos++;
             break;
         }
@@ -228,21 +226,6 @@ Surface SDF_scene(vec3 pos)
 
 
     return symbols[0];
-
-    /*
-    for (int i = 0; i < sphere_buffer.spheres.length(); i++) {
-        vec3 pos1 = (inverse(matrices_buffer.matrices[0]) * vec4(pos, 1)).xyz;
-        sdf = min(sdf, SDF_sphere(pos1, sphere_buffer.spheres[i]));
-    }
-
-    for (int i = 0; i < box_buffer.boxes.length(); i++) {
-        sdf = min(sdf, SDF_box(pos, box_buffer.boxes[i]));
-    }
-    //sdf = min(max_dist, max(SDF_sphere(pos, sphere_buffer.spheres[0]), SDF_sphere(pos, sphere_buffer.spheres[1])));
-    // TODO other figures
-
-    return sdf;
-    */
 }
 
 /*
@@ -321,7 +304,7 @@ Material trace(vec3 org, vec3 dir)
 // Main shader program function
 void main() {
     //outColor = vec4(inColor + vec3(1, 1, 1), 1);
-    vec3 cam_pos = normalize(vec3(cos(time), 4, sin(time))) * 4;
+    vec3 cam_pos = normalize(vec3(cos(time * 0 + 1), 1, sin(time * 0 + 1))) * 2;
     vec3 cam_dir = normalize(vec3(0) - cam_pos);
     vec3 up = vec3(0, 1, 0);
     vec3 cam_right = normalize(cross(cam_dir, up));
@@ -345,9 +328,9 @@ void main() {
     int i = int(float(gl_FragCoord.x) / frame_w * 4);
     int j = 3 - int(float(gl_FragCoord.y) / frame_h * 4);
     vec4 v = vec4(0, 0, 0, 1);
-    //outColor = vec4(matrices_buffer.matrices[4][j][i], 0, 0, 1);
+    //outColor = vec4(matrices_buffer.matrices[0][j][i], 0, 0, 1);
     //v = figure_buffer.matr * v;
-    //outColor = v;
+    //outColor = sphere_buffer.spheres[0].mtl.color;
     //Material res = trace()''
 
 } // End of 'main' function

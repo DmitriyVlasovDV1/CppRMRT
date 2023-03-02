@@ -21,6 +21,8 @@ class primitive {
                                                         // uniforms
     ::std::map<const char *, ::std::pair<float **, int>>
         shaderUniform3fv;  // Shader's float 3-component vector uniforms
+    ::std::map<const char *, ::std::pair<float *, int>>
+        shaderUniform4fv;  // Shader's float 3-component vector uniforms
     // + count of these vectors
 
     // Class default constructor
@@ -136,6 +138,22 @@ public:
      */
     void addUniform(
         const float **uniformValue,
+        const char *uniformName,
+        int uniformCount = 1
+    );
+
+    /* Add uniform to the shader function.
+     * ARGUMENTS:
+     *   - uniform value:
+     *       float **uniformValue;
+     *   - uniform name on the shader:
+     *       const char *uniformName;
+     *   - uniforms number:
+     *       int uniformCount;
+     * RETURNS: None.
+     */
+    void addUniform4fv(
+        const float *uniformValue,
         const char *uniformName,
         int uniformCount = 1
     );

@@ -5,13 +5,46 @@ namespace hse {
 
 
 void rmShdUnit::init() {
+
+
+    // Scene
+    {
+        factory = std::make_unique<FigureFactory>();
+        Material mtl_light_grey;
+        mtl_light_grey.color[0] = 223 / 255.;
+        mtl_light_grey.color[1] = 150 / 255.;
+        mtl_light_grey.color[2] = 44 / 255.;
+        mtl_light_grey.color[3] = 1;
+        Material mtl_dark_grey;
+        mtl_dark_grey.color[0] = 230 / 255.;
+        mtl_dark_grey.color[1] = 230 / 255.;
+        mtl_dark_grey.color[2] = 250 / 255.;
+        mtl_dark_grey.color[3] = 1;
+
+
+        srand(12);
+        Figure wall2 = factory->createBox(0.01, mtl_light_grey);
+        Figure wall = wall2 * (::math::matr4::scale(::math::vec3(50, 30, 1)) * ::math::matr4::translate(math::vec3(0, 0, 0)));
+        const int num_stones = 12;
+        Figure stone = factory->createSphere(0.05, mtl_dark_grey);
+        for (int i = 0; i < num_stones; i++) {
+            wall = wall - (stone * ::math::matr4::translate(::math::vec3(float(rand())/RAND_MAX*0.6-0.3, float(rand())/RAND_MAX*0.6-0.3, float(rand())/RAND_MAX*0.08-0.04)));
+        }
+        Figure wall3 = (wall * (::math::matr4::translate(::math::vec3(0, 100, 10))));// * ::math::matr4::rotateX(math::PI / 2)));
+
+        wall3.draw(unitPrimitive);
+        std::string source = wall3.getFragmentSource("../data/shaders/rm/fragment_src.glsl");
+        std::ofstream file("../data/shaders/rm/fragment.glsl");
+        file << source;
+        file.close();
+    }
     ::std::vector<int> indexBuffer(6);
     ::std::vector<float> vertexBuffer = {-1, -1, 0,
-                                          1, -1, 0,
-                                          1, 1, 0,
-                                          -1, -1, 0,
-                                          1, 1, 0,
-                                          -1, 1, 0};
+                                         1, -1, 0,
+                                         1, 1, 0,
+                                         -1, -1, 0,
+                                         1, 1, 0,
+                                         -1, 1, 0};
 
     for (int j = 0; j < 6; j++)
         indexBuffer[j] = j;
@@ -24,36 +57,6 @@ void rmShdUnit::init() {
     unitPrimitive->addUniform(frameH, "frame_h");
     unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
 
-
-
-    // Scene
-    {
-        factory = std::make_unique<FigureFactory>();
-        Material mtl_light_grey;
-        mtl_light_grey.color[0] = 95 / 255.;
-        mtl_light_grey.color[1] = 158 / 255.;
-        mtl_light_grey.color[2] = 160 / 255.;
-        mtl_light_grey.color[3] = 1;
-        Material mtl_dark_grey;
-        mtl_dark_grey.color[0] = 230 / 255.;
-        mtl_dark_grey.color[1] = 230 / 255.;
-        mtl_dark_grey.color[2] = 250 / 255.;
-        mtl_dark_grey.color[3] = 1;
-
-        srand(130);
-
-        Figure wall2 = factory->createBox(0.1, mtl_light_grey);
-        Figure wall = wall2 * ::math::matr4::scale(::math::vec3(10, 6, 1));
-        /*
-        const int num_stones = 2;
-        Figure stone = factory->createSphere(0.3, mtl_dark_grey);
-        for (int i = 0; i < num_stones; i++) {
-            wall |= (stone * ::math::matr4::translate(::math::vec3(float(rand())/RAND_MAX*1-0.5, float(rand())/RAND_MAX*0.6-0.3, 0.1)));
-        }
-         */
-
-        wall.draw();
-    }
 }  // End of 'testUnit::initUnit' function
 
 //std::vector<uint> parseFigures(const std::string &str, )

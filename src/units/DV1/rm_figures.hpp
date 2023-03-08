@@ -35,10 +35,13 @@ public:
     std::vector<int> concatenateAssociative(Type target, const Figure &other);
 
     // intersection figures operator
+    Figure & operator=(const Figure &other);
+
+    // intersection figures operator
     Figure operator&(const Figure &other);
 
     // unite figures operator
-    Figure operator|=(const Figure &other);
+    Figure operator|(const Figure &other);
 
     // sub figures operator
     Figure operator-(const Figure &other);
@@ -46,7 +49,14 @@ public:
     // sub figures operator
     Figure operator*(const math::matr4 &matr);
 
-    void draw() const;
+    std::string parseExpr(int &ind) const;
+
+    std::string getSdfSceneSource() const;
+
+    std::string getFragmentSource(const std::string &filepath) const;
+    std::string getVertexSource(const std::string &filepath) const;
+
+    void draw(primitive *primitive) const;
 
     // TODO |= &= -=
 };

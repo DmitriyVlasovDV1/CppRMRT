@@ -6,9 +6,15 @@
 
 namespace hse {
 
+    Figure & Figure::operator=(const Figure &other) {
+        type = other.type;
+        serialized = other.serialized;
+        factory = other.factory;
+        return *this;
+    }
 
     std::vector<int> Figure::wrap(char left, const std::vector<int> &ser, char right) {
-        std::vector<int> res(left);
+        std::vector<int> res(1, left);
         res.insert(res.end(), ser.begin(), ser.end());
         res.push_back(right);
         return res;
@@ -17,6 +23,7 @@ namespace hse {
 
     std::vector<int> Figure::concatenate(const Figure &other) {
         std::vector<int> res(serialized);
+        res.push_back(',');
         res.insert(res.end(), other.serialized.begin(), other.serialized.end());
         return res;
     }
@@ -45,19 +52,20 @@ namespace hse {
         }
 
         Figure res(factory);
-        res.serialized = wrap('E', concatenateAssociative(Type::INTER, other), 'I');
+        res.serialized = wrap('I', concatenate(other), 'E');
         res.type = Type::INTER;
         return res;
     }
 
     // unite figures operator
-    Figure Figure::operator|=(const Figure &other) {
+    Figure Figure::operator|(const Figure &other) {
         if (factory != other.factory) {
             throw std::invalid_argument("Figures from different fabrics");
         }
 
         Figure res(factory);
-        res.serialized = wrap('E', concatenateAssociative(Type::UNITE, other), 'I');
+        auto tmp = wrap('U', concatenate(other), 'E');
+        res.serialized = tmp;
         res.type = Type::UNITE;
         return res;
     }
@@ -69,27 +77,121 @@ namespace hse {
         }
 
         Figure res(factory);
-        res.serialized = wrap('E', concatenate(other), 'S');
+        res.serialized = wrap('S', concatenate(other), 'E');
         res.type = Type::SUB;
         return res;
     }
 
     // sub figures operator
     Figure Figure::operator*(const math::matr4 &matr) {
-        int id = factory->addMatr(matr);
-        int idInv = factory->addMatr(matr.inverting());
+        int id = factory->addMatr(matr.inverting());
 
         Figure res(factory);
         res.serialized.push_back('m');
         res.serialized.push_back(id);
         res.serialized.insert(res.serialized.end(), serialized.begin(), serialized.end());
-        res.serialized.push_back('m');
-        res.serialized.push_back(idInv);
         res.type = Type::BRICK;
         return res;
     }
 
-    void Figure::draw() const {
+    std::string Figure::parseExpr(int &pos) const {
+        std::string res;
+        std::string curMatr = "mat4(1)";
+
+        while (pos < serialized.size() && serialized[pos] != ',' && serialized[pos] != 'E') {
+            int ind;
+            std::string expr1;
+            std::string expr2;
+            switch (serialized[pos]) {
+                case 'm':
+                    ind = serialized[++pos];
+                    curMatr = "matrices_buffer.matrices[" + std::to_string(ind) + "] * " + curMatr;
+                    break;
+                case 's':
+                    ind = serialized[++pos];
+                    res += "SDF_sphere(pos, " + curMatr + ", sph)";
+                    break;
+                case 'b':
+                    ind = serialized[++pos];
+                    res += "SDF_box(pos, " + curMatr + ", box_buffer.boxes[" + std::to_string(ind) + "])";
+                    break;
+                case 'I':
+                    expr1 = parseExpr(++pos);
+                    expr2 = parseExpr(++pos);
+
+                    res += "inter(" + expr1 + ", " + expr2 + ")";
+                    break;
+                case 'U':
+                    expr1 = parseExpr(++pos);
+                    expr2 = parseExpr(++pos);
+
+                    res += "unite(" + expr1 + ", " + expr2 + ")";
+                    break;
+                case 'S':
+                    expr1 = parseExpr(++pos);
+                    expr2 = parseExpr(++pos);
+
+                    res += "sub(" + expr1 + ", " + expr2 + ")";
+                    break;
+            }
+            pos++;
+        }
+        return res;
+    }
+
+    std::string Figure::getSdfSceneSource() const {
+        int pos = 0;
+        std::string res =\
+            "Surface SDF_scene(vec3 pos)\n"
+            "{\n"
+            "Surface res;\n"
+            "Sphere sph;\n"
+            "sph.radius = 0.1;"
+            "res.sdf = max_dist;\n"
+            "res = ";
+        res += parseExpr(pos);
+        res += ";\n"
+            "return res;\n"
+            "}\n";
+        return res;
+    }
+
+    std::string Figure::getFragmentSource(const std::string &filepath) const {
+        std::ifstream file(filepath);
+        if (!file) {
+            // TODO
+        }
+
+        std::string sourceLine;
+        std::string source;
+        while (std::getline(file, sourceLine)) {
+            if (sourceLine == "#include SDF_scene") {
+                source += getSdfSceneSource();
+            } else {
+                source += sourceLine + '\n';
+            }
+        }
+
+        return source;
+    }
+
+    std::string Figure::getVertexSource(const std::string &filepath) const {
+        std::ifstream file(filepath);
+        if (!file) {
+            // TODO
+        }
+
+        std::string sourceLine;
+        std::string source;
+        while (std::getline(file, sourceLine)) {
+            source += sourceLine + '\n';
+        }
+
+        return source;
+    }
+
+
+    void Figure::draw(primitive *primitive) const {
         GLuint ssbo, ssbo2, ssbo3, ssbo4, ssbo5, ssbo6;
         glGenBuffers(1, &ssbo);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);

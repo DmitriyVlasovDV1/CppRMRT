@@ -136,14 +136,7 @@ Surface SDF_box(vec3 p, mat4 matr, Box box)
 }
 
 
-Surface SDF_scene(vec3 pos)
-{
-Surface res;
-Sphere sph;
-sph.radius = 0.1;res.sdf = max_dist;
-res = sub(sub(sub(sub(sub(sub(sub(sub(sub(sub(sub(sub(SDF_box(pos, matrices_buffer.matrices[0] * mat4(1), box_buffer.boxes[0]), SDF_sphere(pos, matrices_buffer.matrices[1] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[2] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[3] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[4] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[5] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[6] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[7] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[8] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[9] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[10] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[11] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[12] * mat4(1), sph));
-return res;
-}
+#include SDF_scene
 
 /*****
  * Utils

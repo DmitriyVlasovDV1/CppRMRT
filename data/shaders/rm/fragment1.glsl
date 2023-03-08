@@ -12,10 +12,19 @@ uniform int frame_h;
  * Globals
  *****/
 
-float max_dist = 4; // max ray traversal distance
-float eps = 0.0001;
-vec3 light_dir = vec3(1, 1, 1);
 
+#define code_E 69
+#define code_S 83
+#define code_m 109
+#define code_b 98
+#define code_s 115
+#define code_I 73
+#define code_U 85
+#define code_M 77
+
+float max_dist = 10; // max ray traversal distance
+float eps = 0.001;
+vec3 light_dir = vec3(1, 1, 1);
 
 /*****
  * Structures
@@ -46,14 +55,11 @@ struct Box
     float radius;
 };
 
-struct Surface {
-    Material mtl;
-    float sdf;
-};
-
 /*****
  * SSBO's
  *****/
+
+uniform mat4 matrs[100];
 
 layout(binding = 2, std430) buffer SphereBuffer
 {
@@ -65,32 +71,44 @@ layout(binding = 3, std430) buffer BoxBuffer
     Box boxes[];
 } box_buffer;
 
+struct mystr {
+    float a00, a01, a02, a03;
+    float a10, a11, a12, a13;
+    float a20, a21, a22, a23;
+    float a30, a31, a32, a33;
+};
+
 layout(binding = 4, std430) buffer MatricesBuffer
 {
     mat4 matrices[];
 } matrices_buffer;
 
+layout(binding = 5, std430) buffer FiguresBuffer
+{
+    int figures[];
+} figures_buffer;
+
+struct Surface {
+    Material mtl;
+    float sdf;
+};
+
+layout(binding = 6, std430) buffer SymbolsBuffer
+{
+    Surface symbols[];
+} symbols_buffer;
+
 /*****
  * SDF's
  *****/
 
-// power smooth min (k = 8);
-float smin( float a, float b, float k )
-{
-    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
-    return mix( b, a, h ) - k*h*(1.0-h);
-}
 
 Surface unite(Surface a, Surface b)
 {
-    Surface res;
-    res.sdf = min(a.sdf, b.sdf);
     if (a.sdf < b.sdf) {
-        res.mtl = a.mtl;
-        return res;
+        return a;
     }
-    res.mtl = b.mtl;
-    return res;
+    return b;
 }
 
 Surface inter( Surface a, Surface b )
@@ -105,7 +123,6 @@ Surface sub( Surface a, Surface b )
 {
     Surface res;
     res.mtl = a.mtl;
-    res.sdf = max(a.sdf, -b.sdf);
     if (a.sdf > -b.sdf)  {
         res.sdf = a.sdf;
         return res;
@@ -114,21 +131,19 @@ Surface sub( Surface a, Surface b )
     return res;
 }
 
-Surface SDF_sphere(vec3 p, mat4 matr, Sphere sphere)
+Surface SDF_sphere(vec3 p, Sphere sphere)
 {
-    vec3 pos_matr = (matr * vec4(p, 1)).xyz;
     Surface res;
-    res.sdf = length(pos_matr) - sphere.radius;
+    res.sdf = length(p) - sphere.radius;
     res.mtl = sphere.mtl;
     return res;
 }
 
 
-Surface SDF_box(vec3 p, mat4 matr, Box box)
+Surface SDF_box(vec3 p, Box box)
 {
-    vec3 pos_matr = (matr * vec4(p, 1)).xyz;
     Surface res;
-    vec3 q = abs(pos_matr) - vec3(box.radius);
+    vec3 q = abs(p) - vec3(box.radius);
 
     res.sdf = length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
     res.mtl = box.mtl;
@@ -136,14 +151,98 @@ Surface SDF_box(vec3 p, mat4 matr, Box box)
 }
 
 
+Surface symbols[128];
+int operations[5];
+int len = figures_buffer.figures.length();
+
 Surface SDF_scene(vec3 pos)
 {
-Surface res;
-Sphere sph;
-sph.radius = 0.1;res.sdf = max_dist;
-res = sub(sub(sub(sub(sub(sub(sub(sub(sub(sub(sub(sub(SDF_box(pos, matrices_buffer.matrices[0] * mat4(1), box_buffer.boxes[0]), SDF_sphere(pos, matrices_buffer.matrices[1] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[2] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[3] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[4] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[5] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[6] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[7] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[8] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[9] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[10] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[11] * mat4(1), sph)), SDF_sphere(pos, matrices_buffer.matrices[12] * mat4(1), sph));
-return res;
+    float sdf = max_dist;
+
+    mat4 cur_matr = mat4(1);
+    int symb_pos = 0;
+    int op_pos = 0;
+    int matr_pos = 0;
+
+    Surface tmp;
+    int i = 0;
+    while (i < len) {
+        int code = figures_buffer.figures[i];
+        int ind;
+        vec3 pos_matr;
+        switch (code) {
+        case code_m:
+            ind = figures_buffer.figures[i + 1];
+            i++;
+            cur_matr *= matrices_buffer.matrices[ind];
+            break;
+        case code_s:
+            ind = figures_buffer.figures[i + 1];
+            i++;
+            pos_matr = (cur_matr * vec4(pos, 1)).xyz;
+            symbols[symb_pos] = SDF_sphere(pos_matr, sphere_buffer.spheres[ind]);
+            symb_pos++;
+            break;
+        case code_b:
+            ind = figures_buffer.figures[i + 1];
+            i++;
+            pos_matr = (cur_matr * vec4(pos, 1)).xyz;
+            symbols[symb_pos] = SDF_box(pos_matr, box_buffer.boxes[ind]);
+            symb_pos++;
+            break;
+        case code_S:
+            operations[op_pos] = code_S;
+            op_pos++;
+            break;
+            case code_I:
+            operations[op_pos] = code_I;
+            op_pos++;
+            break;
+        case code_U:
+            symb_pos--;
+            Surface prev = symbols[symb_pos];
+            while (symbols[symb_pos - 1].sdf != -max_dist)
+            {
+                Surface b = symbols[symb_pos];
+                symb_pos--;
+                Surface a = symbols[symb_pos];
+                symbols[symb_pos] = unite(a, b);
+            }
+
+            return symbols[symb_pos];
+            //symbols[symb_pos - 1] = prev; ///  WTF???
+            break;
+        case code_E:
+            Surface srf;
+            srf.sdf = -max_dist;
+            symbols[symb_pos] = srf;
+            symb_pos++;
+            break;
+        }
+        i++;
+    }
+
+
+    return symbols[0];
 }
+
+/*
+Material average_mtl(vec3 pos)
+{
+    Material mtl;
+    float sdf = SDF_scene(pos);
+
+    for (int i = 0; i < sphere_buffer.spheres.length(); i++) {
+        float k = SDF_sphere(pos, sphere_buffer.spheres[i]) / sdf;
+        mtl.color += sphere_buffer.spheres[i].mtl.color * k;
+    }
+    for (int i = 0; i < box_buffer.boxes.length(); i++) {
+        float k = SDF_box(pos, box_buffer.boxes[i]) / sdf;
+        mtl.color += box_buffer.boxes[i].mtl.color * k;
+    }
+    return mtl;
+}
+*/
 
 /*****
  * Utils
@@ -188,14 +287,14 @@ Material trace(vec3 org, vec3 dir)
         {
             //res = average_mtl(pos);
             srf.mtl.color *= 0.4 * abs(dot(light_dir, get_norm(pos, -dir))) + 0.4;
-            srf.mtl.color = vec4(get_norm(pos, -dir), 1);
+            //srf.mtl.color = vec4(get_norm(pos, -dir), 1);
             //res.color = vec4(1, 0, 0, 1);
             return srf.mtl;
         }
         t += srf.sdf;
     }
     Material res;
-    res.color = vec4(0.1, 0, 0.2, 1);
+    res.color = vec4(0, 0, 0, 1);
     return res;
 }
 
@@ -203,7 +302,7 @@ Material trace(vec3 org, vec3 dir)
 // Main shader program function
 void main() {
     //outColor = vec4(inColor + vec3(1, 1, 1), 1);
-    vec3 cam_pos = normalize(vec3(abs(cos(time * 1 + 1)), 0.7, abs(sin(time * 1 + 1)))) * 1;
+    vec3 cam_pos = normalize(vec3(cos(time * 0 + 1), 1, sin(time * 0 + 1))) * 2;
     vec3 cam_dir = normalize(vec3(0) - cam_pos);
     vec3 up = vec3(0, 1, 0);
     vec3 cam_right = normalize(cross(cam_dir, up));
@@ -211,8 +310,8 @@ void main() {
     float near = 0.5;
 
     vec3 pixel_pos = (cam_dir * near +
-    cam_up * ((float(gl_FragCoord.y) / frame_h) - 0.5) +
-    cam_right * ((float(gl_FragCoord.x) / frame_w) - 0.5));
+        cam_up * ((float(gl_FragCoord.y) / frame_h) - 0.5) +
+        cam_right * ((float(gl_FragCoord.x) / frame_w) - 0.5));
     vec3 dir = normalize(pixel_pos);
     vec3 org = pixel_pos + cam_pos;
 

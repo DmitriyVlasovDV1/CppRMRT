@@ -96,6 +96,23 @@ public:
      */
     uint createShader(const ::std::string &shaderPath);
 
+    /* Create shader function.
+     * ARGUMENTS:
+     *   - vertex shader source in string:
+     *       const ::std::string &vertexShaderSource;
+     *   - fragment shader source in string:
+     *       const ::std::string &fragmentShaderSource;
+     *   - path to shader's realization (read shader class constructor note)
+     *       const ::std::string &shaderPath;
+     * RETURNS:
+     *   (uint) - shader program id.
+     */
+    uint createShader(
+        const ::std::string &vertexShaderSource,
+        const ::std::string &fragmentShaderSource,
+        const ::std::string &shaderPath = ""
+    );
+
     /* Create primitive function.
      * ARGUMENTS:
      *   - path to primitive's shader:

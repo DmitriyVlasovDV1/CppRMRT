@@ -1,5 +1,5 @@
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#ifndef UNIT_HPP
+#define UNIT_HPP
 
 #include "../../../def.hpp"
 #include "../buffers/buffer.hpp"
@@ -168,4 +168,4 @@ protected:
 };  // End of 'unit' class
 }  // namespace hse
 
-#endif  // SCENE_HPP
+#endif  // UNIT_HPP

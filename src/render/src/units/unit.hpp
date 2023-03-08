@@ -135,6 +135,26 @@ public:
         const ::std::vector<int> &indexBuffer = ::std::vector<int>()
     );
 
+    /* Create primitive function.
+     * ARGUMENTS:
+     *   - shader program id:
+     *       uint shaderProgramId;
+     *   - vertex buffer data:
+     *       const ::std::vector<float> &vertexBuffer;
+     *   - vertex buffer format:
+     *       const ::std::string &vertexBufferFormat;
+     *   - index buffer data:
+     *       const ::std::vector<int> &indexBuffer;
+     * RETURNS:
+     *   (primitive *) - not-owning pointer to the created primitive;
+     */
+    primitive *createPrimitive(
+        uint shaderProgramId,
+        const ::std::vector<float> &vertexBuffer,
+        const ::std::string &vertexBufferFormat,
+        const ::std::vector<int> &indexBuffer
+    );
+
 protected:
     // Class constructor
     explicit unit();

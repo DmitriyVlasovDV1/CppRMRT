@@ -76,6 +76,14 @@ class primitive {
     ~primitive();
 
 public:
+    /* Attach shader program id to the primitive function.
+     * ARGUMENTS:
+     *   - shader program id:
+     *       uint shaderProgramId_;
+     * RETURNS: None.
+     */
+    void setShaderProgram(uint shaderProgramId_);
+
     /* Get primitive rendering type function.
      * ARGUMENTS: None.
      * RETURNS:

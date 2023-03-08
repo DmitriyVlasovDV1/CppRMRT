@@ -1,5 +1,5 @@
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#ifndef UNIT_HPP
+#define UNIT_HPP
 
 #include "../../../def.hpp"
 #include "../buffers/buffer.hpp"
@@ -96,6 +96,23 @@ public:
      */
     uint createShader(const ::std::string &shaderPath);
 
+    /* Create shader function.
+     * ARGUMENTS:
+     *   - vertex shader source in string:
+     *       const ::std::string &vertexShaderSource;
+     *   - fragment shader source in string:
+     *       const ::std::string &fragmentShaderSource;
+     *   - path to shader's realization (read shader class constructor note)
+     *       const ::std::string &shaderPath;
+     * RETURNS:
+     *   (uint) - shader program id.
+     */
+    uint createShader(
+        const ::std::string &vertexShaderSource,
+        const ::std::string &fragmentShaderSource,
+        const ::std::string &shaderPath = ""
+    );
+
     /* Create primitive function.
      * ARGUMENTS:
      *   - path to primitive's shader:
@@ -116,6 +133,26 @@ public:
         const ::std::vector<float> &vertexBuffer,
         const ::std::string &vertexBufferFormat = "v3v3",
         const ::std::vector<int> &indexBuffer = ::std::vector<int>()
+    );
+
+    /* Create primitive function.
+     * ARGUMENTS:
+     *   - shader program id:
+     *       uint shaderProgramId;
+     *   - vertex buffer data:
+     *       const ::std::vector<float> &vertexBuffer;
+     *   - vertex buffer format:
+     *       const ::std::string &vertexBufferFormat;
+     *   - index buffer data:
+     *       const ::std::vector<int> &indexBuffer;
+     * RETURNS:
+     *   (primitive *) - not-owning pointer to the created primitive;
+     */
+    primitive *createPrimitive(
+        uint shaderProgramId,
+        const ::std::vector<float> &vertexBuffer,
+        const ::std::string &vertexBufferFormat,
+        const ::std::vector<int> &indexBuffer
     );
 
 protected:
@@ -151,4 +188,4 @@ protected:
 };  // End of 'unit' class
 }  // namespace hse
 
-#endif  // SCENE_HPP
+#endif  // UNIT_HPP

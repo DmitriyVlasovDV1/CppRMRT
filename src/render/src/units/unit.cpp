@@ -101,7 +101,30 @@ uint unit::createShader(const ::std::string &shaderPath) {
         return shadersArray[shaderPath]->getShaderProgramId();
     shadersArray[shaderPath] = new shader(shaderPath);
     return shadersArray[shaderPath]->getShaderProgramId();
-}  // End of 'render::shaderAdd' function
+}  // End of 'unit::createShader' function
+
+/* Create shader function.
+ * ARGUMENTS:
+ *   - vertex shader source in string:
+ *       const ::std::string &vertexShaderSource;
+ *   - fragment shader source in string:
+ *       const ::std::string &fragmentShaderSource;
+ *   - path to shader's realization (read shader class constructor note)
+ *       const ::std::string &shaderPath;
+ * RETURNS:
+ *   (uint) - shader program id.
+ */
+uint unit::createShader(
+    const ::std::string &vertexShaderSource,
+    const ::std::string &fragmentShaderSource,
+    const ::std::string &shaderPath
+) {
+    if (!shaderPath.empty() && shadersArray[shaderPath])
+        return shadersArray[shaderPath]->getShaderProgramId();
+    shadersArray[shaderPath] =
+        new shader(vertexShaderSource, fragmentShaderSource, shaderPath);
+    return shadersArray[shaderPath]->getShaderProgramId();
+}  // End of 'unit::createShader' function
 
 /* Create primitive function.
  * ARGUMENTS:
@@ -128,7 +151,34 @@ primitive *unit::createPrimitive(
         createShader(shaderPath), vertexBuffer, vertexBufferFormat, indexBuffer
     ));
     return primitivesArray.back();
-}  // End of 'render::primitiveAdd' function
+}  // End of 'unit::createPrimitive' function
+
+/* Create primitive function.
+ * ARGUMENTS:
+ *   - shader program id:
+ *       uint shaderProgramId;
+ *   - vertex buffer data:
+ *       const ::std::vector<float> &vertexBuffer;
+ *   - vertex buffer format:
+ *       const ::std::string &vertexBufferFormat;
+ *   - index buffer data:
+ *       const ::std::vector<int> &indexBuffer;
+ * RETURNS:
+ *   (primitive *) - not-owning pointer to the created primitive;
+ * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
+ * position, color, normal, texture coordinate.
+ */
+primitive *unit::createPrimitive(
+    uint shaderProgramId,
+    const ::std::vector<float> &vertexBuffer,
+    const ::std::string &vertexBufferFormat,
+    const ::std::vector<int> &indexBuffer
+) {
+    primitivesArray.emplace_back(new primitive(
+        shaderProgramId, vertexBuffer, vertexBufferFormat, indexBuffer
+    ));
+    return primitivesArray.back();
+}  // End of 'unit::createPrimitive' function
 
 // Class constructor
 unit::unit() : isInitialized(false), isVisible(true) {
@@ -140,8 +190,7 @@ unit::unit() : isInitialized(false), isVisible(true) {
  */
 void unit::render() const {
     for (auto &primitiveInstance : primitivesArray)
-        if (primitiveInstance->getVisibility())
-            primitiveInstance->render();
+        if (primitiveInstance->getVisibility()) primitiveInstance->render();
 }  // End of 'unit::render' function
 
 /* Clear unit function.

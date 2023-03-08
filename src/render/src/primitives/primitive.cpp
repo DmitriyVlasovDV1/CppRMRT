@@ -98,6 +98,16 @@ primitive::~primitive() {
     ::std::cout << "Clear primitive" << ::std::endl;
 }  // End of 'primitive::~primitive' function
 
+/* Attach shader program id to the primitive function.
+ * ARGUMENTS:
+ *   - shader program id:
+ *       uint shaderProgramId_;
+ * RETURNS: None.
+ */
+void primitive::setShaderProgram(uint shaderProgramId_) {
+    shaderProgramId = shaderProgramId_;
+}  // End of 'primitive::setShaderProgram' function
+
 /* Get primitive rendering type function.
  * ARGUMENTS: None.
  * RETURNS:

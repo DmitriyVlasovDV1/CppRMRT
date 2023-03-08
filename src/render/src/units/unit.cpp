@@ -103,6 +103,29 @@ uint unit::createShader(const ::std::string &shaderPath) {
     return shadersArray[shaderPath]->getShaderProgramId();
 }  // End of 'render::shaderAdd' function
 
+/* Create shader function.
+ * ARGUMENTS:
+ *   - vertex shader source in string:
+ *       const ::std::string &vertexShaderSource;
+ *   - fragment shader source in string:
+ *       const ::std::string &fragmentShaderSource;
+ *   - path to shader's realization (read shader class constructor note)
+ *       const ::std::string &shaderPath;
+ * RETURNS:
+ *   (uint) - shader program id.
+ */
+uint unit::createShader(
+    const ::std::string &vertexShaderSource,
+    const ::std::string &fragmentShaderSource,
+    const ::std::string &shaderPath
+) {
+    if (!shaderPath.empty() && shadersArray[shaderPath])
+        return shadersArray[shaderPath]->getShaderProgramId();
+    shadersArray[shaderPath] =
+        new shader(vertexShaderSource, fragmentShaderSource, shaderPath);
+    return shadersArray[shaderPath]->getShaderProgramId();
+}
+
 /* Create primitive function.
  * ARGUMENTS:
  *   - path to primitive's shader:
@@ -140,8 +163,7 @@ unit::unit() : isInitialized(false), isVisible(true) {
  */
 void unit::render() const {
     for (auto &primitiveInstance : primitivesArray)
-        if (primitiveInstance->getVisibility())
-            primitiveInstance->render();
+        if (primitiveInstance->getVisibility()) primitiveInstance->render();
 }  // End of 'unit::render' function
 
 /* Clear unit function.

@@ -50,7 +50,7 @@ public:
         const uint width_,
         const uint height_
     )
-        : width(width_), height(height_) {
+        : width(width_), height(height_), projectionSize(0.1) {
         setProjection();
         setView(location_, direction_);
     }  // End of 'camera' function
@@ -68,7 +68,8 @@ public:
           right(right_),
           up(up_),
           width(width_),
-          height(height_) {
+          height(height_),
+          projectionSize(0.1) {
         at = location + direction;
         setProjection();
         view = matr4::getView(location, direction, right, up);
@@ -211,8 +212,8 @@ public:
     // Class destructor
     ~camera() {
         ::std::cout << "Clear camera" << ::std::endl;
-    } // End of '~camera' function
-};  // End of 'camera' class
+    }  // End of '~camera' function
+};     // End of 'camera' class
 }  // namespace math
 
 #endif  // CAMERA_HPP

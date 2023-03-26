@@ -2,6 +2,7 @@
 // Created by dvlasov on 02.03.23.
 //
 
+#if 0
 #include "rm_figures.hpp"
 
 namespace hse {
@@ -260,3 +261,4 @@ namespace hse {
 
 
 }
+#endif

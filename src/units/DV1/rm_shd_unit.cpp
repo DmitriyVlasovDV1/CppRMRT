@@ -5,7 +5,7 @@ namespace hse {
 
 
 void rmShdUnit::init() {
-
+#if 0
 
     // Scene
     {
@@ -57,10 +57,12 @@ void rmShdUnit::init() {
     unitPrimitive->addUniform(frameH, "frame_h");
     unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
 
+#endif
 }  // End of 'testUnit::initUnit' function
 
 //std::vector<uint> parseFigures(const std::string &str, )
 void rmShdUnit::response() {
+
 
 }  // End of 'testUnit::responseUnit' function
 

@@ -3,94 +3,209 @@
 
 #include <memory>
 #include <exception>
+#include <variant>
 #include "../../def.hpp"
 
-namespace hse {
+namespace hse::drawable_figures {
 
-class FigureFactory;
-class Figure {
-    friend FigureFactory;
+class FigureRender;
 
-    enum class Type {
-        BRICK,
-        UNITE,
-        INTER,
-        SUB,
-    } type;
+enum class RenderType {
+    SVYATOSLAVSRENDEROK,
+    RM,
+    RT
+}; // RenderType
 
-private:
-    FigureFactory *factory;
-    std::vector<int> serialized;
+/*
+ * Primitives
+ */
+enum class PrimitiveType {
+    SPHERE,
+    BOX
+}; // PrimitiveType
 
-    Figure(FigureFactory *factory_) : factory(factory_), serialized(), type(Type::BRICK) {
+class Primitive {
+    PrimitiveType m_primitiveType;
+}; // Primitive
+
+class SpherePrimitive : public Primitive {
+public:
+    SpherePrimitive(float radius) : m_radius(radius) {
     }
 
-    std::vector<int> wrap(char left, const std::vector<int> &ser, char right);
+private:
+    float m_radius;
+}; // SpherePrimitive
 
-    std::vector<int> wrap(const std::string &left, const std::vector<int> &ser, const std::string &right);
-
+class BoxPrimitive : public Primitive {
 public:
-    std::vector<int> concatenate(const Figure &other);
-
-    std::vector<int> concatenateAssociative(Type target, const Figure &other);
-
-    // intersection figures operator
-    Figure & operator=(const Figure &other);
-
-    // intersection figures operator
-    Figure operator&(const Figure &other);
-
-    // unite figures operator
-    Figure operator|(const Figure &other);
-
-    // sub figures operator
-    Figure operator-(const Figure &other);
-
-    // sub figures operator
-    Figure operator*(const math::matr4 &matr);
-
-    std::string parseExpr(int &ind) const;
-
-    std::string getSdfSceneSource() const;
-
-    std::string getFragmentSource(const std::string &filepath) const;
-    std::string getVertexSource(const std::string &filepath) const;
-
-    void draw(primitive *primitive) const;
-
-    // TODO |= &= -=
-};
-
-struct alignas(16) Material {
-    float color[4];
-};
-
-struct alignas(16) SphereBrick {
-    Material mtl;
-    float radius;
-};
-
-struct alignas(16) BoxBrick {
-    Material mtl;
-    float radius;
-};
-
-class FigureFactory {
-    friend Figure;
+    BoxPrimitive(float size) : m_size(size) {
+    }
 
 private:
-    std::vector<BoxBrick> boxes;
-    std::vector<SphereBrick> spheres;
-    std::vector<math::matr4> matricies;
+    float m_size;
+}; // BoxPrimitive
 
-    int addMatr(const math::matr4 &matr);
-
+/*
+ * Transformations
+ */
+class TransformationId {
+    // TODO need link to storage
 public:
-    Figure createSphere(float radius, Material mtl={});
+    TransformationId(int id) : m_storage_id(id) {
+    }
 
-    Figure createBox(float radius, Material mtl={});
+    // TODO operations with other instances and Transformations
 
-};
+private:
+    const int m_storage_id;
+}; // TransformationId
+
+enum class TransformationType {
+    ROTATION,
+    TRANSLATION,
+    SCALE
+}; // TransformationType
+
+class Transformation {
+public:
+    Transformation(TransformationType type) : m_transformationType(type) {
+    }
+
+    TransformationType m_transformationType;
+}; // Transformation
+
+class Translation : public Transformation {
+public:
+    Translation(const math::vec3 &vec) : Transformation(TransformationType::TRANSLATION), m_vec(vec) {
+    }
+private:
+    math::vec3 m_vec;
+}; // Translation
+
+class Rotation : public Transformation {
+public:
+    Rotation(const math::vec3 &vec, float deg) : Transformation(TransformationType::ROTATION), m_vec(vec),
+        m_deg(deg) {
+    }
+private:
+    math::vec3 m_vec;
+    float m_deg;
+}; // Rotation
+
+class Scale : public Transformation {
+public:
+    Scale(const math::vec3 &vec) : Transformation(TransformationType::SCALE), m_vec(vec)
+    {
+    }
+private:
+    math::vec3 m_vec;
+}; // Scale
+
+/*
+ * Materials
+ */
+class MaterialId {
+public:
+    MaterialId(int id) : m_id(id) {
+    }
+private:
+    const int m_id;
+}; // MaterialId
+
+class Material {
+    math::vec3 m_color;
+}; // Material
+
+/*
+ * Figures
+ */
+class FigureId {
+    // TODO need link to storage
+public:
+    FigureId(int id) : m_id(id) {
+    }
+
+    // intersection
+    FigureId operator&(FigureId other) {
+    }
+    // add instance for main scene
+    void draw(RenderType renderType) {
+    }
+
+private:
+    const int m_id;
+}; // FigureId
+
+enum class CreationType {
+    PRIMITIVE,
+    INTERSECTION,
+    UNION,
+    SUBTRACTION
+}; // CreationType
+
+class Figure {
+    friend FigureRender;
+private:
+    Figure(int id) : m_creationType(CreationType::PRIMITIVE),
+        m_sources(id), m_transforms() {
+    }
+    Figure(CreationType creationType, const std::vector<FigureId> &sources) : m_creationType(CreationType::PRIMITIVE),
+          m_sources(sources), m_transforms() {
+    }
+
+    CreationType m_creationType;
+    std::variant<int, std::vector<FigureId>> m_sources;
+    std::vector<TransformationId> m_transforms;
+}; // Figure
+
+// single tone in render
+class FigureRender {
+    std::vector<std::unique_ptr<Primitive>> m_primitives;
+    std::vector<Figure> m_figures;
+    std::vector<Material> m_materials;
+    std::vector<std::unique_ptr<Transformation>> m_transformations;
+    std::vector<FigureId> m_forDrawing;
+
+    FigureId createBox(float size, MaterialId mtl) {
+        int ind(static_cast<int>(m_primitives.size()));
+        m_primitives.push_back(std::make_unique<BoxPrimitive>(size));
+        FigureId res(static_cast<int>(m_figures.size()));
+        m_figures.emplace_back(ind);
+        return res;
+    }
+
+    FigureId createSphere(float radius) {
+        int ind(static_cast<int>(m_primitives.size()));
+        m_primitives.push_back(std::make_unique<SpherePrimitive>(radius));
+        FigureId res(static_cast<int>(m_figures.size()));
+        m_figures.emplace_back(ind);
+        return res;
+    }
+
+    TransformationId createTranslation(const math::vec3 &vec) {
+        TransformationId res(static_cast<int>(m_transformations.size()));
+        m_transformations.push_back(std::make_unique<Translation>(vec));
+        return res;
+    }
+
+    TransformationId createRotation(const math::vec3 &vec, const float deg) {
+        TransformationId res(static_cast<int>(m_transformations.size()));
+        m_transformations.push_back(std::make_unique<Rotation>(vec, deg));
+        return res;
+    }
+
+    TransformationId createScale(const math::vec3 &vec) {
+        TransformationId res(static_cast<int>(m_transformations.size()));
+        m_transformations.push_back(std::make_unique<Scale>(vec));
+        return res;
+    }
+    // TODO other primitives
+
+private:
+    void addToScene(FigureId id) {
+    }
+}; // FigureRender
 
 }
 #endif  // RM_FIGURES_HPP

@@ -4,7 +4,7 @@
 #include <memory>
 #include "../../def.hpp"
 #include "../../render/render.hpp"
-#include "rm_figures.hpp"
+//#include "rm_figures.hpp"
 
 // Project namespace
 namespace hse {
@@ -16,7 +16,7 @@ private:
     int *frameH;
     uint shdId;
     primitive *unitPrimitive;
-    std::unique_ptr<FigureFactory> factory;
+    //std::unique_ptr<FigureFactory> factory;
 public:
     // Class constructor
     explicit rmShdUnit() = default;

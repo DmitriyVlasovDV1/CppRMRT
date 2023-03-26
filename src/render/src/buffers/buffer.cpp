@@ -3,8 +3,7 @@
 // Project namespace
 namespace hse {
 // Class default constructor
-buffer::buffer()
-    : bufferId(0) {
+buffer::buffer() : bufferId(0) {
 }  // End of 'buffer::buffer' function
 
 /* Get buffer id function.
@@ -17,8 +16,7 @@ uint buffer::getBufferId() const {
 }  // End of 'buffer::getBufferId' function
 
 // Class default constructor
-vertexBuffer::vertexBuffer()
-    : sizeOfVertex(0), sizeOfBuffer(0) {
+vertexBuffer::vertexBuffer() : sizeOfVertex(0), sizeOfBuffer(0) {
 }  // End of 'vertexBuffer::vertexBuffer' function
 
 /* Class constructor.
@@ -30,11 +28,17 @@ vertexBuffer::vertexBuffer()
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-vertexBuffer::vertexBuffer(const ::std::vector<float> &bufferData, const ::std::string &bufferFormat)
+vertexBuffer::vertexBuffer(
+    const ::std::vector<float> &bufferData,
+    const ::std::string &bufferFormat
+)
     : sizeOfBuffer(bufferData.size() * sizeof(float)) {
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeOfBuffer * sizeof(float)), (void *)&bufferData[0], GL_STATIC_DRAW);
+    glBufferData(
+        GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeOfBuffer * sizeof(float)),
+        (void *)&bufferData[0], GL_STATIC_DRAW
+    );
 
     ::std::vector<int> vertexBufferOffsets;
     int vertexBufferStride = 0;
@@ -43,7 +47,10 @@ vertexBuffer::vertexBuffer(const ::std::vector<float> &bufferData, const ::std::
             vertexBufferOffsets.push_back(sign - '0');
             vertexBufferStride += sign - '0';
         }
-    sizeOfVertex = vertexBufferStride * static_cast<int>(sizeof(float));  // Stride is measured by bytes
+    sizeOfVertex =
+        vertexBufferStride * static_cast<int>(sizeof(float));  // Stride is
+                                                               // measured by
+                                                               // bytes
 
     int localOffset = 0;
     for (int offsetNumber = 0; offsetNumber < vertexBufferOffsets.size();
@@ -53,7 +60,8 @@ vertexBuffer::vertexBuffer(const ::std::vector<float> &bufferData, const ::std::
             sizeOfVertex, (void *)static_cast<intptr_t>(localOffset)
         );
         glEnableVertexAttribArray(offsetNumber);
-        localOffset += vertexBufferOffsets[offsetNumber] * static_cast<int>(sizeof(float));
+        localOffset +=
+            vertexBufferOffsets[offsetNumber] * static_cast<int>(sizeof(float));
     }
 }  // End of 'vertexBuffer::vertexBuffer' function
 
@@ -90,7 +98,11 @@ vertexBuffer::~vertexBuffer() {
 indexBuffer::indexBuffer(const ::std::vector<int> &bufferData) {
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(bufferData.size() * sizeof(int)), (void *)&bufferData[0], GL_STATIC_DRAW);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        static_cast<GLsizeiptr>(bufferData.size() * sizeof(int)),
+        (void *)&bufferData[0], GL_STATIC_DRAW
+    );
 }  // End of 'indexBuffer::indexBuffer' function
 
 // Class destructor
@@ -116,7 +128,11 @@ vertexArray::vertexArray()
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-vertexArray::vertexArray(const ::std::vector<float> &vertexBufferData, const ::std::string &vertexBufferFormat, const ::std::vector<int> &indexBufferData) {
+vertexArray::vertexArray(
+    const ::std::vector<float> &vertexBufferData,
+    const ::std::string &vertexBufferFormat,
+    const ::std::vector<int> &indexBufferData
+) {
     glGenVertexArrays(1, &bufferId);
     glBindVertexArray(bufferId);
     vertexBufferObject = new vertexBuffer(vertexBufferData, vertexBufferFormat);
@@ -136,15 +152,15 @@ void vertexArray::render(renderType type) const {
     if (indexBufferObject) {
         glDrawElements(
             type == TRIANGLES ? GL_TRIANGLE_STRIP : GL_LINE_LOOP,
-            static_cast<int>(vertexBufferObject->getBufferSize()) / vertexBufferObject->getVertexSize(),
-            GL_UNSIGNED_INT,
-            nullptr
+            static_cast<int>(vertexBufferObject->getBufferSize()) /
+                vertexBufferObject->getVertexSize(),
+            GL_UNSIGNED_INT, nullptr
         );
     } else
         glDrawArrays(
-            type == TRIANGLES ? GL_TRIANGLES : GL_LINES,
-            0,
-            static_cast<int>(vertexBufferObject->getBufferSize()) / vertexBufferObject->getVertexSize()
+            type == TRIANGLES ? GL_TRIANGLES : GL_LINES, 0,
+            static_cast<int>(vertexBufferObject->getBufferSize()) /
+                vertexBufferObject->getVertexSize()
         );
     glBindVertexArray(0);
 }
@@ -167,12 +183,20 @@ vertexArray::~vertexArray() {
  *       uint bufferBinding.
  */
 template <typename T>
-shaderStorageBuffer::shaderStorageBuffer(const ::std::vector<T> &bufferData, uint bufferBinding) {
+shaderStorageBuffer::shaderStorageBuffer(
+    const ::std::vector<T> &bufferData,
+    uint bufferBinding
+) {
     if (usedBindings.count(bufferBinding))
-        assert(("SSBO by binding = " + ::std::to_string(bufferBinding) + "; Try to create ssbo with already used binding").c_str());
+        assert(("SSBO by binding = " + ::std::to_string(bufferBinding) +
+                "; Try to create ssbo with already used binding")
+                   .c_str());
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferId);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, bufferData.size() * sizeof(T), (void *)&bufferData[0], GL_DYNAMIC_COPY);
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER, bufferData.size() * sizeof(T),
+        (void *)&bufferData[0], GL_DYNAMIC_COPY
+    );
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bufferBinding, bufferId);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }  // End of 'shaderStorageBuffer::shaderStorageBuffer' function

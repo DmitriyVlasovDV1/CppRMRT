@@ -9,7 +9,6 @@ namespace hse {
 // Test unit class declaration
 class testUnit final : public unit {
     primitive *unitPrimitive;
-    int size = 10;
 
 public:
     // Class constructor

@@ -16,8 +16,10 @@ void testUnit::init() {
         indexBuffer[j] = j;
     unitPrimitive = createPrimitive("test", vertexBuffer, "v3v3", indexBuffer);
     unitPrimitive->setRenderType(buffer::renderType::LINES);
-    unitPrimitive->addUniform(&size, "size");
     unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
+    unitPrimitive->setRenderType(buffer::renderType::LINES);
+
+    mainCamera.moveTo(math::vec3(0, 10, 0));
 
     // One of the tests
     ::math::matr4 M(1, 2, 3, 4, 4, 3, 2, 1, 2, 3, 4, 1, 4, 1, 2, 3);
@@ -30,7 +32,14 @@ void testUnit::init() {
  * RETURNS: None.
  */
 void testUnit::response() {
-    unitPrimitive->setRenderType(buffer::renderType::LINES);
+    if (render::renderInstance.keys[GLFW_KEY_W].action == GLFW_PRESS)
+        ::std::cout << 'w' << ::std::endl;
+    if (render::renderInstance.keys[GLFW_KEY_A].action == GLFW_PRESS)
+        ::std::cout << 'a' << ::std::endl;
+    if (render::renderInstance.keys[GLFW_KEY_S].action == GLFW_PRESS)
+        ::std::cout << 's' << ::std::endl;
+    if (render::renderInstance.keys[GLFW_KEY_D].action == GLFW_PRESS)
+        ::std::cout << 'd' << ::std::endl;
 }  // End of 'testUnit::responseUnit' function
 
 // Class override destructor

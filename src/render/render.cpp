@@ -21,6 +21,7 @@ void render::init(uint windowWidth_, uint windowHeight_) {
     }
     glfwMakeContextCurrent(windowInstance);
     glfwSetFramebufferSizeCallback(windowInstance, frameBufferSizeCallback);
+    glfwSetKeyCallback(windowInstance, keyboardCallback);
     glewExperimental = true;
     if (!glewInit()) assert("Error in glew initialization");
     ::std::cout << "OpenGL: " << glGetString(GL_VERSION) << "\n";
@@ -38,8 +39,10 @@ void render::init(uint windowWidth_, uint windowHeight_) {
  */
 void render::response() {
     // Initializing units
-    for (auto &[unitName, unitInstance] : unitsArray)
+    for (auto &[unitName, unitInstance] : unitsArray) {
+        unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
         unitInstance->init();
+    }
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
@@ -64,17 +67,6 @@ void render::response() {
     }
 }  // End of 'render::response' function
 
-// Class destructor
-render::~render() {
-    for (auto &[unitName, unitInstance] : unitsArray) {
-        unitInstance->clear();
-        delete unitInstance;
-    }
-    glfwDestroyWindow(windowInstance);
-    glfwTerminate();
-    ::std::cout << "Clear render" << ::std::endl;
-}  // End of 'render::~render' function
-
 /* Get time function.
  * ARGUMENTS: None.
  * RETURNS:
@@ -82,7 +74,7 @@ render::~render() {
  */
 [[nodiscard]] const float &render::getTime() const {
     return time;
-}  // End of 'getTime' function
+}  // End of 'render::getTime' function
 
 /* Get delta time function.
  * ARGUMENTS: None.
@@ -91,7 +83,7 @@ render::~render() {
  */
 [[nodiscard]] const float &render::getDeltaTime() const {
     return deltaTime;
-}  // End of 'getDeltaTime' function
+}  // End of 'render::getDeltaTime' function
 
 /* Get window width function.
  * ARGUMENTS: None.
@@ -124,7 +116,7 @@ render::~render() {
  */
 void render::addUnit(const ::std::string &unitName, unit *unitInstance) {
     unitsArray[unitName] = unitInstance;
-}  // End of 'render::addScene' function
+}  // End of 'render::addUnit' function
 
 // Class default constructors
 render::render()
@@ -164,6 +156,43 @@ void render::frameBufferSizeCallback(
 ) {
     renderInstance.windowWidth = width;
     renderInstance.windowHeight = height;
+    for (auto &[unitName, unitInstance] : renderInstance.unitsArray)
+        unitInstance->mainCamera.setProjection(width, height);
     glViewport(0, 0, width, height);
-}  // End of 'framebuffer_size_callback' function
+}  // End of 'render::frameBufferSizeCallback' function
+
+/* Keyboard response window callback function.
+     * ARGUMENTS:
+     *   - window instance:
+     *       GLFWwindow *window;
+     *   - key:
+     *       int key;
+     *   - key's scaned code:
+     *       int scancode;
+     *   - key's action:
+     *       int action;
+     *   - key's mods:
+     *       int mods;
+     * RETURNS: None.
+ */
+void render::keyboardCallback(
+    GLFWwindow *window,
+    int key,
+    int scancode,
+    int action,
+    int mods
+) {
+    renderInstance.keys[key] = {action, mods};
+} // End of 'render::keyboardCallback' function
+
+// Class destructor
+render::~render() {
+    for (auto &[unitName, unitInstance] : unitsArray) {
+        unitInstance->clear();
+        delete unitInstance;
+    }
+    glfwDestroyWindow(windowInstance);
+    glfwTerminate();
+    ::std::cout << "Clear render" << ::std::endl;
+}  // End of 'render::~render' function
 }  // namespace hse

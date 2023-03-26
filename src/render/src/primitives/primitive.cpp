@@ -156,7 +156,7 @@ void primitive::setVisibility(bool isVisible_) {
  */
 void primitive::addUniform(const int *uniformValue, const char *uniformName) {
     shaderUniform1i[uniformName] = const_cast<int *>(uniformValue);
-}  // End of 'shader::shaderAddUniform1i' function
+}  // End of 'primitive::addUniform' function
 
 /* Add uniform of one float variable to the shader function.
  * ARGUMENTS:
@@ -168,7 +168,7 @@ void primitive::addUniform(const int *uniformValue, const char *uniformName) {
  */
 void primitive::addUniform(const float *uniformValue, const char *uniformName) {
     shaderUniform1f[uniformName] = const_cast<float *>(uniformValue);
-}  // End of 'shader::shaderAddUniform1f' function
+}  // End of 'primitive::addUniform' function
 
 /* Add uniform of 3-component geom vector to the shader function.
  * ARGUMENTS:
@@ -196,6 +196,6 @@ void primitive::addUniform4fv(
 ) {
     shaderUniform4fv[uniformName] = {
         const_cast<float *>(uniformValue), uniformCount};
-}  // End of 'shader::shaderAddUniform3fv' function
+}  // End of 'primitive::addUniform' function
 
 }  // namespace hse

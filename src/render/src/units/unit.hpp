@@ -2,6 +2,7 @@
 #define UNIT_HPP
 
 #include "../../../def.hpp"
+#include "../../../utilities/math/cameras/camera.hpp"
 #include "../buffers/buffer.hpp"
 #include "../primitives/primitive.hpp"
 #include "../shaders/shader.hpp"
@@ -19,6 +20,9 @@ class unit {
                                                        // array
     ::std::vector<primitive *> primitivesArray;  // Unit's primitives array
     ::std::vector<buffer *> buffersArray;        // Unit's buffers array
+
+protected:
+    ::math::camera mainCamera;  // Unit's main camera
 
 public:
     /* Get unit's visibility flag function.

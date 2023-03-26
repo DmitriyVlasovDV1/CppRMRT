@@ -9,6 +9,13 @@ namespace hse {
 // Render class declaration
 class render {
 public:
+    // Key struct for callback
+    struct key {
+        int action;
+        int mode;
+    };  // end of 'key' struct
+
+    ::std::map<int, key> keys;     // Keys map for input response
     static render renderInstance;  // Render instance
 
     /* Initialized glew/glfw function.
@@ -70,11 +77,11 @@ private:
     // Source containers
     ::std::map<::std::string, unit *> unitsArray;  // Units map
     GLFWwindow *windowInstance;  // Window instance (for now we can have only
+                                 // one window)
 
     // Render public variables (can be received by methods)
     uint windowWidth,       // Window width
         windowHeight;       // Window height
-                            // one window)
     float time, deltaTime;  // Time and delta time per frame
 
     // Class default constructors
@@ -83,11 +90,11 @@ private:
     /* Class constructor.
      * ARGUMENTS:
      *   - window width and height:
-     *       uint windowWidth, windowHeight.
+     *       uint windowWidth_, windowHeight_.
      */
     [[maybe_unused]] explicit render(uint windowWidth_, uint windowHeight_);
 
-    /* Resize window callback-function.
+    /* Resize window callback function.
      * ARGUMENTS:
      *   - window instance:
      *       GLFWwindow *window;
@@ -99,6 +106,28 @@ private:
         GLFWwindow *window,
         int width,
         int height
+    );
+
+    /* Keyboard response window callback function.
+     * ARGUMENTS:
+     *   - window instance:
+     *       GLFWwindow *window;
+     *   - key:
+     *       int key;
+     *   - key's scaned code:
+     *       int scancode;
+     *   - key's action:
+     *       int action;
+     *   - key's mods:
+     *       int mods;
+     * RETURNS: None.
+     */
+    static void keyboardCallback(
+        GLFWwindow *window,
+        int key,
+        int scancode,
+        int action,
+        int mods
     );
 
     // Class destructor

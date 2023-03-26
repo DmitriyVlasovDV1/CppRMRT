@@ -12,10 +12,7 @@ class buffer {
 
 public:
     // Enum for rendering type installation
-    enum renderType {
-        TRIANGLES,
-        LINES
-    }; // End of 'renderType' enum
+    enum renderType { TRIANGLES, LINES };  // End of 'renderType' enum
 
 protected:
     uint bufferId;  // Buffer id
@@ -57,7 +54,10 @@ class vertexBuffer final : public buffer {
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    explicit vertexBuffer(const ::std::vector<float> &bufferData, const ::std::string &bufferFormat = "v3");
+    explicit vertexBuffer(
+        const ::std::vector<float> &bufferData,
+        const ::std::string &bufferFormat = "v3"
+    );
 
 public:
     /* Get size of one vertex function.
@@ -123,7 +123,11 @@ class vertexArray final : public buffer {
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    explicit vertexArray(const ::std::vector<float> &vertexBufferData, const ::std::string &vertexBufferFormat, const ::std::vector<int> &indexBufferData);
+    explicit vertexArray(
+        const ::std::vector<float> &vertexBufferData,
+        const ::std::string &vertexBufferFormat,
+        const ::std::vector<int> &indexBufferData
+    );
 
 public:
     /* Draw vertex array function.
@@ -156,7 +160,10 @@ class shaderStorageBuffer final : public buffer {
      *       uint bufferBinding.
      */
     template <typename T>
-    explicit shaderStorageBuffer(const ::std::vector<T> &bufferData, uint bufferBinding);
+    explicit shaderStorageBuffer(
+        const ::std::vector<T> &bufferData,
+        uint bufferBinding
+    );
 
 public:
     // Class destructor

@@ -181,7 +181,16 @@ primitive *unit::createPrimitive(
 }  // End of 'unit::createPrimitive' function
 
 // Class constructor
-unit::unit() : isInitialized(false), isVisible(true) {
+unit::unit()
+    : isInitialized(false),
+      isVisible(true),
+      mainCamera(
+          ::math::vec3(0),
+          ::math::vec3(1, 0, 0),
+          ::math::vec3(1, 1, 1),
+          ::math::vec3(0, 1, 0),
+          400, 400
+      ) {
 }  // End of 'unit::unit' function
 
 /* Render unit function.

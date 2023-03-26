@@ -491,8 +491,10 @@ public:
             right((direction % up_).normalize()), up(right % direction);
 
         return matr4(
-            right.x, up.x, -direction.x, 0, right.y, up.y, -direction.y, 0,
-            right.z, up.z, -direction.z, 0, -(location & right),
+            right.x, up.x, -direction.x, 0,
+            right.y, up.y, -direction.y, 0,
+            right.z, up.z, -direction.z, 0,
+            -(location & right),
             -(location & up), location & direction, 1
         );
     }  // End of 'getView' function

@@ -10,7 +10,7 @@ namespace hse {
 class testUnit final : public unit {
     primitive *unitPrimitive;
 
-    /* Sphere genaration function.
+    /* Sphere generation function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */

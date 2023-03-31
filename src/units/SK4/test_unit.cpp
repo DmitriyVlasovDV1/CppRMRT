@@ -2,6 +2,10 @@
 
 // Project namespace
 namespace hse {
+/* Sphere generation function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
 void testUnit::spheresGeneration() {
     const size_t spheresNumber = 4000;
     for (int i = 0; i < spheresNumber; i++) {

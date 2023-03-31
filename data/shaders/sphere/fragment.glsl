@@ -20,7 +20,7 @@ vec3 lightResponse() {
     vec3 RV = normalize(reflect(V, normal)), H = normalize(V - L);
 
     vec3 ambientOcculusion = vec3((1 - abs(dot(RV, normal))) / 5);
-    float diffuse = pow((dot(normal, -L) + 1) / 1.5, 2) + 0.1;
+    float diffuse = pow((dot(normal, -L) + 1) / 1.7, 2) + 0.1;
     float sphereColorWeight = 2.5, lightColorWeight = 1;
     float summaryWeight = sphereColorWeight + lightColorWeight;
     vec3 sphereRawColor = sphereColor * sphereColorWeight;

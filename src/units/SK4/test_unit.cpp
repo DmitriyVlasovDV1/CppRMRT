@@ -2,12 +2,9 @@
 
 // Project namespace
 namespace hse {
-/* Unit initialization override function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-void testUnit::init() {
-    for (int i = 0; i < 4000; i++) {
+void testUnit::spheresGeneration() {
+    const size_t spheresNumber = 4000;
+    for (int i = 0; i < spheresNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
                   100,
               y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
@@ -21,23 +18,38 @@ void testUnit::init() {
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
         tmp->addUniform(color, "sphereColor");
     }
+}  // End of 'testUnit::spheresGeneration' function
 
-    // One of the tests
+/* Unit initialization override function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+void testUnit::init() {
+    spheresGeneration();
+
+    // One of the math tests
     ::math::matr4 M(1, 2, 3, 4, 4, 3, 2, 1, 2, 3, 4, 1, 4, 1, 2, 3);
     M.inverse();
     M.print();
 }  // End of 'testUnit::initUnit' function
 
-/* Unit response override function.
+/* Camera response function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void testUnit::response() {
+void testUnit::cameraResponse() {
     math::vec3 newCameraLocation = math::vec3(
         (cos(render::renderInstance.getTime() / 1.5f) + 1) * 50, 50,
         (sin(render::renderInstance.getTime() / 1.5f) + 1) * 50
     );
     mainCamera.setView(newCameraLocation, math::vec3(0) - newCameraLocation);
+}  // End of 'testUnit::cameraResponse' function
+
+/* Input (keyboard/mouse) response function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+void testUnit::inputResponse() {
     if (render::renderInstance.keys[GLFW_KEY_W].action == GLFW_PRESS)
         ::std::cout << 'w' << ::std::endl;
     if (render::renderInstance.keys[GLFW_KEY_A].action == GLFW_PRESS)
@@ -57,10 +69,21 @@ void testUnit::response() {
         oldAction = GLFW_PRESS;
     } else if (render::renderInstance.keys[GLFW_KEY_SPACE].action == GLFW_RELEASE)
         oldAction = GLFW_RELEASE;
+}  // End of 'testUnit::inputResponse' function
+
+/* Unit response override function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+void testUnit::response() {
+    cameraResponse();
+    inputResponse();
 }  // End of 'testUnit::responseUnit' function
 
 // Class override destructor
 testUnit::~testUnit() {
     ::std::cout << "Clear test unit" << ::std::endl;
 }  // End of 'testUnit::~testUnit' function
+
+// End of 'testUnit::~testUnit' function
 }  // namespace hse

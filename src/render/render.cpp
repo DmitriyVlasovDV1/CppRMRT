@@ -50,8 +50,12 @@ void render::response() {
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
-        deltaTime = static_cast<float>(glfwGetTime()) - time;
-        time += deltaTime;
+        if (!isPause) {
+            deltaTime = static_cast<float>(glfwGetTime()) - time;
+            time += deltaTime;
+        } else {
+            glfwSetTime(time);
+        }
         glfwSetWindowTitle(
             windowInstance,
             ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)))
@@ -81,16 +85,35 @@ void render::response() {
  * RETURNS:
  *   (float &) - time.
  */
-[[nodiscard]] const float &render::getTime() const {
+const float &render::getTime() const {
     return time;
 }  // End of 'render::getTime' function
+
+/* Get pause flag function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (bool) - paused flag.
+ */
+bool render::getPauseFlag() const {
+    return isPause;
+}  // End of 'render::getPauseFlag' function
+
+/* Set pause flag function.
+ * ARGUMENTS:
+ *   - new pause flag value:
+ *       bool isPause_;
+ * RETURNS: None.
+ */
+void render::setPauseFlag(bool isPause_) {
+    isPause = isPause_;
+} // End of 'render::setPauseFlag' function
 
 /* Get delta time function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (const float &) - delta time.
  */
-[[nodiscard]] const float &render::getDeltaTime() const {
+const float &render::getDeltaTime() const {
     return deltaTime;
 }  // End of 'render::getDeltaTime' function
 
@@ -99,7 +122,7 @@ void render::response() {
  * RETURNS:
  *   (const uint &) - window width.
  */
-[[nodiscard]] const uint &render::getWindowWidth() const {
+const uint &render::getWindowWidth() const {
     return windowWidth;
 }  // End of 'render::getWindowWidth' function
 
@@ -108,7 +131,7 @@ void render::response() {
  * RETURNS:
  *   (const uint &) - window height.
  */
-[[nodiscard]] const uint &render::getWindowHeight() const {
+const uint &render::getWindowHeight() const {
     return windowHeight;
 }  // End of 'render::getWindowHeight' function
 
@@ -133,7 +156,8 @@ render::render()
       windowHeight(0),
       windowInstance(nullptr),
       time(0),
-      deltaTime(0) {
+      deltaTime(0),
+      isPause(false) {
 }  // End of 'render::render' function
 
 /* Class constructor.
@@ -146,7 +170,8 @@ render::render()
       windowHeight(0),
       windowInstance(nullptr),
       time(0),
-      deltaTime(0) {
+      deltaTime(0),
+      isPause(false) {
     init(windowWidth_, windowHeight_);
 }  // End of 'render::render' function
 
@@ -171,18 +196,18 @@ void render::frameBufferSizeCallback(
 }  // End of 'render::frameBufferSizeCallback' function
 
 /* Keyboard response window callback function.
-     * ARGUMENTS:
-     *   - window instance:
-     *       GLFWwindow *window;
-     *   - key:
-     *       int key;
-     *   - key's scaned code:
-     *       int scancode;
-     *   - key's action:
-     *       int action;
-     *   - key's mods:
-     *       int mods;
-     * RETURNS: None.
+ * ARGUMENTS:
+ *   - window instance:
+ *       GLFWwindow *window;
+ *   - key:
+ *       int key;
+ *   - key's scaned code:
+ *       int scancode;
+ *   - key's action:
+ *       int action;
+ *   - key's mods:
+ *       int mods;
+ * RETURNS: None.
  */
 void render::keyboardCallback(
     GLFWwindow *window,
@@ -192,7 +217,7 @@ void render::keyboardCallback(
     int mods
 ) {
     renderInstance.keys[key] = {action, mods};
-} // End of 'render::keyboardCallback' function
+}  // End of 'render::keyboardCallback' function
 
 // Class destructor
 render::~render() {

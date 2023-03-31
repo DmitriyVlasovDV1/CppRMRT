@@ -2,7 +2,7 @@
 #define UNIT_HPP
 
 #include "../../../def.hpp"
-#include "../../../utilities/math/cameras/camera.hpp"
+#include "../../../utilities/cameras/camera.hpp"
 #include "../buffers/buffer.hpp"
 #include "../primitives/primitive.hpp"
 #include "../shaders/shader.hpp"
@@ -22,7 +22,7 @@ class unit {
     ::std::vector<buffer *> buffersArray;        // Unit's buffers array
 
 protected:
-    ::math::camera mainCamera;  // Unit's main camera
+    camera mainCamera;  // Unit's main camera
 
 public:
     /* Get unit's visibility flag function.
@@ -122,11 +122,11 @@ public:
      *   - path to primitive's shader:
      *       const ::std::string &shaderPath;
      *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBuffer;
+     *       const ::std::vector<float> &vertexBufferData;
      *   - vertex buffer format:
      *       const ::std::string &vertexBufferFormat;
      *   - index buffer data:
-     *       const ::std::vector<int> &indexBuffer;
+     *       const ::std::vector<int> &indexBufferData;
      * RETURNS:
      *   (primitive *) - not-owning pointer to the created primitive;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
@@ -134,9 +134,9 @@ public:
      */
     primitive *createPrimitive(
         const ::std::string &shaderPath,
-        const ::std::vector<float> &vertexBuffer,
+        const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat = "v3v3",
-        const ::std::vector<int> &indexBuffer = ::std::vector<int>()
+        const ::std::vector<int> &indexBufferData = ::std::vector<int>()
     );
 
     /* Create primitive function.
@@ -144,19 +144,39 @@ public:
      *   - shader program id:
      *       uint shaderProgramId;
      *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBuffer;
+     *       const ::std::vector<float> &vertexBufferData;
      *   - vertex buffer format:
      *       const ::std::string &vertexBufferFormat;
      *   - index buffer data:
-     *       const ::std::vector<int> &indexBuffer;
+     *       const ::std::vector<int> &indexBufferData;
      * RETURNS:
      *   (primitive *) - not-owning pointer to the created primitive;
      */
     primitive *createPrimitive(
         uint shaderProgramId,
-        const ::std::vector<float> &vertexBuffer,
+        const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat,
-        const ::std::vector<int> &indexBuffer
+        const ::std::vector<int> &indexBufferData
+    );
+
+    /* Create sphere primitive function.
+     * ARGUMENTS:
+     *   - sphere's radius:
+     *       float radius;
+     *   - sphere's position:
+     *       const math::vec3 &position;
+     *   - sphere's stacks:
+     *       int stacks;
+     *   - sphere's slices:
+     *       int slices;
+     * RETURNS:
+     *   (primitive *) - not-owning pointer to the created sphere primitive;
+     */
+    primitive *createSpherePrimitive(
+        float radius,
+        const math::vec3 &position,
+        int stacks = 20,
+        int slices = 20
     );
 
 protected:

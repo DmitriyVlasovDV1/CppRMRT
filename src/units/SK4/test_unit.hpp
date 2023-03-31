@@ -10,6 +10,24 @@ namespace hse {
 class testUnit final : public unit {
     primitive *unitPrimitive;
 
+    /* Sphere genaration function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void spheresGeneration();
+
+    /* Camera response function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void cameraResponse();
+
+    /* Input (keyboard/mouse) response function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void inputResponse();
+
 public:
     // Class constructor
     explicit testUnit() = default;

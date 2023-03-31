@@ -65,14 +65,14 @@ public:
      * RETURNS:
      *   (int) - vertex size.
      */
-    [[nodiscard]] int getVertexSize() const;
+    int getVertexSize() const;
 
     /* Get size of buffer data function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (size_t) - size of buffer data.
      */
-    [[nodiscard]] size_t getBufferSize() const;
+    size_t getBufferSize() const;
 
     // Class destructor
     ~vertexBuffer() final;
@@ -84,6 +84,8 @@ class indexBuffer final : public buffer {
     friend class unit;
     friend class primitive;
     friend class vertexArray;
+
+    size_t indexesCount;  // Number of indexes in buffer data
 
     // Class default constructor
     explicit indexBuffer() = default;

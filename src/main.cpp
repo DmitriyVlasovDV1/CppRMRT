@@ -16,7 +16,7 @@ int main() {
 #endif
     }
 
-    ::hse::render::renderInstance.init(600, 600);
+    ::hse::render::renderInstance.init(800, 600);
     ::hse::render::renderInstance.addUnit("Test unit", new hse::testUnit());
     ::hse::render::renderInstance.response();
 

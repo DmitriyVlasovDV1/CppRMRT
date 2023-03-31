@@ -60,10 +60,12 @@ primitive::primitive(
 }  // End of 'primitive::primitive' function
 
 /* Draw primitive function.
- * ARGUMENTS: None.
+ * ARGUMENTS:
+ *   - camera for rendering primitive:
+ *      const camera &camera;
  * RETURNS: None.
  */
-void primitive::render() const {
+void primitive::render(const camera &camera) const {
     glUseProgram(shaderProgramId);
     int uniformLocation;
     for (auto &[uniformName, uniformValue] : shaderUniform1i) {
@@ -74,12 +76,10 @@ void primitive::render() const {
         uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
         if (uniformLocation != -1) glUniform1f(uniformLocation, *uniformValue);
     }
-    for (auto &[uniformName, uniformPair] : shaderUniform3fv) {
+    for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
         uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
         if (uniformLocation != -1)
-            glUniform3fv(
-                uniformLocation, uniformPair.second, *uniformPair.first
-            );
+            glUniform3fv(uniformLocation, 1, &uniformValue.x);
     }
     for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
         uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
@@ -88,9 +88,31 @@ void primitive::render() const {
                 uniformLocation, uniformPair.second, GL_FALSE, uniformPair.first
             );
     }
+    uniformLocation = glGetUniformLocation(shaderProgramId, "cameraPosition");
+    if (uniformLocation != -1) {
+        math::vec3 tmp = camera.getLocation();
+        glUniform3fv(uniformLocation, 1, &tmp.x);
+    }
+    uniformLocation = glGetUniformLocation(shaderProgramId, "cameraDirection");
+    if (uniformLocation != -1) {
+        math::vec3 tmp = camera.getDirection();
+        glUniform3fv(uniformLocation, 1, &tmp.x);
+    }
+    uniformLocation = glGetUniformLocation(shaderProgramId, "transform");
+    if (uniformLocation != -1)
+        glUniformMatrix4fv(
+            uniformLocation, 1, GL_FALSE, (float *)transform.matrix
+        );
+    uniformLocation = glGetUniformLocation(shaderProgramId, "viewProjection");
+    if (uniformLocation != -1)
+        glUniformMatrix4fv(
+            uniformLocation, 1, GL_FALSE,
+            (float *)camera.getViewProjection().matrix
+        );
+
     vertexArrayInstance->render(renderingType);
     glUseProgram(0);
-}  // End of 'primitive::primitiveDraw' function
+}  // End of 'primitive::render' function
 
 // Class destructor
 primitive::~primitive() {
@@ -173,7 +195,21 @@ void primitive::addUniform(const float *uniformValue, const char *uniformName) {
 /* Add uniform of 3-component geom vector to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       const float **uniformValue;
+ *       const math::vec3 &vector;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ *   - uniforms number:
+ *       int uniformCount;
+ * RETURNS: None.
+ */
+void primitive::addUniform(const math::vec3 &vector, const char *uniformName) {
+    shaderUniform3fv[uniformName] = vector;
+}  // End of 'shader::addUniform' function
+
+/* Add uniform to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const float *uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
  *   - uniforms number:
@@ -181,15 +217,6 @@ void primitive::addUniform(const float *uniformValue, const char *uniformName) {
  * RETURNS: None.
  */
 void primitive::addUniform(
-    const float **uniformValue,
-    const char *uniformName,
-    int uniformCount
-) {
-    shaderUniform3fv[uniformName] = {
-        const_cast<float **>(uniformValue), uniformCount};
-}  // End of 'shader::shaderAddUniform3fv' function
-
-void primitive::addUniform4fv(
     const float *uniformValue,
     const char *uniformName,
     int uniformCount

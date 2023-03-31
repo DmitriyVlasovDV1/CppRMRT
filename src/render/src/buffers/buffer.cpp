@@ -36,8 +36,8 @@ vertexBuffer::vertexBuffer(
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_ARRAY_BUFFER, bufferId);
     glBufferData(
-        GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeOfBuffer * sizeof(float)),
-        (void *)&bufferData[0], GL_STATIC_DRAW
+        GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeOfBuffer),
+        &bufferData[0], GL_STATIC_DRAW
     );
 
     ::std::vector<int> vertexBufferOffsets;
@@ -96,12 +96,13 @@ vertexBuffer::~vertexBuffer() {
  *       const ::std::vector<int> &bufferData.
  */
 indexBuffer::indexBuffer(const ::std::vector<int> &bufferData) {
+    indexesCount = bufferData.size();
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
-        static_cast<GLsizeiptr>(bufferData.size() * sizeof(int)),
-        (void *)&bufferData[0], GL_STATIC_DRAW
+        static_cast<GLsizeiptr>(indexesCount * sizeof(int)),
+        &bufferData[0], GL_STATIC_DRAW
     );
 }  // End of 'indexBuffer::indexBuffer' function
 
@@ -151,10 +152,9 @@ void vertexArray::render(renderType type) const {
     glBindVertexArray(bufferId);
     if (indexBufferObject) {
         glDrawElements(
-            type == TRIANGLES ? GL_TRIANGLE_STRIP : GL_LINE_LOOP,
-            static_cast<int>(vertexBufferObject->getBufferSize()) /
-                vertexBufferObject->getVertexSize(),
-            GL_UNSIGNED_INT, nullptr
+            type == TRIANGLES ? GL_TRIANGLES : GL_LINES,
+            static_cast<int>(indexBufferObject->indexesCount), GL_UNSIGNED_INT,
+            nullptr
         );
     } else
         glDrawArrays(

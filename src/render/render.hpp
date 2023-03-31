@@ -50,39 +50,55 @@ public:
      * RETURNS:
      *   (const float &) - time.
      */
-    [[nodiscard]] const float &getTime() const;
+    const float &getTime() const;
+
+    /* Get pause flag function.
+     * ARGUMENTS: None.
+     * RETURNS:
+     *   (bool) - paused flag.
+     */
+    bool getPauseFlag() const;
+
+    /* Set pause flag function.
+     * ARGUMENTS:
+     *   - new pause flag value:
+     *       bool isPause_;
+     * RETURNS: None.
+     */
+    void setPauseFlag(bool isPause_);
 
     /* Get delta time function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (const float &) - delta time.
      */
-    [[nodiscard]] const float &getDeltaTime() const;
+    const float &getDeltaTime() const;
 
     /* Get window width function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (uint) - window width.
      */
-    [[nodiscard]] const uint &getWindowWidth() const;
+    const uint &getWindowWidth() const;
 
     /* Get window height function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (const uint &) - window height.
      */
-    [[nodiscard]] const uint &getWindowHeight() const;
+    const uint &getWindowHeight() const;
 
 private:
     // Source containers
     ::std::map<::std::string, unit *> unitsArray;  // Units map
     GLFWwindow *windowInstance;  // Window instance (for now we can have only
-                                 // one window)
+    // one window)
 
     // Render public variables (can be received by methods)
     uint windowWidth,       // Window width
         windowHeight;       // Window height
     float time, deltaTime;  // Time and delta time per frame
+    bool isPause;           // Pause flag
 
     // Class default constructors
     explicit render();

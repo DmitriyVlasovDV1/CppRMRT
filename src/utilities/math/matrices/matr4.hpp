@@ -8,11 +8,11 @@ namespace math {
 // Matrix 4x4 class definition
 class matr4 {
 public:
-    float M[4][4];
+    float matrix[4][4];
 
     // Class default constructor
     explicit matr4()
-        : M{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {
+        : matrix{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {
     }
 
     /* Class constructor.
@@ -38,10 +38,11 @@ public:
         const float A32,
         const float A33
     )
-        : M{{A00, A01, A02, A03},
-            {A10, A11, A12, A13},
-            {A20, A21, A22, A23},
-            {A30, A31, A32, A33}} {
+        : matrix{
+              {A00, A01, A02, A03},
+              {A10, A11, A12, A13},
+              {A20, A21, A22, A23},
+              {A30, A31, A32, A33}} {
     }  // End of 'matr4' function
 
     /* Class constructor.
@@ -50,10 +51,11 @@ public:
      *       const float M_[4][4].
      */
     explicit matr4(const float M_[4][4])
-        : M{{M_[0][0], M_[0][1], M_[0][2], M_[0][3]},
-            {M_[1][0], M_[1][1], M_[1][2], M_[1][3]},
-            {M_[2][0], M_[2][1], M_[2][2], M_[2][3]},
-            {M_[3][0], M_[3][1], M_[3][2], M_[3][3]}} {
+        : matrix{
+              {M_[0][0], M_[0][1], M_[0][2], M_[0][3]},
+              {M_[1][0], M_[1][1], M_[1][2], M_[1][3]},
+              {M_[2][0], M_[2][1], M_[2][2], M_[2][3]},
+              {M_[3][0], M_[3][1], M_[3][2], M_[3][3]}} {
     }  // End of 'matr4' function
 
     /* Get pointer to a matrix function.
@@ -61,8 +63,8 @@ public:
      * RETURNS:
      *   (float *) - float pointer to the matrix.
      */
-    inline operator float *() {
-        return M[0];
+    inline explicit operator float *() {
+        return matrix[0];
     }  // End of 'operator float *' function
 
     /* Get constant pointer to a matrix function.
@@ -70,8 +72,8 @@ public:
      * RETURNS:
      *   (const float *) - const float pointer to the matrix.
      */
-    inline operator const float *() const {
-        return M[0];
+    inline explicit operator const float *() const {
+        return matrix[0];
     }  // End of 'operator const float *' function
 
     /* Get position vector from transform matrix function.
@@ -80,7 +82,7 @@ public:
      *   (vec3) - position vector.
      */
     inline vec3 getPosition() const {
-        return vec3(M[3][0], M[3][1], M[3][2]);
+        return vec3(matrix[3][0], matrix[3][1], matrix[3][2]);
     }  // End of 'getPosition' function
 
     /* Get forward vector from transform matrix function.
@@ -89,7 +91,7 @@ public:
      *   (vec3) - forward vector.
      */
     inline vec3 getForward() const {
-        return vec3(M[2][0], M[2][1], M[2][2]);
+        return vec3(matrix[2][0], matrix[2][1], matrix[2][2]);
     }  // End of 'getForward' function
 
     /* Get right vector from transform matrix function.
@@ -98,7 +100,7 @@ public:
      *   (vec3) - right vector.
      */
     inline vec3 getRight() const {
-        return vec3(M[0][0], M[0][1], M[0][2]);
+        return vec3(matrix[0][0], matrix[0][1], matrix[0][2]);
     }  // End of 'getRight' function
 
     /* Get up vector from transform matrix function.
@@ -107,7 +109,7 @@ public:
      *   (vec3) - up vector.
      */
     inline vec3 getUp() const {
-        return vec3(M[1][0], M[1][1], M[1][2]);
+        return vec3(matrix[1][0], matrix[1][1], matrix[1][2]);
     }  // End of 'getUp' function
 
     /* Calculate determinant of 3x3 matrix function.
@@ -138,22 +140,26 @@ public:
      *   (float) - matrix 4x4 determinant.
      */
     inline float det() const {
-        return M[0][0] * matr3Det(
-                             M[1][1], M[1][2], M[1][3], M[2][1], M[2][2],
-                             M[2][3], M[3][1], M[3][2], M[3][3]
-                         ) -
-               M[0][1] * matr3Det(
-                             M[1][0], M[1][2], M[1][3], M[2][0], M[2][2],
-                             M[2][3], M[3][0], M[3][2], M[3][3]
-                         ) +
-               M[0][2] * matr3Det(
-                             M[1][0], M[1][1], M[1][3], M[2][0], M[2][1],
-                             M[2][3], M[3][0], M[3][1], M[3][3]
-                         ) -
-               M[0][3] * matr3Det(
-                             M[1][0], M[1][1], M[1][2], M[2][0], M[2][1],
-                             M[2][2], M[3][0], M[3][1], M[3][2]
-                         );
+        return matrix[0][0] * matr3Det(
+                                  matrix[1][1], matrix[1][2], matrix[1][3],
+                                  matrix[2][1], matrix[2][2], matrix[2][3],
+                                  matrix[3][1], matrix[3][2], matrix[3][3]
+                              ) -
+               matrix[0][1] * matr3Det(
+                                  matrix[1][0], matrix[1][2], matrix[1][3],
+                                  matrix[2][0], matrix[2][2], matrix[2][3],
+                                  matrix[3][0], matrix[3][2], matrix[3][3]
+                              ) +
+               matrix[0][2] * matr3Det(
+                                  matrix[1][0], matrix[1][1], matrix[1][3],
+                                  matrix[2][0], matrix[2][1], matrix[2][3],
+                                  matrix[3][0], matrix[3][1], matrix[3][3]
+                              ) -
+               matrix[0][3] * matr3Det(
+                                  matrix[1][0], matrix[1][1], matrix[1][2],
+                                  matrix[2][0], matrix[2][1], matrix[2][2],
+                                  matrix[3][0], matrix[3][1], matrix[3][2]
+                              );
     }  // End of 'det' function
 
     /* Assignment operator function.
@@ -166,7 +172,7 @@ public:
     inline matr4 &operator=(const matr4 &other) {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                M[i][j] = other.M[i][j];
+                matrix[i][j] = other.matrix[i][j];
         return *this;
     }  // End of 'operator=' function
 
@@ -180,89 +186,89 @@ public:
     inline matr4 operator*(const matr4 &other) const {
         matr4 tmp;
 
-        tmp.M[0][0] = M[0][0];
-        tmp.M[0][0] *= other.M[0][0];
-        tmp.M[0][0] += M[0][1] * other.M[1][0];
-        tmp.M[0][0] += M[0][2] * other.M[2][0];
-        tmp.M[0][0] += M[0][3] * other.M[3][0];
-        tmp.M[0][1] = M[0][0];
-        tmp.M[0][1] *= other.M[0][1];
-        tmp.M[0][1] += M[0][1] * other.M[1][1];
-        tmp.M[0][1] += M[0][2] * other.M[2][1];
-        tmp.M[0][1] += M[0][3] * other.M[3][1];
-        tmp.M[0][2] = M[0][0];
-        tmp.M[0][2] *= other.M[0][2];
-        tmp.M[0][2] += M[0][1] * other.M[1][2];
-        tmp.M[0][2] += M[0][2] * other.M[2][2];
-        tmp.M[0][2] += M[0][3] * other.M[3][2];
-        tmp.M[0][3] = M[0][0];
-        tmp.M[0][3] *= other.M[0][3];
-        tmp.M[0][3] += M[0][1] * other.M[1][3];
-        tmp.M[0][3] += M[0][2] * other.M[2][3];
-        tmp.M[0][3] += M[0][3] * other.M[3][3];
+        tmp.matrix[0][0] = matrix[0][0];
+        tmp.matrix[0][0] *= other.matrix[0][0];
+        tmp.matrix[0][0] += matrix[0][1] * other.matrix[1][0];
+        tmp.matrix[0][0] += matrix[0][2] * other.matrix[2][0];
+        tmp.matrix[0][0] += matrix[0][3] * other.matrix[3][0];
+        tmp.matrix[0][1] = matrix[0][0];
+        tmp.matrix[0][1] *= other.matrix[0][1];
+        tmp.matrix[0][1] += matrix[0][1] * other.matrix[1][1];
+        tmp.matrix[0][1] += matrix[0][2] * other.matrix[2][1];
+        tmp.matrix[0][1] += matrix[0][3] * other.matrix[3][1];
+        tmp.matrix[0][2] = matrix[0][0];
+        tmp.matrix[0][2] *= other.matrix[0][2];
+        tmp.matrix[0][2] += matrix[0][1] * other.matrix[1][2];
+        tmp.matrix[0][2] += matrix[0][2] * other.matrix[2][2];
+        tmp.matrix[0][2] += matrix[0][3] * other.matrix[3][2];
+        tmp.matrix[0][3] = matrix[0][0];
+        tmp.matrix[0][3] *= other.matrix[0][3];
+        tmp.matrix[0][3] += matrix[0][1] * other.matrix[1][3];
+        tmp.matrix[0][3] += matrix[0][2] * other.matrix[2][3];
+        tmp.matrix[0][3] += matrix[0][3] * other.matrix[3][3];
 
-        tmp.M[1][0] = M[1][0];
-        tmp.M[1][0] *= other.M[0][0];
-        tmp.M[1][0] += M[1][1] * other.M[1][0];
-        tmp.M[1][0] += M[1][2] * other.M[2][0];
-        tmp.M[1][0] += M[1][3] * other.M[3][0];
-        tmp.M[1][1] = M[1][0];
-        tmp.M[1][1] *= other.M[0][1];
-        tmp.M[1][1] += M[1][1] * other.M[1][1];
-        tmp.M[1][1] += M[1][2] * other.M[2][1];
-        tmp.M[1][1] += M[1][3] * other.M[3][1];
-        tmp.M[1][2] = M[1][0];
-        tmp.M[1][2] *= other.M[0][2];
-        tmp.M[1][2] += M[1][1] * other.M[1][2];
-        tmp.M[1][2] += M[1][2] * other.M[2][2];
-        tmp.M[1][2] += M[1][3] * other.M[3][2];
-        tmp.M[1][3] = M[1][0];
-        tmp.M[1][3] *= other.M[0][3];
-        tmp.M[1][3] += M[1][1] * other.M[1][3];
-        tmp.M[1][3] += M[1][2] * other.M[2][3];
-        tmp.M[1][3] += M[1][3] * other.M[3][3];
+        tmp.matrix[1][0] = matrix[1][0];
+        tmp.matrix[1][0] *= other.matrix[0][0];
+        tmp.matrix[1][0] += matrix[1][1] * other.matrix[1][0];
+        tmp.matrix[1][0] += matrix[1][2] * other.matrix[2][0];
+        tmp.matrix[1][0] += matrix[1][3] * other.matrix[3][0];
+        tmp.matrix[1][1] = matrix[1][0];
+        tmp.matrix[1][1] *= other.matrix[0][1];
+        tmp.matrix[1][1] += matrix[1][1] * other.matrix[1][1];
+        tmp.matrix[1][1] += matrix[1][2] * other.matrix[2][1];
+        tmp.matrix[1][1] += matrix[1][3] * other.matrix[3][1];
+        tmp.matrix[1][2] = matrix[1][0];
+        tmp.matrix[1][2] *= other.matrix[0][2];
+        tmp.matrix[1][2] += matrix[1][1] * other.matrix[1][2];
+        tmp.matrix[1][2] += matrix[1][2] * other.matrix[2][2];
+        tmp.matrix[1][2] += matrix[1][3] * other.matrix[3][2];
+        tmp.matrix[1][3] = matrix[1][0];
+        tmp.matrix[1][3] *= other.matrix[0][3];
+        tmp.matrix[1][3] += matrix[1][1] * other.matrix[1][3];
+        tmp.matrix[1][3] += matrix[1][2] * other.matrix[2][3];
+        tmp.matrix[1][3] += matrix[1][3] * other.matrix[3][3];
 
-        tmp.M[2][0] = M[2][0];
-        tmp.M[2][0] *= other.M[0][0];
-        tmp.M[2][0] += M[2][1] * other.M[1][0];
-        tmp.M[2][0] += M[2][2] * other.M[2][0];
-        tmp.M[2][0] += M[2][3] * other.M[3][0];
-        tmp.M[2][1] = M[2][0];
-        tmp.M[2][1] *= other.M[0][1];
-        tmp.M[2][1] += M[2][1] * other.M[1][1];
-        tmp.M[2][1] += M[2][2] * other.M[2][1];
-        tmp.M[2][1] += M[2][3] * other.M[3][1];
-        tmp.M[2][2] = M[2][0];
-        tmp.M[2][2] *= other.M[0][2];
-        tmp.M[2][2] += M[2][1] * other.M[1][2];
-        tmp.M[2][2] += M[2][2] * other.M[2][2];
-        tmp.M[2][2] += M[2][3] * other.M[3][2];
-        tmp.M[2][3] = M[2][0];
-        tmp.M[2][3] *= other.M[0][3];
-        tmp.M[2][3] += M[2][1] * other.M[1][3];
-        tmp.M[2][3] += M[2][2] * other.M[2][3];
-        tmp.M[2][3] += M[2][3] * other.M[3][3];
+        tmp.matrix[2][0] = matrix[2][0];
+        tmp.matrix[2][0] *= other.matrix[0][0];
+        tmp.matrix[2][0] += matrix[2][1] * other.matrix[1][0];
+        tmp.matrix[2][0] += matrix[2][2] * other.matrix[2][0];
+        tmp.matrix[2][0] += matrix[2][3] * other.matrix[3][0];
+        tmp.matrix[2][1] = matrix[2][0];
+        tmp.matrix[2][1] *= other.matrix[0][1];
+        tmp.matrix[2][1] += matrix[2][1] * other.matrix[1][1];
+        tmp.matrix[2][1] += matrix[2][2] * other.matrix[2][1];
+        tmp.matrix[2][1] += matrix[2][3] * other.matrix[3][1];
+        tmp.matrix[2][2] = matrix[2][0];
+        tmp.matrix[2][2] *= other.matrix[0][2];
+        tmp.matrix[2][2] += matrix[2][1] * other.matrix[1][2];
+        tmp.matrix[2][2] += matrix[2][2] * other.matrix[2][2];
+        tmp.matrix[2][2] += matrix[2][3] * other.matrix[3][2];
+        tmp.matrix[2][3] = matrix[2][0];
+        tmp.matrix[2][3] *= other.matrix[0][3];
+        tmp.matrix[2][3] += matrix[2][1] * other.matrix[1][3];
+        tmp.matrix[2][3] += matrix[2][2] * other.matrix[2][3];
+        tmp.matrix[2][3] += matrix[2][3] * other.matrix[3][3];
 
-        tmp.M[3][0] = M[3][0];
-        tmp.M[3][0] *= other.M[0][0];
-        tmp.M[3][0] += M[3][1] * other.M[1][0];
-        tmp.M[3][0] += M[3][2] * other.M[2][0];
-        tmp.M[3][0] += M[3][3] * other.M[3][0];
-        tmp.M[3][1] = M[3][0];
-        tmp.M[3][1] *= other.M[0][1];
-        tmp.M[3][1] += M[3][1] * other.M[1][1];
-        tmp.M[3][1] += M[3][2] * other.M[2][1];
-        tmp.M[3][1] += M[3][3] * other.M[3][1];
-        tmp.M[3][2] = M[3][0];
-        tmp.M[3][2] *= other.M[0][2];
-        tmp.M[3][2] += M[3][1] * other.M[1][2];
-        tmp.M[3][2] += M[3][2] * other.M[2][2];
-        tmp.M[3][2] += M[3][3] * other.M[3][2];
-        tmp.M[3][3] = M[3][0];
-        tmp.M[3][3] *= other.M[0][3];
-        tmp.M[3][3] += M[3][1] * other.M[1][3];
-        tmp.M[3][3] += M[3][2] * other.M[2][3];
-        tmp.M[3][3] += M[3][3] * other.M[3][3];
+        tmp.matrix[3][0] = matrix[3][0];
+        tmp.matrix[3][0] *= other.matrix[0][0];
+        tmp.matrix[3][0] += matrix[3][1] * other.matrix[1][0];
+        tmp.matrix[3][0] += matrix[3][2] * other.matrix[2][0];
+        tmp.matrix[3][0] += matrix[3][3] * other.matrix[3][0];
+        tmp.matrix[3][1] = matrix[3][0];
+        tmp.matrix[3][1] *= other.matrix[0][1];
+        tmp.matrix[3][1] += matrix[3][1] * other.matrix[1][1];
+        tmp.matrix[3][1] += matrix[3][2] * other.matrix[2][1];
+        tmp.matrix[3][1] += matrix[3][3] * other.matrix[3][1];
+        tmp.matrix[3][2] = matrix[3][0];
+        tmp.matrix[3][2] *= other.matrix[0][2];
+        tmp.matrix[3][2] += matrix[3][1] * other.matrix[1][2];
+        tmp.matrix[3][2] += matrix[3][2] * other.matrix[2][2];
+        tmp.matrix[3][2] += matrix[3][3] * other.matrix[3][2];
+        tmp.matrix[3][3] = matrix[3][0];
+        tmp.matrix[3][3] *= other.matrix[0][3];
+        tmp.matrix[3][3] += matrix[3][1] * other.matrix[1][3];
+        tmp.matrix[3][3] += matrix[3][2] * other.matrix[2][3];
+        tmp.matrix[3][3] += matrix[3][3] * other.matrix[3][3];
 
         return tmp;
     }  // End of 'operator*' function
@@ -290,7 +296,7 @@ public:
         matr4 tmp;
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                tmp.M[i][j] = M[i][j] + other.M[i][j];
+                tmp.matrix[i][j] = matrix[i][j] + other.matrix[i][j];
         return tmp;
     }  // End of 'operator+' function
 
@@ -317,7 +323,7 @@ public:
         matr4 tmp;
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                tmp.M[i][j] = M[i][j] - other.M[i][j];
+                tmp.matrix[i][j] = matrix[i][j] - other.matrix[i][j];
         return tmp;
     }  // End of 'operator-' function
 
@@ -343,7 +349,7 @@ public:
     inline matr4 &operator-() {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                M[i][j] = -M[i][j];
+                matrix[i][j] = -matrix[i][j];
         return *this;
     }  // End of 'operator-' function
 
@@ -357,71 +363,87 @@ public:
         if (det != 0)
             return matr4(
                 matr3Det(
-                    M[1][1], M[1][2], M[1][3], M[2][1], M[2][2], M[2][3],
-                    M[3][1], M[3][2], M[3][3]
+                    matrix[1][1], matrix[1][2], matrix[1][3], matrix[2][1],
+                    matrix[2][2], matrix[2][3], matrix[3][1], matrix[3][2],
+                    matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    M[0][1], M[0][2], M[0][3], M[2][1], M[2][2], M[2][3],
-                    M[3][1], M[3][2], M[3][3]
+                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[2][1],
+                    matrix[2][2], matrix[2][3], matrix[3][1], matrix[3][2],
+                    matrix[3][3]
                 ) / det,
                 matr3Det(
-                    M[0][1], M[0][2], M[0][3], M[1][1], M[1][2], M[1][3],
-                    M[3][1], M[3][2], M[3][3]
+                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][1],
+                    matrix[1][2], matrix[1][3], matrix[3][1], matrix[3][2],
+                    matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    M[0][1], M[0][2], M[0][3], M[1][1], M[1][2], M[1][3],
-                    M[2][1], M[2][2], M[2][3]
+                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][1],
+                    matrix[1][2], matrix[1][3], matrix[2][1], matrix[2][2],
+                    matrix[2][3]
                 ) / det,
 
                 -matr3Det(
-                    M[1][0], M[1][2], M[1][3], M[2][0], M[2][2], M[2][3],
-                    M[3][0], M[3][2], M[3][3]
+                    matrix[1][0], matrix[1][2], matrix[1][3], matrix[2][0],
+                    matrix[2][2], matrix[2][3], matrix[3][0], matrix[3][2],
+                    matrix[3][3]
                 ) / det,
                 matr3Det(
-                    M[0][0], M[0][2], M[0][3], M[2][0], M[2][2], M[2][3],
-                    M[3][0], M[3][2], M[3][3]
+                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[2][0],
+                    matrix[2][2], matrix[2][3], matrix[3][0], matrix[3][2],
+                    matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    M[0][0], M[0][2], M[0][3], M[1][0], M[1][2], M[1][3],
-                    M[3][0], M[3][2], M[3][3]
+                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[1][0],
+                    matrix[1][2], matrix[1][3], matrix[3][0], matrix[3][2],
+                    matrix[3][3]
                 ) / det,
                 matr3Det(
-                    M[0][0], M[0][2], M[0][3], M[1][0], M[1][2], M[1][3],
-                    M[2][0], M[2][2], M[2][3]
+                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[1][0],
+                    matrix[1][2], matrix[1][3], matrix[2][0], matrix[2][2],
+                    matrix[2][3]
                 ) / det,
 
                 matr3Det(
-                    M[1][0], M[1][1], M[1][3], M[2][0], M[2][1], M[2][3],
-                    M[3][0], M[3][1], M[3][3]
+                    matrix[1][0], matrix[1][1], matrix[1][3], matrix[2][0],
+                    matrix[2][1], matrix[2][3], matrix[3][0], matrix[3][1],
+                    matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    M[0][0], M[0][1], M[0][3], M[2][0], M[2][1], M[2][3],
-                    M[3][0], M[3][1], M[3][3]
+                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[2][0],
+                    matrix[2][1], matrix[2][3], matrix[3][0], matrix[3][1],
+                    matrix[3][3]
                 ) / det,
                 matr3Det(
-                    M[0][0], M[0][1], M[0][3], M[1][0], M[1][1], M[1][3],
-                    M[3][0], M[3][1], M[3][3]
+                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[1][0],
+                    matrix[1][1], matrix[1][3], matrix[3][0], matrix[3][1],
+                    matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    M[0][0], M[0][1], M[0][3], M[1][0], M[1][1], M[1][3],
-                    M[2][0], M[2][1], M[2][3]
+                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[1][0],
+                    matrix[1][1], matrix[1][3], matrix[2][0], matrix[2][1],
+                    matrix[2][3]
                 ) / det,
 
                 -matr3Det(
-                    M[1][0], M[1][1], M[1][2], M[2][0], M[2][1], M[2][2],
-                    M[3][0], M[3][1], M[3][2]
+                    matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0],
+                    matrix[2][1], matrix[2][2], matrix[3][0], matrix[3][1],
+                    matrix[3][2]
                 ) / det,
                 matr3Det(
-                    M[0][0], M[0][1], M[0][2], M[2][0], M[2][1], M[2][2],
-                    M[3][0], M[3][1], M[3][2]
+                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[2][0],
+                    matrix[2][1], matrix[2][2], matrix[3][0], matrix[3][1],
+                    matrix[3][2]
                 ) / det,
                 -matr3Det(
-                    M[0][0], M[0][1], M[0][2], M[1][0], M[1][1], M[1][2],
-                    M[3][0], M[3][1], M[3][2]
+                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0],
+                    matrix[1][1], matrix[1][2], matrix[3][0], matrix[3][1],
+                    matrix[3][2]
                 ) / det,
                 matr3Det(
-                    M[0][0], M[0][1], M[0][2], M[1][0], M[1][1], M[1][2],
-                    M[2][0], M[2][1], M[2][2]
+                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0],
+                    matrix[1][1], matrix[1][2], matrix[2][0], matrix[2][1],
+                    matrix[2][2]
                 ) / det
             );
         return matr4();
@@ -435,7 +457,7 @@ public:
     inline matr4 &inverse() {
         *this = this->inverting();
         return *this;
-    } // End of 'inverse' function
+    }  // End of 'inverse' function
 
     /* Matrix transpose function.
      * ARGUMENTS: None.
@@ -445,7 +467,7 @@ public:
     inline constexpr matr4 &transpose() {
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                ::std::swap(M[i][j], M[j][i]);
+                ::std::swap(matrix[i][j], matrix[j][i]);
         return *this;
     }  // End of 'transpose' function
 
@@ -456,9 +478,10 @@ public:
      */
     inline matr4 transposing() const {
         return matr4(
-            M[0][0], M[1][0], M[2][0], M[3][0], M[0][1], M[1][1], M[2][1],
-            M[3][1], M[0][2], M[1][2], M[2][2], M[3][2], M[0][3], M[1][3],
-            M[2][3], M[3][3]
+            matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
+            matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
+            matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
+            matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]
         );
     }  // End of 'transposing' function
 
@@ -491,10 +514,8 @@ public:
             right((direction % up_).normalize()), up(right % direction);
 
         return matr4(
-            right.x, up.x, -direction.x, 0,
-            right.y, up.y, -direction.y, 0,
-            right.z, up.z, -direction.z, 0,
-            -(location & right),
+            right.x, up.x, -direction.x, 0, right.y, up.y, -direction.y, 0,
+            right.z, up.z, -direction.z, 0, -(location & right),
             -(location & up), location & direction, 1
         );
     }  // End of 'getView' function
@@ -519,9 +540,10 @@ public:
         const vec3 &up
     ) {
         return matr4(
-            right.x, up.x, -direction.x, 0, right.y, up.y, -direction.y, 0,
-            right.z, up.z, -direction.z, 0, -(location & right),
-            -(location & up), location & direction, 1
+            right.x, up.x, -direction.x, 0,
+            right.y, up.y, -direction.y, 0,
+            right.z, up.z, -direction.z, 0,
+            -(location & right), -(location & up), location & direction, 1
         );
     }  // End of 'getView' function
 
@@ -562,18 +584,17 @@ public:
         const float near,
         const float far
     ) {
-        //        return matr4(
-        //            2 * near / (right - left), 0, 0, 0,
-        //            0, 2 * near / (top - bottom), 0, 0,
-        //            (right + left) / (right - left), (top + bottom) / (top -
-        //            Bottom), -(far + near) / (far - near), -1, 0, 0, -2 * far
-        //            * near / (far - near), 0
-        //        );
         return matr4(
             2 * near / (right - left), 0, 0, 0, 0, 2 * near / (top - bottom), 0,
             0, (right + left) / (right - left), (top + bottom) / (top - bottom),
-            -(far) / (far - near), -1, 0, 0, -far * near / (far - near), 0
+            -(far + near) / (far - near), -1, 0, 0,
+            -2 * far * near / (far - near), 0
         );
+//        return matr4(
+//            2 * near / (right - left), 0, 0, 0, 0, 2 * near / (top - bottom), 0,
+//            0, (right + left) / (right - left), (top + bottom) / (top - bottom),
+//            -(far) / (far - near), -1, 0, 0, -far * near / (far - near), 0
+//        );
     }  // End of 'getProjection' function
 
     /* Get scale matrix function.
@@ -713,9 +734,27 @@ public:
      * RETURNS:
      *   (matr4) - rotating by z axis matrix.
      */
-    inline static matr4 RotateZ(float angle) {
+    inline static matr4 rotateZ(float angle) {
         return rotateZRad(degree2Radian(angle));
-    }  // End of 'RotateZ' function
+    }  // End of 'rotateZ' function
+
+    /* Multiply 3d vector by matrix function.
+     * ARGUMENTS:
+     *   - vector for multiplying:
+     *       const vec3 &point;
+     * RETURNS:
+     *   (vec3) - multiplication result.
+     */
+    inline vec3 transformPoint(const vec3 &point) {
+        return vec3(
+            point.x * matrix[0][0] + point.y * matrix[1][0] +
+                point.z * matrix[2][0] + matrix[3][0],
+            point.x * matrix[0][1] + point.y * matrix[1][1] +
+                point.z * matrix[2][1] + matrix[3][1],
+            point.x * matrix[0][2] + point.y * matrix[1][2] +
+                point.z * matrix[2][2] + matrix[3][2]
+        );
+    } // End of 'transformPoint' function
 
     /* Print matrix function.
      * ARGUMENTS: None.
@@ -723,14 +762,14 @@ public:
      */
     inline void print() const {
         ::std::cout << "Matrix: { ";
-        for (int i = 0; i < 4; i++) {
+        for (auto i : matrix) {
             ::std::cout << "{";
             for (int j = 0; j < 4; j++)
-                ::std::cout << M[i][j] << (j != 3 ? ", " : "");
+                ::std::cout << i[j] << (j != 3 ? ", " : "");
             ::std::cout << "} ";
         }
         ::std::cout << "}" << ::std::endl;
-    } // End of 'print' function
+    }  // End of 'print' function
 };     // End of 'matr4' class
 }  // namespace math
 

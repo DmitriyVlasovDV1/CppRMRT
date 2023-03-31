@@ -7,7 +7,7 @@ namespace hse {
  * RETURNS: None.
  */
 void testUnit::init() {
-    for (int i = 0; i < 400; i++) {
+    for (int i = 0; i < 1000; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
                   100,
               y = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *

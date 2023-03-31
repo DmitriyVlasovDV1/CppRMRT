@@ -79,7 +79,7 @@ void primitive::render(const camera &camera) const {
     for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
         uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
         if (uniformLocation != -1)
-            glUniform3fv(uniformLocation, 1, &uniformValue);
+            glUniform3fv(uniformLocation, 1, &uniformValue.x);
     }
     for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
         uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
@@ -203,7 +203,7 @@ void primitive::addUniform(const float *uniformValue, const char *uniformName) {
  * RETURNS: None.
  */
 void primitive::addUniform(const math::vec3 &vector, const char *uniformName) {
-    shaderUniform3fv[uniformName] = vector.x;
+    shaderUniform3fv[uniformName] = vector;
 }  // End of 'shader::addUniform' function
 
 /* Add uniform to the shader function.

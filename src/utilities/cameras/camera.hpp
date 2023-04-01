@@ -119,6 +119,21 @@ public:
 
     /* Set view matrix function.
      * ARGUMENTS:
+     *   - camera transform matrix:
+     *       const math::matr4 &transformMatrix;
+     * RETURNS: None;
+     * NOTE: This method is the BEST method for moving/changing camera axis.
+     */
+    void setView(const math::matr4 &transformMatrix) {
+        position = transformMatrix.transformPoint(position);
+        direction = transformMatrix.transformPoint(direction);
+        right = transformMatrix.transformPoint(right);
+        up = transformMatrix.transformPoint(up);
+        setView();
+    } // End of 'setView' function
+
+    /* Set view matrix function.
+     * ARGUMENTS:
      *   - new camera position:
      *       const vec3 &position_;
      *   - new look at direction:

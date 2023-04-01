@@ -7,7 +7,7 @@ namespace hse {
  * RETURNS: None.
  */
 void testUnit::spheresGeneration() {
-    const size_t spheresNumber = 2000;
+    const size_t spheresNumber = 3000;
     for (int i = 0; i < spheresNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
                   100,
@@ -29,7 +29,7 @@ void testUnit::spheresGeneration() {
  * RETURNS: None.
  */
 void testUnit::cubesGeneration() {
-    const size_t cubesNumber = 2000;
+    const size_t cubesNumber = 3000;
     for (int i = 0; i < cubesNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
                   100,
@@ -39,8 +39,9 @@ void testUnit::cubesGeneration() {
                   100;
         primitive *tmp =
             createCubePrimitive(1, 1, 1, math::vec3(x - 50, y - 50, z - 50));
-        tmp->transformMatrix = math::matr4::rotateX(45) *
-                               math::matr4::rotateZ(45) * tmp->transformMatrix;
+        tmp->transformMatrix = math::matr4::rotateX(z) *
+                               math::matr4::rotateY(x) *
+                               math::matr4::rotateZ(y) * tmp->transformMatrix;
         tmp->addUniform(render::renderInstance.getTime(), "time");
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
         tmp->addUniform(color, "pointColor");
@@ -54,10 +55,6 @@ void testUnit::cubesGeneration() {
 void testUnit::init() {
     spheresGeneration();
     cubesGeneration();
-    // One of the math tests
-    ::math::matr4 M(1, 2, 3, 4, 4, 3, 2, 1, 2, 3, 4, 1, 4, 1, 2, 3);
-    M.inverse();
-    M.print();
 }  // End of 'testUnit::initUnit' function
 
 /* Camera response function.

@@ -93,7 +93,7 @@ void testUnit::inputResponse() {
  * RETURNS: None.
  */
 void testUnit::init() {
-    unitModel = createModel("objModel", "tea_cup/tea_cup.obj");
+    unitModel = createModel("obj_model", "tea_cup/tea_cup.obj");
     unitModel->addUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
     unitModel->transformMatrix = math::matr4::translate(math::vec3(0, -1, 0)) *
                                  math::matr4::scale(math::vec3(10));

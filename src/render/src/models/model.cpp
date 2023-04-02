@@ -94,8 +94,14 @@ void model::parseObj(const ::std::string &fileName) {
                 indexBufferData.push_back(numberOfVertexes + 2);
                 numberOfVertexes += 3;
             }
-        } else
-            assert(("Wrong file format in file: " + fileName).c_str());
+        } else {
+            // Not really sure that it's the best way
+            // assert(("Wrong file format in file: " + fileName).c_str());
+
+            // Skipping unknown tag
+            ::std::string line;
+            ::std::getline(fileContent, line);
+        }
         oldType = type;
     }
     if (!vertexBufferData.empty())

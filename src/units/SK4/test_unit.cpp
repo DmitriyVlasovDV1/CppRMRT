@@ -20,7 +20,7 @@ void testUnit::spheresGeneration() {
         );
         tmp->addUniform(render::renderInstance.getTime(), "time");
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
-        tmp->addUniform(color, "pointColor");
+        tmp->addUniform(color, "vertexColor");
     }
 }  // End of 'testUnit::spheresGeneration' function
 
@@ -44,7 +44,7 @@ void testUnit::cubesGeneration() {
                                math::matr4::rotateZ(y) * tmp->transformMatrix;
         tmp->addUniform(render::renderInstance.getTime(), "time");
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
-        tmp->addUniform(color, "pointColor");
+        tmp->addUniform(color, "vertexColor");
     }
 }  // End of 'testUnit::cubesGeneration' function
 

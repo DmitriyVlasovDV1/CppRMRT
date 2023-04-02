@@ -5,7 +5,7 @@ in vec3 vertexNormal;
 
 uniform vec3 cameraPosition;
 uniform vec3 cameraDirection;
-uniform vec3 pointColor;
+uniform vec3 vertexColor;
 uniform float time;
 
 vec3 lightColor = vec3(0.7);
@@ -22,7 +22,7 @@ vec3 lightResponse() {
     float diffuse = pow((dot(normal, -L) + 1) / 1.7, 2) + 0.1;
     float pointColorWeight = 2.5, lightColorWeight = 1;
     float summaryWeight = pointColorWeight + lightColorWeight;
-    vec3 pointRawColor = pointColor * pointColorWeight;
+    vec3 pointRawColor = vertexColor * pointColorWeight;
     vec3 lightRawColor = lightColor * lightColorWeight;
     vec3 pointNaturalColor = vec3(max(min((pointRawColor.x + lightRawColor.x) / summaryWeight, 1.0), 0.0),
                                   max(min((pointRawColor.y + lightRawColor.y) / summaryWeight, 1.0), 0.0),

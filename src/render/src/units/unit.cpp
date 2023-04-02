@@ -189,6 +189,40 @@ primitive *unit::createPrimitive(
     return primitivesArray.back();
 }  // End of 'unit::createPrimitive' function
 
+/* Create model function.
+ * ARGUMENTS:
+ *   - path to the model's shader:
+ *       const ::std::string &shaderPath;
+ *   - models' file name:
+ *       const ::std::string &modelFileName;
+ * RETURNS:
+ *   (model *) - not-owning pointer to the created model.
+ */
+model *unit::createModel(
+    const ::std::string &shaderPath,
+    const ::std::string &modelFileName
+) {
+    modelsArray.push_back(new model(createShader(shaderPath), modelFileName));
+    return modelsArray.back();
+}  // End of 'unit::createModel' function
+
+/* Create model function.
+ * ARGUMENTS:
+ *   - model's shader program id:
+ *       uint shaderProgramId;
+ *   - models' file name:
+ *       const ::std::string &modelFileName;
+ * RETURNS:
+ *   (model *) - not-owning pointer to the created model.
+ */
+model *unit::createModel(
+    uint shaderProgramId,
+    const ::std::string &modelFileName
+) {
+    modelsArray.push_back(new model(shaderProgramId, modelFileName));
+    return modelsArray.back();
+}  // End of 'unit::createModel' function
+
 /* Create sphere primitive function.
  * ARGUMENTS:
  *   - sphere's radius:
@@ -468,6 +502,8 @@ unit::unit()
  * RETURNS: None.
  */
 void unit::render() const {
+    for (auto &modelInstance : modelsArray)
+        if (modelInstance->getVisibility()) modelInstance->render(mainCamera);
     for (auto &primitiveInstance : primitivesArray)
         if (primitiveInstance->getVisibility())
             primitiveInstance->render(mainCamera);
@@ -484,5 +520,7 @@ void unit::clear() {
         delete shaderInstance;
     for (auto &primitiveInstance : primitivesArray)
         delete primitiveInstance;
+    for (auto &modelInstance : modelsArray)
+        delete modelInstance;
 }  // End of 'unit::clear' function
 }  // namespace hse

@@ -67,7 +67,7 @@ void render::response() {
         );
 
         // Response/Render all units
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
         for (auto &[unitName, unitInstance] : unitsArray)
@@ -76,8 +76,8 @@ void render::response() {
                 unitInstance->render();
             }
         glFinish();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDisable(GL_DEPTH_TEST);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         glfwSwapBuffers(windowInstance);
         glfwPollEvents();

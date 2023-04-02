@@ -144,7 +144,7 @@ vertexArray::vertexArray(
     if (!indexBufferData.empty())
         indexBufferObject = new indexBuffer(indexBufferData);
     glBindVertexArray(0);
-} // End of 'vertexArray::vertexArray' function
+}  // End of 'vertexArray::vertexArray' function
 
 /* Render vertex array function.
  * ARGUMENTS:
@@ -156,18 +156,25 @@ void vertexArray::render(renderType type) const {
     glBindVertexArray(bufferId);
     if (indexBufferObject) {
         glDrawElements(
-            type == TRIANGLES ? GL_TRIANGLES : GL_LINES,
+            type == TRIANGLES         ? GL_TRIANGLES
+            : type == TRIANGLES_STRIP ? GL_TRIANGLE_STRIP
+            : type == QUADS           ? GL_QUADS
+                                      : GL_LINES,
             static_cast<int>(indexBufferObject->indexesCount), GL_UNSIGNED_INT,
             nullptr
         );
     } else
         glDrawArrays(
-            type == TRIANGLES ? GL_TRIANGLES : GL_LINES, 0,
+            type == TRIANGLES         ? GL_TRIANGLES
+            : type == TRIANGLES_STRIP ? GL_TRIANGLE_STRIP
+            : type == QUADS           ? GL_QUADS
+                                      : GL_LINES,
+            0,
             static_cast<int>(vertexBufferObject->getBufferSize()) /
                 vertexBufferObject->getVertexSize()
         );
     glBindVertexArray(0);
-} // End of 'vertexArray::render' function
+}  // End of 'vertexArray::render' function
 
 // Class destructor
 vertexArray::~vertexArray() {

@@ -11,7 +11,8 @@ public:
     float x, y;  // Two components of geom vector
 
     // Class default constructor
-    explicit vec2() = default;
+    explicit vec2() : x(0), y(0) {
+    }  // End of 'vec2' function
 
     /* Class constructor.
      * ARGUMENTS:
@@ -281,7 +282,7 @@ public:
     inline static vec2 max(const vec2 &v1, const vec2 &v2) {
         return vec2(::std::max(v1.x, v2.x), ::std::max(v1.y, v2.y));
     }  // End of 'max' function
-}; // End of 'vec2' class
+};     // End of 'vec2' class
 }  // namespace math
 
 #endif  // VEC2_HPP

@@ -8,6 +8,8 @@
 namespace hse {
 // Test unit class declaration
 class testUnit final : public unit {
+    model *unitModel;
+
     /* Spheres generation function.
      * ARGUMENTS: None.
      * RETURNS: None.

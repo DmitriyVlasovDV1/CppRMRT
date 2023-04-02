@@ -11,8 +11,9 @@ namespace hse {
 class primitive {
     // Friend classes
     friend class unit;
+    friend class model;
 
-    buffer::renderType renderingType;  // Rendering type
+    buffer::renderType renderType;     // Rendering type
     vertexArray *vertexArrayInstance;  // Vertex array instance
     uint shaderProgramId;              // Primitive's shader instance
     bool isVisible;                    // Visibility flag
@@ -99,10 +100,10 @@ public:
     /* Set primitive rendering type function.
      * ARGUMENTS:
      *   - new rendering type:
-     *       buffer::renderType type_:
+     *       buffer::renderType renderType_:
      * RETURNS: None.
      */
-    void setRenderType(buffer::renderType type_);
+    void setRenderType(buffer::renderType renderType_);
 
     /* Get primitive's visibility flag function.
      * ARGUMENTS: None.
@@ -129,7 +130,7 @@ public:
      */
     void addUniform(int uniformValue, const char *uniformName);
 
-    /* Add uniform to the shader function.
+    /* Add uniform of one float variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       float uniformValue;
@@ -139,7 +140,7 @@ public:
      */
     void addUniform(float uniformValue, const char *uniformName);
 
-    /* Add uniform to the shader function.
+    /* Add uniform of 3-component geom vector to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const math::vec3 &vector;
@@ -149,12 +150,14 @@ public:
      */
     void addUniform(const math::vec3 &vector, const char *uniformName);
 
-    /* Add uniform to the shader function.
+    /* Add uniform of matrix4x4 variable to the shader function.
      * ARGUMENTS:
-     *   - uniform matrix value:
-     *       const math::matr4 &matrix;
+     *   - uniform value:
+     *       const math::matr4 &uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
+     *   - uniforms number:
+     *       int uniformCount;
      * RETURNS: None.
      */
     void addUniform(const math::matr4 &matrix, const char *uniformName);

@@ -12,6 +12,7 @@ file(GLOB SOURCE_FILES
         src/render/src/units/unit.cpp
         src/render/src/buffers/buffer.cpp
         src/render/src/primitives/primitive.cpp
+        src/render/src/models/model.cpp
         src/render/src/shaders/shader.cpp
         src/units/SK4/test_unit.cpp
         src/units/DV1/rm_shd_unit.cpp
@@ -27,6 +28,7 @@ file(GLOB HEADER_FILES
         src/render/src/units/unit.hpp
         src/render/src/buffers/buffer.hpp
         src/render/src/primitives/primitive.hpp
+        src/render/src/models/model.hpp
         src/render/src/shaders/shader.hpp
         src/units/SK4/test_unit.hpp
         src/units/DV1/rm_shd_unit.hpp

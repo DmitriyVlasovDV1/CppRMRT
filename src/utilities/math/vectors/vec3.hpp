@@ -12,7 +12,8 @@ public:
     float x, y, z;  // Three components of geom vector
 
     // Class default constructor
-    explicit vec3() = default;
+    explicit vec3() : x(0), y(0), z(0) {
+    }  // End of 'vec3' function
 
     /* Class constructor.
      * ARGUMENTS:

@@ -7,7 +7,7 @@ namespace hse {
  * RETURNS: None.
  */
 void testUnit::spheresGeneration() {
-    const size_t spheresNumber = 3000;
+    const size_t spheresNumber = 1000;
     for (int i = 0; i < spheresNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
                   100,
@@ -29,7 +29,7 @@ void testUnit::spheresGeneration() {
  * RETURNS: None.
  */
 void testUnit::cubesGeneration() {
-    const size_t cubesNumber = 3000;
+    const size_t cubesNumber = 1000;
     for (int i = 0; i < cubesNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
                   100,
@@ -47,15 +47,6 @@ void testUnit::cubesGeneration() {
         tmp->addUniform(color, "pointColor");
     }
 }  // End of 'testUnit::cubesGeneration' function
-
-/* Unit initialization override function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-void testUnit::init() {
-    spheresGeneration();
-    cubesGeneration();
-}  // End of 'testUnit::initUnit' function
 
 /* Camera response function.
  * ARGUMENTS: None.
@@ -97,11 +88,30 @@ void testUnit::inputResponse() {
         oldAction = GLFW_RELEASE;
 }  // End of 'testUnit::inputResponse' function
 
+/* Unit initialization override function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+void testUnit::init() {
+    unitModel = createModel("objModel", "tea_cup/tea_cup.obj");
+    unitModel->addUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
+    unitModel->transformMatrix = math::matr4::translate(math::vec3(0, -1, 0)) *
+                                 math::matr4::scale(math::vec3(10));
+    spheresGeneration();
+    cubesGeneration();
+}  // End of 'testUnit::initUnit' function
+
 /* Unit response override function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
 void testUnit::response() {
+    unitModel->transformMatrix =
+        math::matr4::translate(math::vec3(0, -1, 0)) *
+        math::matr4::scale(math::vec3(10)) *
+        math::matr4::rotateY(render::renderInstance.getTime() * 50) *
+        math::matr4::rotateX(-render::renderInstance.getTime() * 30) *
+        math::matr4::rotateZ(render::renderInstance.getTime() * 20);
     cameraResponse();
     inputResponse();
 }  // End of 'testUnit::responseUnit' function

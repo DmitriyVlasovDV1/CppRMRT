@@ -12,7 +12,12 @@ class buffer {
 
 public:
     // Enum for rendering type installation
-    enum renderType { TRIANGLES, LINES };  // End of 'renderType' enum
+    enum renderType {
+        QUADS,
+        TRIANGLES,
+        TRIANGLES_STRIP,
+        LINES
+    };  // End of 'renderType' enum
 
 protected:
     uint bufferId;  // Buffer id

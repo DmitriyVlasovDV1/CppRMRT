@@ -111,7 +111,7 @@ public:
      */
     primitive *getChild(int index) const;
 
-    /* Add uniform to the shader function.
+    /* Add uniform of one integer variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       int uniformValue;
@@ -121,7 +121,7 @@ public:
      */
     void addUniform(int uniformValue, const char *uniformName);
 
-    /* Add uniform to the shader function.
+    /* Add uniform of one float variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       float uniformValue;
@@ -131,7 +131,7 @@ public:
      */
     void addUniform(float uniformValue, const char *uniformName);
 
-    /* Add uniform to the shader function.
+    /* Add uniform of 3-component geom vector to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const math::vec3 &vector;
@@ -141,12 +141,14 @@ public:
      */
     void addUniform(const math::vec3 &vector, const char *uniformName);
 
-    /* Add uniform to the shader function.
+    /* Add uniform of matrix4x4 variable to the shader function.
      * ARGUMENTS:
-     *   - uniform matrix value:
-     *       const math::matr4 &matrix;
+     *   - uniform value:
+     *       const math::matr4 &uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
+     *   - uniforms number:
+     *       int uniformCount;
      * RETURNS: None.
      */
     void addUniform(const math::matr4 &matrix, const char *uniformName);

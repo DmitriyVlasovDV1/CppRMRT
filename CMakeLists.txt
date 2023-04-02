@@ -23,6 +23,7 @@ file(GLOB HEADER_FILES
         src/utilities/math/vectors/vec3.hpp
         src/utilities/math/vectors/vec2.hpp
         src/utilities/math/matrices/matr4.hpp
+        src/utilities/camera/camera.hpp
         src/def.hpp
         src/render/render.hpp
         src/render/src/units/unit.hpp

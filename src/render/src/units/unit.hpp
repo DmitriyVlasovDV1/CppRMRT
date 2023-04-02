@@ -2,7 +2,7 @@
 #define UNIT_HPP
 
 #include "../../../def.hpp"
-#include "../../../utilities/cameras/camera.hpp"
+#include "../../../utilities/camera/camera.hpp"
 #include "../buffers/buffer.hpp"
 #include "../models/model.hpp"
 #include "../primitives/primitive.hpp"

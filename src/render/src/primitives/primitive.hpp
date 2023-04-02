@@ -2,7 +2,7 @@
 #define PRIMITIVE_HPP
 
 #include "../../../def.hpp"
-#include "../../../utilities/cameras/camera.hpp"
+#include "../../../utilities/camera/camera.hpp"
 #include "../buffers/buffer.hpp"
 #include "../shaders/shader.hpp"
 

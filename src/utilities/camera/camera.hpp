@@ -159,23 +159,6 @@ public:
 
     /* Set view matrix function.
      * ARGUMENTS:
-     *   - new camera position:
-     *       const math::vec3 &position_;
-     *   - new camera at direction:
-     *       const math::vec3 &at_;
-     * RETURNS: None.
-     */
-    void setPositionWithAtDirection(
-        const math::vec3 &position_,
-        const math::vec3 &at_
-    ) {
-        position = position_;
-        direction = (at_ - position).normalize();
-        setView();
-    }  // End of 'setPositionWithAtDirection' function
-
-    /* Set view matrix function.
-     * ARGUMENTS:
      *   - new camera direction:
      *       const math::vec3 &direction_;
      *   - new up camera direction:

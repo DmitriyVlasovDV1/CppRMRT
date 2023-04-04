@@ -1,3 +1,4 @@
+#if 0
 #ifndef RM_FIGURES_HPP
 #define RM_FIGURES_HPP
 
@@ -129,6 +130,7 @@ public:
     // intersection
     FigureId operator&(FigureId other) {
     }
+
     // add instance for main scene
     void draw(RenderType renderType) {
     }
@@ -209,3 +211,4 @@ private:
 
 }
 #endif  // RM_FIGURES_HPP
+#endif

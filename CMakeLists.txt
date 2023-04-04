@@ -15,7 +15,8 @@ file(GLOB SOURCE_FILES
         src/render/src/shaders/shader.cpp
         src/units/SK4/test_unit.cpp
         src/units/DV1/rm_shd_unit.cpp
-        src/units/DV1/rm_figures.cpp)
+        src/units/DV1/rm_figures.cpp
+        src/render/figure_scene.cpp)
 file(GLOB HEADER_FILES
         src/utilities/math/math.hpp
         src/utilities/math/math_def.hpp
@@ -30,7 +31,8 @@ file(GLOB HEADER_FILES
         src/render/src/shaders/shader.hpp
         src/units/SK4/test_unit.hpp
         src/units/DV1/rm_shd_unit.hpp
-        src/units/DV1/rm_figures.hpp)
+        src/units/DV1/rm_figures.hpp
+        src/render/figure_scene.hpp)
 
 find_package(OpenGL REQUIRED)
 

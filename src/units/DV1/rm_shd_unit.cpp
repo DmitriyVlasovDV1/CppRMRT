@@ -1,4 +1,5 @@
 #include "rm_shd_unit.hpp"
+#include "../../render/figure_scene.hpp"
 
 // Project namespace
 namespace hse {
@@ -6,6 +7,9 @@ namespace hse {
 
 void rmShdUnit::init() {
 #if 0
+    using fr = drawable_figures::FigureRender;
+    auto sphereId = fr::figureRender.createSphere(0.5);
+    sphereId.draw();
 
     // Scene
     {

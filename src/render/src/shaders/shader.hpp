@@ -17,10 +17,10 @@ class shader {
         int type;          // Shader type
         int id;            // Shader id
     } shaders[2] = {
-        {"vertex", GL_VERTEX_SHADER},
-        {"fragment", GL_FRAGMENT_SHADER}};
+        {"vertex", GL_VERTEX_SHADER},       // Struct data for vertex shader
+        {"fragment", GL_FRAGMENT_SHADER}};  // Struct data for fragment shader
 
-    /* Load shader program from file function.
+    /* Parse shader program from file function.
      * ARGUMENTS:
      *   - shader's program path:
      *       const ::std::string &shaderPath;
@@ -28,7 +28,7 @@ class shader {
      *   (::std::pair<::std::string, ::std::string>) - pair of shaders
      * realization.
      */
-    ::std::pair<::std::string, ::std::string> loadShaderFromFile(
+    ::std::pair<::std::string, ::std::string> parseShaderFromFile(
         const ::std::string &shaderPath
     ) const;
 
@@ -86,7 +86,6 @@ public:
      *   (uint) - shader id;
      */
     uint getShaderProgramId() const;
-
 };  // End of 'shader' class
 }  // namespace hse
 

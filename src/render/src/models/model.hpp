@@ -1,27 +1,22 @@
-#ifndef PRIMITIVE_HPP
-#define PRIMITIVE_HPP
+#ifndef MODEL_HPP
+#define MODEL_HPP
 
 #include "../../../def.hpp"
-#include "../../../utilities/camera/camera.hpp"
-#include "../buffers/buffer.hpp"
-#include "../shaders/shader.hpp"
+#include "../primitives/primitive.hpp"
 
+// Project namespace
 namespace hse {
-// Primitive class declaration
-class primitive {
+// Model class declaration
+class model {
     // Friend classes
     friend class unit;
-    friend class model;
 
-    buffer::renderType renderType;     // Rendering type
-    vertexArray *vertexArrayInstance;  // Vertex array instance
-    uint shaderProgramId;              // Primitive's shader instance
-    bool isVisible;                    // Visibility flag
+    uint shaderProgramId;                        // Model's shader program id
+    bool isVisible;                              // Model's visibility flag
+    buffer::renderType renderType;               // Model rendering type
+    ::std::vector<primitive *> primitivesArray;  // Array of all model's
+                                                 // primitives
 
-public:
-    math::matr4 transformMatrix;  // Transform matrix
-
-private:
     ::std::map<const char *, int> shaderUniform1i;           // Integer uniforms
     ::std::map<const char *, float> shaderUniform1f;         // Floats uniforms
     ::std::map<const char *, math::vec3> shaderUniform3fv;   // 3d-vector
@@ -29,60 +24,40 @@ private:
     ::std::map<const char *, math::matr4> shaderUniform4fv;  // Matrix4x4
                                                              // uniforms
 
-    // Class default constructor
-    explicit primitive();
+public:
+    math::matr4 transformMatrix;  // Transform matrix for model
+
+private:
+    /* Parse *.obj file function.
+     * ARGUMENTS:
+     *   - model's file name:
+     *       const ::std::string &fileName;
+     * RETURNS: None.
+     */
+    void parseObj(const ::std::string &fileName);
 
     /* Class constructor.
      * ARGUMENTS:
-     *   - primitive's shader program id:
-     *       uint primitiveShaderProgramId_;
-     *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBuffer;
-     *   - vertex buffer format:
-     *       const ::std::string &vertexBufferFormat;
-     *   - index buffer data:
-     *       const ::std::vector<int> &indexBuffer;
-     *   - primitive's rendering type:
-     *       renderType type_;
-     * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
-     * position, color, normal, texture coordinate.
+     *   - model's shader program id:
+     *       uint shaderProgramId_;
+     *   - model's file name:
+     *       const ::std::string &fileName.
      */
-    explicit primitive(
-        uint primitiveShaderProgramId_,
-        const ::std::vector<float> &vertexBuffer,
-        const ::std::string &vertexBufferFormat = "v3v3",
-        const ::std::vector<int> &indexBuffer = ::std::vector<int>(),
-        buffer::renderType type_ = buffer::renderType::TRIANGLES
-    );
+    explicit model(uint shaderProgramId_, const ::std::string &fileName);
 
-    /* Class constructor.
+    /* Draw model function.
      * ARGUMENTS:
-     *   - primitive's shader program id:
-     *       uint primitiveShaderProgramId_;
-     *   - vertex array:
-     *       vertexArray *vertexArrayInstance_;
-     *   - primitive's rendering type:
-     *       renderType type_.
-     */
-    explicit primitive(
-        uint primitiveShaderProgramId_,
-        vertexArray *vertexArrayInstance_,
-        buffer::renderType type_ = buffer::renderType::TRIANGLES
-    );
-
-    /* Draw primitive function.
-     * ARGUMENTS:
-     *   - camera for rendering primitive:
+     *   - camera for rendering model:
      *      const camera &camera;
      * RETURNS: None.
      */
     void render(const camera &camera) const;
 
     // Class destructor
-    ~primitive();
+    ~model();
 
 public:
-    /* Attach shader program id to the primitive function.
+    /* Attach shader program id to the model function.
      * ARGUMENTS:
      *   - shader program id:
      *       uint shaderProgramId_;
@@ -90,29 +65,14 @@ public:
      */
     void setShaderProgram(uint shaderProgramId_);
 
-    /* Get primitive rendering type function.
-     * ARGUMENTS: None.
-     * RETURNS:
-     *   (buffer::renderType) - rendering type.
-     */
-    buffer::renderType getRenderType() const;
-
-    /* Set primitive rendering type function.
-     * ARGUMENTS:
-     *   - new rendering type:
-     *       buffer::renderType renderType_:
-     * RETURNS: None.
-     */
-    void setRenderType(buffer::renderType renderType_);
-
-    /* Get primitive's visibility flag function.
+    /* Get model's visibility flag function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (bool) - visibility flag.
      */
     bool getVisibility() const;
 
-    /* Set primitive's visibility flag function.
+    /* Set model's visibility flag function.
      * ARGUMENTS:
      *   - new flag:
      *       bool isVisible_;
@@ -120,7 +80,38 @@ public:
      */
     void setVisibility(bool isVisible_);
 
-    /* Add uniform to the shader function.
+    /* Get model rendering type function.
+     * ARGUMENTS: None.
+     * RETURNS:
+     *   (buffer::renderType) - rendering type.
+     */
+    buffer::renderType getRenderType() const;
+
+    /* Set model rendering type function.
+     * ARGUMENTS:
+     *   - new rendering type:
+     *       buffer::renderType renderType_:
+     * RETURNS: None.
+     */
+    void setRenderType(buffer::renderType renderType_);
+
+    /* Get number of primitives in model function.
+     * ARGUMENTS: None.
+     * RETURNS:
+     *   (int) - number of primitives in model.
+     */
+    int getNumberOfChildren() const;
+
+    /* Get primitive's pointer by index in model function.
+     * ARGUMENTS:
+     *   - index of the primitive:
+     *       int index;
+     * RETURNS:
+     *   (primitive *) - not-owning pointer to the primitive.
+     */
+    primitive *getChild(int index) const;
+
+    /* Add uniform of one integer variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       int uniformValue;
@@ -161,7 +152,7 @@ public:
      * RETURNS: None.
      */
     void addUniform(const math::matr4 &matrix, const char *uniformName);
-};  // End of 'primitive' class
+};  // End of 'model' class
 }  // namespace hse
 
-#endif  // PRIMITIVE_HPP
+#endif  // MODEL_HPP

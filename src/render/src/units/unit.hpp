@@ -2,8 +2,9 @@
 #define UNIT_HPP
 
 #include "../../../def.hpp"
-#include "../../../utilities/cameras/camera.hpp"
+#include "../../../utilities/camera/camera.hpp"
 #include "../buffers/buffer.hpp"
+#include "../models/model.hpp"
 #include "../primitives/primitive.hpp"
 #include "../shaders/shader.hpp"
 
@@ -19,10 +20,12 @@ class unit {
     ::std::map<::std::string, shader *> shadersArray;  // Unit's shader programs
                                                        // array
     ::std::vector<primitive *> primitivesArray;  // Unit's primitives array
+    ::std::vector<model *> modelsArray;          // Unit's models array
     ::std::vector<buffer *> buffersArray;        // Unit's buffers array
 
 protected:
-    camera mainCamera;  // Unit's main camera
+    camera mainCamera;  // Unit's main camera (can be changed, but all render
+                        // works from this camera in each unit)
 
 public:
     /* Get unit's visibility flag function.
@@ -46,6 +49,8 @@ public:
      *       const ::std::vector<float> &vertexBufferData;
      *   - buffer's format:
      *       const ::std::string &vertexBufferFormat;
+     * RETURNS:
+     *   (uint) - created buffer id;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
@@ -58,6 +63,8 @@ public:
      * ARGUMENTS:
      *   - buffer's data;
      *       const ::std::vector<int> &indexBufferData.
+     * RETURNS:
+     *   (uint) - created buffer id;
      */
     uint createIndexBuffer(const ::std::vector<int> &indexBufferData);
 
@@ -69,6 +76,8 @@ public:
      *       const ::std::string &vertexBufferFormat;
      *   - index buffer data:
      *       const ::std::vector<int> &indexBufferData;
+     * RETURNS:
+     *   (uint) - created buffer id.
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
@@ -84,6 +93,8 @@ public:
      *       const ::std::vector<T> &bufferData;
      *   - buffer's binding value:
      *       uint bufferBinding.
+     * RETURNS:
+     *   (uint) - created buffer id.
      */
     template <typename T>
     uint createShaderStorageBuffer(
@@ -150,13 +161,41 @@ public:
      *   - index buffer data:
      *       const ::std::vector<int> &indexBufferData;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created primitive;
+     *   (primitive *) - not-owning pointer to the created primitive.
      */
     primitive *createPrimitive(
         uint shaderProgramId,
         const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat,
         const ::std::vector<int> &indexBufferData
+    );
+
+    /* Create model function.
+     * ARGUMENTS:
+     *   - path to the model's shader:
+     *       const ::std::string &shaderPath;
+     *   - models' file name:
+     *       const ::std::string &modelFileName;
+     * RETURNS:
+     *   (model *) - not-owning pointer to the created model.
+     */
+    model *createModel(
+        const ::std::string &shaderPath,
+        const ::std::string &modelFileName
+    );
+
+    /* Create model function.
+     * ARGUMENTS:
+     *   - model's shader program id:
+     *       uint shaderProgramId;
+     *   - models' file name:
+     *       const ::std::string &modelFileName;
+     * RETURNS:
+     *   (model *) - not-owning pointer to the created model.
+     */
+    model *createModel(
+        uint shaderProgramId,
+        const ::std::string &modelFileName
     );
 
     /* Create sphere primitive function.
@@ -170,13 +209,80 @@ public:
      *   - sphere's slices:
      *       int slices;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created sphere primitive;
+     *   (primitive *) - not-owning pointer to the created sphere primitive.
      */
     primitive *createSpherePrimitive(
         float radius,
         const math::vec3 &position,
         int stacks = 20,
         int slices = 20
+    );
+
+private:
+    /* Generate vertexes for plane primitive function.
+     * ARGUMENTS:
+     *   - vertex buffer data array:
+     *       ::std::vector<float> &vertexBufferData;
+     *   - index buffer data array:
+     *       ::std::vector<int> &indexBufferData;
+     *   - plane's width:
+     *       const math::vec3 &width;
+     *   - plane's height:
+     *       const math::vec3 &height;
+     *   - plane's normal:
+     *       const math::vec3 &normal;
+     *   - plane's position:
+     *       const math::vec3 &position;
+     *   - indexes offset (for cube primitive):
+     *       int indexesOffset;
+     * RETURNS: None.
+     */
+    static void generatePlaneVertexData(
+        ::std::vector<float> &vertexBufferData,
+        ::std::vector<int> &indexBufferData,
+        const math::vec3 &width,
+        const math::vec3 &height,
+        const math::vec3 &normal,
+        const math::vec3 &position,
+        int indexesOffset = 0
+    );
+
+public:
+    /* Create plane primitive function.
+     * ARGUMENTS:
+     *   - plane's width:
+     *       float width;
+     *   - plane's height:
+     *       float height;
+     *   - plane's position:
+     *       const math::vec3 &position;
+     * RETURNS:
+     *   (primitive *) - not-owning pointer to the created plane primitive.
+     */
+    primitive *createPlanePrimitive(
+        float width,
+        float height,
+        const math::vec3 &position
+    );
+
+    /* Create cube primitive function.
+     * ARGUMENTS:
+     *   - cube's length:
+     *       float length;
+     *   - cube's width:
+     *       float width;
+     *   - cube's height:
+     *       float height;
+     *   - cube's position:
+     *       const math::vec3 &position;
+     * RETURNS:
+     *   (primitive *) - not-owning pointer to the created cube primitive.
+     */
+    primitive *createCubePrimitive(
+        float length,
+        float width,
+        float height,
+        const math::vec3 &position
     );
 
 protected:

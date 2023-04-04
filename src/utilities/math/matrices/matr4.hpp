@@ -659,7 +659,7 @@ public:
      * RETURNS:
      *   (matr4) - rotating matrix by random axis.
      */
-    inline static matr4 Rotate(float angle, vec3 axis) {
+    inline static matr4 rotate(float angle, vec3 axis) {
         return rotateRad(degree2Radian(angle), axis);
     }  // End of 'rotate' function
 
@@ -745,7 +745,7 @@ public:
      * RETURNS:
      *   (vec3) - multiplication result.
      */
-    inline vec3 transformPoint(const vec3 &point) {
+    inline vec3 transformPoint(const vec3 &point) const {
         return vec3(
             point.x * matrix[0][0] + point.y * matrix[1][0] +
                 point.z * matrix[2][0] + matrix[3][0],

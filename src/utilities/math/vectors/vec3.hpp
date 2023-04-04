@@ -2,7 +2,6 @@
 #define VEC3_HPP
 
 #include <cmath>
-
 #include "../math_def.hpp"
 
 // Math module namespace
@@ -13,7 +12,8 @@ public:
     float x, y, z;  // Three components of geom vector
 
     // Class default constructor
-    explicit vec3() = default;
+    explicit vec3() : x(0), y(0), z(0) {
+    }  // End of 'vec3' function
 
     /* Class constructor.
      * ARGUMENTS:
@@ -67,7 +67,8 @@ public:
      * RETURNS: None.
      */
     inline void print() const {
-        ::std::cout << "vec3: x:" << x << "; y: " << y << "; z:" << z << ::std::endl;
+        ::std::cout << "vec3: x:" << x << "; y: " << y << "; z:" << z
+                    << ::std::endl;
     }  // End of 'print' function
 
     /* Compare function.
@@ -327,6 +328,17 @@ public:
             ::std::max(v1.z, v2.z)
         );
     }  // End of 'max' function
+
+    /* Get angle between (0-pi) two vectors function.
+     * ARGUMENTS:
+     *   - vectors to calculating:
+     *       const vec3 &v1, &v2;
+     * RETURNS:
+     *   (float) - angle in radians (0-pi) between two vectors.
+     */
+    inline static float getAngleBetween(const vec3 &v1, const vec3 &v2) {
+        return acos(v1.normalizing() & v2.normalizing());
+    }  // End of 'getAngleBetween' function
 };     // End of 'vec3' class
 }  // namespace math
 

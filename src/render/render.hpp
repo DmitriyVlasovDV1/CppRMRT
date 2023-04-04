@@ -21,12 +21,14 @@ public:
     drawable_figures::FigureScene scene; // Universal scene
 
     /* Initialized glew/glfw function.
-     * ARGUMENTS: None.
+     * ARGUMENTS:
+     *   - window width and height:
+     *       uint windowWidth_, windowHeight_;
      * RETURNS: None.
      */
     void init(uint windowWidth_ = 400, uint windowHeight_ = 400);
 
-    /* Response single window function.
+    /* Response window function.
      * ARGUMENTS: None.
      * RETURNS: None.
      * NOTE:
@@ -47,12 +49,12 @@ public:
      */
     void addUnit(const ::std::string &unitName, unit *unitInstance);
 
-    /* Get time function.
+    /* Get time value function.
      * ARGUMENTS: None.
      * RETURNS:
-     *   (const float &) - time.
+     *   (float) - time value.
      */
-    const float &getTime() const;
+    float getTime() const;
 
     /* Get pause flag function.
      * ARGUMENTS: None.
@@ -69,32 +71,30 @@ public:
      */
     void setPauseFlag(bool isPause_);
 
-    /* Get delta time function.
+    /* Get delta time between frames function.
      * ARGUMENTS: None.
      * RETURNS:
-     *   (const float &) - delta time.
+     *   (float) - delta time.
      */
-    const float &getDeltaTime() const;
+    float getDeltaTime() const;
 
     /* Get window width function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (uint) - window width.
      */
-    const uint &getWindowWidth() const;
+    uint getWindowWidth() const;
 
     /* Get window height function.
      * ARGUMENTS: None.
      * RETURNS:
-     *   (const uint &) - window height.
+     *   (uint) - window height.
      */
-    const uint &getWindowHeight() const;
+    uint getWindowHeight() const;
 
 private:
-    // Source containers
     ::std::map<::std::string, unit *> unitsArray;  // Units map
-    GLFWwindow *windowInstance;  // Window instance (for now we can have only
-    // one window)
+    GLFWwindow *windowInstance;                    // Window instance
 
     // Render public variables (can be received by methods)
     uint windowWidth,       // Window width
@@ -102,7 +102,7 @@ private:
     float time, deltaTime;  // Time and delta time per frame
     bool isPause;           // Pause flag
 
-    // Class default constructors
+    // Class default constructor
     explicit render();
 
     /* Class constructor.
@@ -110,7 +110,7 @@ private:
      *   - window width and height:
      *       uint windowWidth_, windowHeight_.
      */
-    [[maybe_unused]] explicit render(uint windowWidth_, uint windowHeight_);
+    explicit render(uint windowWidth_, uint windowHeight_);
 
     /* Resize window callback function.
      * ARGUMENTS:
@@ -132,7 +132,7 @@ private:
      *       GLFWwindow *window;
      *   - key:
      *       int key;
-     *   - key's scaned code:
+     *   - key's scanned code:
      *       int scancode;
      *   - key's action:
      *       int action;

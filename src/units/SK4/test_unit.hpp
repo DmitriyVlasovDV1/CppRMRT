@@ -8,13 +8,19 @@
 namespace hse {
 // Test unit class declaration
 class testUnit final : public unit {
-    primitive *unitPrimitive;
+    model *unitModel;
 
-    /* Sphere genaration function.
+    /* Spheres generation function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     void spheresGeneration();
+
+    /* Cubes generation function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void cubesGeneration();
 
     /* Camera response function.
      * ARGUMENTS: None.
@@ -26,7 +32,7 @@ class testUnit final : public unit {
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void inputResponse();
+    static void inputResponse();
 
 public:
     // Class constructor

@@ -12,7 +12,12 @@ class buffer {
 
 public:
     // Enum for rendering type installation
-    enum renderType { TRIANGLES, LINES };  // End of 'renderType' enum
+    enum renderType {
+        QUADS,
+        TRIANGLES,
+        TRIANGLES_STRIP,
+        LINES
+    };  // End of 'renderType' enum
 
 protected:
     uint bufferId;  // Buffer id
@@ -29,7 +34,7 @@ public:
      * RETURNS:
      *   (uint) - buffer id;
      */
-    [[nodiscard]] uint getBufferId() const;
+    uint getBufferId() const;
 };  // End of 'buffer' class
 
 // Vertex buffer class declaration
@@ -39,8 +44,8 @@ class vertexBuffer final : public buffer {
     friend class primitive;
     friend class vertexArray;
 
-    int sizeOfVertex;
-    size_t sizeOfBuffer;
+    int sizeOfVertex;  // Size of each vertex in bytes (given by vertex format)
+    size_t sizeOfBuffer;  // Size of full vertex buffer data in bytes
 
     // Class default constructor
     explicit vertexBuffer();
@@ -74,6 +79,7 @@ public:
      */
     size_t getBufferSize() const;
 
+private:
     // Class destructor
     ~vertexBuffer() final;
 };  // End of 'vertexBuffer' class
@@ -88,7 +94,7 @@ class indexBuffer final : public buffer {
     size_t indexesCount;  // Number of indexes in buffer data
 
     // Class default constructor
-    explicit indexBuffer() = default;
+    explicit indexBuffer();
 
     /* Class constructor.
      * ARGUMENTS:
@@ -97,7 +103,6 @@ class indexBuffer final : public buffer {
      */
     explicit indexBuffer(const ::std::vector<int> &bufferData);
 
-public:
     // Class destructor
     ~indexBuffer() final;
 };  // End of 'indexBuffer' class
@@ -108,8 +113,8 @@ class vertexArray final : public buffer {
     friend class unit;
     friend class primitive;
 
-    vertexBuffer *vertexBufferObject;
-    indexBuffer *indexBufferObject;
+    vertexBuffer *vertexBufferObject;  // Vertex buffer pointer
+    indexBuffer *indexBufferObject;    // Index buffer pointer
 
     // Class default constructor
     explicit vertexArray();
@@ -140,6 +145,7 @@ public:
      */
     void render(renderType type) const;
 
+private:
     // Class destructor
     ~vertexArray() final;
 };  // End of 'vertexArray' class
@@ -149,7 +155,10 @@ class shaderStorageBuffer final : public buffer {
     // Friend classes
     friend class unit;
 
-    ::std::unordered_set<uint> usedBindings;  // Used bindings set
+    static ::std::unordered_set<uint> usedBindings;  // Used bindings set (for
+                                                     // not duplicating or lost
+                                                     // previous data by some
+                                                     // binding)
 
 public: // TODO
     // Class default constructor

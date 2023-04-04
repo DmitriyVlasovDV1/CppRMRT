@@ -1,14 +1,14 @@
 #include "shader.hpp"
 
 namespace hse {
-/* Load shader program from file function.
+/* Parse shader program from file function.
  * ARGUMENTS:
  *   - shader's program path:
  *       const ::std::string &shaderPath;
  * RETURNS:
  *   (::std::pair<::std::string, ::std::string>) - pair of shaders realization.
  */
-::std::pair<::std::string, ::std::string> shader::loadShaderFromFile(
+::std::pair<::std::string, ::std::string> shader::parseShaderFromFile(
     const ::std::string &shaderPath
 ) const {
     int counter = 0;
@@ -35,7 +35,7 @@ namespace hse {
             result.second = shaderSource;
     }
     return result;
-}  // End of 'shader::loadShaderFromFile' function
+}  // End of 'shader::parseShaderFromFile' function
 
 /* Compile shader program function.
  * ARGUMENTS:
@@ -128,7 +128,7 @@ shader::shader() : programId(0) {
  */
 shader::shader(const ::std::string &shaderPath) : programId(0) {
     const ::std::pair<::std::string, ::std::string> shaderSource =
-        loadShaderFromFile(shaderPath);
+        parseShaderFromFile(shaderPath);
     compileShaderProgram(
         shaderPath, shaderSource.first.c_str(), shaderSource.second.c_str()
     );

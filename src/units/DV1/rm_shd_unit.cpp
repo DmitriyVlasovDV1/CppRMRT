@@ -57,9 +57,9 @@ void rmShdUnit::init() {
     );
     frameH = new int{static_cast<int>(render::renderInstance.getWindowHeight())};
     frameW = new int{static_cast<int>(render::renderInstance.getWindowWidth())};
-    unitPrimitive->addUniform(frameW, "frame_w");
-    unitPrimitive->addUniform(frameH, "frame_h");
-    unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
+//    unitPrimitive->addUniform(frameW, "frame_w");
+//    unitPrimitive->addUniform(frameH, "frame_h");
+//    unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
 
 #endif
 }  // End of 'testUnit::initUnit' function

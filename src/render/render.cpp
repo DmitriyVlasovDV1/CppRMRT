@@ -2,10 +2,14 @@
 
 // Project namespace
 namespace hse {
-render render::renderInstance;
+render render::renderInstance;  // Render class singleton object for receiving
+                                // public variables (time, delta time, window
+                                // size, ect.)
 
 /* Initialized glew/glfw function.
- * ARGUMENTS: None.
+ * ARGUMENTS:
+ *   - window width and height:
+ *       uint windowWidth_, windowHeight_;
  * RETURNS: None.
  */
 void render::init(uint windowWidth_, uint windowHeight_) {
@@ -30,12 +34,11 @@ void render::init(uint windowWidth_, uint windowHeight_) {
 
     glEnable(GL_PRIMITIVE_RESTART);
     glPrimitiveRestartIndex(-1);
-
     glClearColor(0, 0, 0, 1);
     glfwSetTime(time);
 }  // End of 'render::init' function
 
-/* Response single window function.
+/* Response window function.
  * ARGUMENTS: None.
  * RETURNS: None.
  * NOTE:
@@ -57,14 +60,15 @@ void render::response() {
         } else {
             glfwSetTime(time);
         }
+        // Calculating current FPS
         glfwSetWindowTitle(
             windowInstance,
             ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)))
                 .c_str()
         );
 
-        // Render all added and visible units
-        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+        // Response/Render all units
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
 
@@ -74,20 +78,35 @@ void render::response() {
                 unitInstance->render();
             }
         glFinish();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDisable(GL_DEPTH_TEST);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         glfwSwapBuffers(windowInstance);
         glfwPollEvents();
     }
 }  // End of 'render::response' function
 
-/* Get time function.
+/* Add unit instance to the unit's array function.
+ * ARGUMENTS:
+ *   - unit name:
+ *       const ::std::string &unitName;
+ *   - unit instance:
+ *       unit *unitInstance;
+ * RETURNS: None.
+ * NOTE:
+ *   Returns value may be changed to (unit *) - not-owning pointer to
+ * the scene, if we want to be able to copy scenes.
+ */
+void render::addUnit(const ::std::string &unitName, unit *unitInstance) {
+    unitsArray[unitName] = unitInstance;
+}  // End of 'render::addUnit' function
+
+/* Get time value function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (float &) - time.
+ *   (float) - time value.
  */
-const float &render::getTime() const {
+float render::getTime() const {
     return time;
 }  // End of 'render::getTime' function
 
@@ -108,51 +127,36 @@ bool render::getPauseFlag() const {
  */
 void render::setPauseFlag(bool isPause_) {
     isPause = isPause_;
-} // End of 'render::setPauseFlag' function
+}  // End of 'render::setPauseFlag' function
 
-/* Get delta time function.
+/* Get delta time between frames function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (const float &) - delta time.
+ *   (float) - delta time.
  */
-const float &render::getDeltaTime() const {
+float render::getDeltaTime() const {
     return deltaTime;
 }  // End of 'render::getDeltaTime' function
 
 /* Get window width function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (const uint &) - window width.
+ *   (uint) - window width.
  */
-const uint &render::getWindowWidth() const {
+uint render::getWindowWidth() const {
     return windowWidth;
 }  // End of 'render::getWindowWidth' function
 
 /* Get window height function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (const uint &) - window height.
+ *   (uint) - window height.
  */
-const uint &render::getWindowHeight() const {
+uint render::getWindowHeight() const {
     return windowHeight;
 }  // End of 'render::getWindowHeight' function
 
-/* Add unit instance to the unit's array function.
- * ARGUMENTS:
- *   - unit name:
- *       const ::std::string &unitName;
- *   - unit instance:
- *       unit *unitInstance;
- * RETURNS: None.
- * NOTE:
- *   Returns value may be changed to (unit *) - not-owning pointer to
- * the scene, if we want to be able to copy scenes.
- */
-void render::addUnit(const ::std::string &unitName, unit *unitInstance) {
-    unitsArray[unitName] = unitInstance;
-}  // End of 'render::addUnit' function
-
-// Class default constructors
+// Class default constructor
 render::render()
     : windowWidth(0),
       windowHeight(0),
@@ -167,7 +171,7 @@ render::render()
  *   - window width and height:
  *       uint windowWidth, windowHeight;
  */
-[[maybe_unused]] render::render(uint windowWidth_, uint windowHeight_)
+render::render(uint windowWidth_, uint windowHeight_)
     : windowWidth(0),
       windowHeight(0),
       windowInstance(nullptr),

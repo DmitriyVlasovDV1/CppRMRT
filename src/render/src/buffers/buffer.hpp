@@ -151,6 +151,7 @@ class shaderStorageBuffer final : public buffer {
 
     ::std::unordered_set<uint> usedBindings;  // Used bindings set
 
+public: // TODO
     // Class default constructor
     explicit shaderStorageBuffer() = default;
 
@@ -167,7 +168,6 @@ class shaderStorageBuffer final : public buffer {
         uint bufferBinding
     );
 
-public:
     // Class destructor
     ~shaderStorageBuffer() final;
 };  // End of 'vertexArray' class

@@ -3,6 +3,7 @@
 
 #include "../def.hpp"
 #include "src/units/unit.hpp"
+#include "figure_scene.hpp"
 
 // Project namespace
 namespace hse {
@@ -17,6 +18,7 @@ public:
 
     ::std::map<int, key> keys;     // Keys map for input response
     static render renderInstance;  // Render instance
+    drawable_figures::FigureScene scene; // Universal scene
 
     /* Initialized glew/glfw function.
      * ARGUMENTS: None.

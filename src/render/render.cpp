@@ -47,6 +47,7 @@ void render::response() {
         unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
         unitInstance->init();
     }
+
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
@@ -66,6 +67,7 @@ void render::response() {
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
+
         for (auto &[unitName, unitInstance] : unitsArray)
             if (unitInstance->getVisibility()) {
                 unitInstance->response();
@@ -218,6 +220,7 @@ void render::keyboardCallback(
 ) {
     renderInstance.keys[key] = {action, mods};
 }  // End of 'render::keyboardCallback' function
+
 
 // Class destructor
 render::~render() {

@@ -16,6 +16,7 @@ namespace hse {
         vertexArray *vertexArrayInstance;  // Vertex array instance
         uint shaderProgramId;              // Primitive's shader instance
         bool isVisible;                    // Visibility flag
+    public: // TODO set visibility
         math::matr4 transform;             // Transform matrix
 
         ::std::map<const char *, int *> shaderUniform1i;    // Shader's int uniforms

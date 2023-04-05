@@ -10,8 +10,21 @@ bool FigureIdHasher::operator() (const FigureId &a, const FigureId &b) const {
 
 // intersection
 FigureId FigureId::operator&(const FigureId &other) {
+    // TODO realization
     return other;
 }
+
+FigureId & FigureId::operator<<(const TransformationId &trId) {
+    render::renderInstance.scene.m_figures[m_id].m_transforms.push_back(trId);
+    return *this;
+}
+
+FigureId & FigureId::operator<<(const math::matr4 &matr) {
+    TransformationId trId = render::renderInstance.scene.createTransformation(matr);
+    render::renderInstance.scene.m_figures[m_id].m_transforms.push_back(trId);
+    return *this;
+}
+
 
 // add instance for main scene
 void FigureId::draw() const {
@@ -26,7 +39,7 @@ FigureId FigureScene::createBox(float size, MaterialId mtl) {
     int ind(static_cast<int>(m_boxes.size()));
     m_boxes.emplace_back(size);
     FigureId res(static_cast<int>(m_figures.size()));
-    m_figures.push_back(Figure(ind));
+    m_figures.push_back(Figure(PrimitiveType::BOX, ind));
     return res;
 }
 
@@ -34,15 +47,19 @@ FigureId FigureScene::createSphere(float radius) {
     int ind(static_cast<int>(m_spheres.size()));
     m_spheres.emplace_back(radius);
     FigureId res(static_cast<int>(m_figures.size()));
-    m_figures.push_back(Figure(ind));
+    m_figures.push_back(Figure(PrimitiveType::SPHERE, ind));
+    return res;
+}
+
+TransformationId FigureScene::createTransformation(const math::matr4 &matr) {
+    TransformationId res(static_cast<int>(m_matrices.size()));
+    m_matrices.push_back(matr);
     return res;
 }
 
 TransformationId FigureScene::createTranslation(const math::vec3 &vec) {
-    math::matr4 matr;//TransformationId res(static_cast<int>(m_matrices.size()));
-    // TODO fill matr
     TransformationId res(static_cast<int>(m_matrices.size()));
-    m_matrices.push_back(matr);
+    m_matrices.push_back(math::matr4::translate(vec));
     return res;
 }
 
@@ -50,18 +67,14 @@ TransformationId FigureScene::createRotation(
     const math::vec3 &vec,
     const float deg
 ) {
-    math::matr4 matr;//TransformationId res(static_cast<int>(m_matrices.size()));
-    // TODO fill matr
     TransformationId res(static_cast<int>(m_matrices.size()));
-    m_matrices.push_back(matr);
+    m_matrices.push_back(math::matr4::rotate(deg, vec));
     return res;
 }
 
 TransformationId FigureScene::createScale(const math::vec3 &vec) {
-    math::matr4 matr;//TransformationId res(static_cast<int>(m_matrices.size()));
-    // TODO fill matr
     TransformationId res(static_cast<int>(m_matrices.size()));
-    m_matrices.push_back(matr);
+    m_matrices.push_back(math::matr4::scale(vec));
     return res;
 }
 
@@ -116,21 +129,22 @@ void FigureScene::initRM() {
 }
 */
 
+FigureScene::FigureScene() : m_curRenderType(RenderType::COMMON) {
+    m_renders[RenderType::COMMON] = std::make_shared<CommonRender>(*this);
+    m_renders[RenderType::RM] = std::make_shared<RMRender>(*this);
+}
+
 // prepare renders
 void FigureScene::init() {
     // initialization of renders
-    /*
     for (auto &render : m_renders) {
-        render.second->init(*this);
+        render.second->init();
     }
-     */
 }
 
 // draw scene
 void FigureScene::response() {
-    /*
-    m_renders[m_curRenderType]->render(*this);
-     */
+    m_renders[m_curRenderType]->render();
 }
 
 }

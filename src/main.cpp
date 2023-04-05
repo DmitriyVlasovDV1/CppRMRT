@@ -18,6 +18,7 @@ int main() {
 
     ::hse::render::renderInstance.init(800, 600);
     //::hse::render::renderInstance.addUnit("Test unit", new hse::testUnit());
+    ::hse::render::renderInstance.addUnit("Figures test", new hse::rmShdUnit());
     ::hse::render::renderInstance.response();
 
     return 0;

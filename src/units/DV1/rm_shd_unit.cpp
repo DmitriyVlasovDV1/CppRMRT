@@ -6,6 +6,14 @@ namespace hse {
 
 
 void rmShdUnit::init() {
+    drawable_figures::FigureScene &scene = render::renderInstance.scene;
+    auto translateId = scene.createTranslation(math::vec3(2, 0, 0));
+
+    auto sphereId = scene.createSphere(1);
+    sphereId << translateId;
+    sphereId.draw();
+
+
 #if 0
     using fr = drawable_figures::FigureRender;
     auto sphereId = fr::figureRender.createSphere(0.5);
@@ -66,15 +74,16 @@ void rmShdUnit::init() {
 
 //std::vector<uint> parseFigures(const std::string &str, )
 void rmShdUnit::response() {
-
+    drawable_figures::FigureScene &scene = render::renderInstance.scene;
+    auto pos = math::vec3(10);
+    scene.mainCamera.setPositionWithDirection(
+        pos, math::vec3(0) - pos
+    );
 
 }  // End of 'testUnit::responseUnit' function
 
 // Class override destructor
 rmShdUnit::~rmShdUnit() {
-    delete frameH;
-    delete frameW;
-    ::std::cout << "Clear unit" << ::std::endl;
 }  // End of 'testUnit::~testUnit' function
 }  // namespace hse
 /*

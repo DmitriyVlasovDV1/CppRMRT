@@ -50,6 +50,7 @@ void render::response() {
         unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
         unitInstance->init();
     }
+    scene.init();
 
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
@@ -77,6 +78,8 @@ void render::response() {
                 unitInstance->response();
                 unitInstance->render();
             }
+        scene.response();
+        scene.render();
         glFinish();
         glDisable(GL_DEPTH_TEST);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

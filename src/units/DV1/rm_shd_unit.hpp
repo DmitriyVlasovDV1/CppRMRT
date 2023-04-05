@@ -11,12 +11,6 @@ namespace hse {
 class Builder;
 // Test unit class declaration
 class rmShdUnit final : public unit {
-private:
-    int *frameW;
-    int *frameH;
-    uint shdId;
-    primitive *unitPrimitive;
-    //std::unique_ptr<FigureFactory> factory;
 public:
     // Class constructor
     explicit rmShdUnit() = default;

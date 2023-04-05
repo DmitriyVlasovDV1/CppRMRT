@@ -22,12 +22,18 @@ enum class PrimitiveType {
     BOX
 }; // PrimitiveType
 
+class PrimitiveId {
+public:
+    PrimitiveId(PrimitiveType type, int id) : m_type(type), m_id(id) {
+    }
+    PrimitiveType m_type;
+    const int m_id;
+};
 class SpherePrimitive {
 public:
     SpherePrimitive(float radius) : m_radius(radius) {
     }
 
-private:
     float m_radius;
 }; // SpherePrimitive
 
@@ -36,7 +42,6 @@ public:
     BoxPrimitive(float size) : m_size(size) {
     }
 
-private:
     float m_size;
 }; // BoxPrimitive
 
@@ -46,13 +51,12 @@ private:
 class TransformationId {
     // TODO need link to storage
 public:
-    TransformationId(int id) : m_storage_id(id) {
+    TransformationId(int id) : m_id(id) {
     }
 
     // TODO operations with other instances and Transformations
 
-private:
-    const int m_storage_id;
+    const int m_id;
 }; // TransformationId
 
 enum class TransformationType {
@@ -127,10 +131,13 @@ public:
     // intersection
     FigureId operator&(const FigureId &other);
 
+    FigureId & operator<<(const TransformationId &trId);
+
+    FigureId & operator<<(const math::matr4 &matr);
+
     // add instance for main scene
     void draw() const;
 
-private:
     const int m_id;
 }; // FigureId
 
@@ -144,16 +151,16 @@ enum class CreationType {
 class FigureScene;
 class Figure {
     friend FigureScene;
-private:
-    explicit Figure(int id) : m_creationType(CreationType::PRIMITIVE),
-          m_sources(id), m_transforms() {
+public:
+    explicit Figure(PrimitiveType type, int id) : m_creationType(CreationType::PRIMITIVE),
+          m_sources(PrimitiveId{type, id}), m_transforms() {
     }
     Figure(CreationType creationType, const std::vector<FigureId> &sources) : m_creationType(CreationType::PRIMITIVE),
           m_sources(sources), m_transforms() {
     }
 
     CreationType m_creationType;
-    std::variant<int, std::vector<FigureId>> m_sources;
+    std::variant<PrimitiveId, std::vector<FigureId>> m_sources;
     std::vector<TransformationId> m_transforms;
 }; // Figure
 
@@ -183,13 +190,15 @@ class FigureScene : public unit {
 public:
 
 
-    FigureScene() = default; // TODO provide only for render
+    FigureScene();
 
     void setRenderType(RenderType renderType);
 
     FigureId createBox(float size, MaterialId mtl);
 
     FigureId createSphere(float radius);
+
+    TransformationId createTransformation(const math::matr4 &matr);
 
     TransformationId createTranslation(const math::vec3 &vec);
 
@@ -198,7 +207,7 @@ public:
     TransformationId createScale(const math::vec3 &vec);
     // TODO other primitives
 
-private:
+public:
     void init() override;
 
     void response() override;
@@ -212,7 +221,7 @@ private:
     std::vector<math::matr4> m_matrices;
     std::set<FigureId, FigureIdHasher> m_scene;
     RenderType m_curRenderType;
-    //std::map<RenderType, std::unique_ptr<FigureRender>> m_renders;
+    std::map<RenderType, std::shared_ptr<FigureRender>> m_renders;
 
     void draw(const FigureId &id);
     void hide(const FigureId &id);

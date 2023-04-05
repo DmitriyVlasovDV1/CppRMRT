@@ -23,7 +23,7 @@ class unit {
     ::std::vector<model *> modelsArray;          // Unit's models array
     ::std::vector<buffer *> buffersArray;        // Unit's buffers array
 
-protected:
+public:
     camera mainCamera;  // Unit's main camera (can be changed, but all render
                         // works from this camera in each unit)
 

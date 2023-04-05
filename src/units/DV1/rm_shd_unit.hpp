@@ -12,6 +12,9 @@ class Builder;
 // Test unit class declaration
 class rmShdUnit final : public unit {
 public:
+    drawable_figures::TransformationId translateId;
+    drawable_figures::TransformationId rotationId;
+
     // Class constructor
     explicit rmShdUnit() = default;
 

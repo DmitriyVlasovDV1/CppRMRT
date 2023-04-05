@@ -83,14 +83,14 @@ public:
      * RETURNS:
      *   (uint) - window width.
      */
-    uint getWindowWidth() const;
+    int getWindowWidth() const;
 
     /* Get window height function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (uint) - window height.
      */
-    uint getWindowHeight() const;
+    int getWindowHeight() const;
 
 private:
     ::std::map<::std::string, unit *> unitsArray;  // Units map

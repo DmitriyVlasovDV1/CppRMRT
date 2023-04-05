@@ -97,7 +97,7 @@ void shader::compileShaderProgram(
             glGetProgramInfoLog(
                 programId, sizeof(logBuffer), &linkStatus, logBuffer
             );
-            ::std::cout << "Error in linking: " << fullShaderPath
+            ::std::cout << "Error in linking: " << fullShaderPath << "\nError:" << logBuffer
                         << ::std::endl;
             isError = true;
         }
@@ -150,7 +150,7 @@ shader::shader(
 )
     : programId(0) {
     compileShaderProgram(
-        shaderPath, vertexShaderSource.c_str(), vertexShaderSource.c_str()
+        shaderPath, vertexShaderSource.c_str(), fragmentShaderSource.c_str()
     );
 }  // End of 'shader::shader' function
 

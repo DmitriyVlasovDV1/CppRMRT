@@ -10,8 +10,30 @@ bool FigureIdHasher::operator() (const FigureId &a, const FigureId &b) const {
 
 // intersection
 FigureId FigureId::operator&(const FigureId &other) {
-    // TODO realization
-    return other;
+    return render::renderInstance.scene.createIntersection(*this, other);
+}
+
+FigureId FigureId::operator|(const FigureId &other) {
+    return render::renderInstance.scene.createUnion(*this, other);
+}
+
+FigureId FigureId::operator/(const FigureId &other) {
+    return render::renderInstance.scene.createSubtraction(*this, other);
+}
+
+FigureId FigureId::operator&=(const FigureId &other) {
+    *this = render::renderInstance.scene.createIntersection(*this, other);
+    return *this;
+}
+
+FigureId FigureId::operator|=(const FigureId &other) {
+    *this = render::renderInstance.scene.createUnion(*this, other);
+    return *this;
+}
+
+FigureId FigureId::operator/=(const FigureId &other) {
+    *this = render::renderInstance.scene.createSubtraction(*this, other);
+    return *this;
 }
 
 FigureId & FigureId::operator<<(const TransformationId &trId) {
@@ -35,7 +57,7 @@ void FigureScene::setRenderType(RenderType renderType) {
     m_curRenderType = renderType;
 }
 
-FigureId FigureScene::createBox(float size, MaterialId mtl) {
+FigureId FigureScene::createBox(float size) {
     int ind(static_cast<int>(m_boxes.size()));
     m_boxes.emplace_back(size);
     FigureId res(static_cast<int>(m_figures.size()));
@@ -78,9 +100,31 @@ TransformationId FigureScene::createScale(const math::vec3 &vec) {
     return res;
 }
 
+TransformationId & TransformationId::operator=(const math::matr4 &matr) {
+    render::renderInstance.scene.m_matrices[m_id] = matr;
+    return *this;
+}
+
+TransformationId & TransformationId::operator*=(const math::matr4 &matr) {
+    render::renderInstance.scene.m_matrices[m_id] *= matr;
+    return *this;
+}
+
+
+FigureId FigureScene::createUnion(const FigureId &a, const FigureId &b) {
+    FigureId res(static_cast<int>(m_figures.size()));
+    m_figures.push_back(Figure(CreationType::UNION, {a, b}));
+    return res;
+}
+
 FigureId FigureScene::createIntersection(const FigureId &a, const FigureId &b) {
     FigureId res(static_cast<int>(m_figures.size()));
     m_figures.push_back(Figure(CreationType::INTERSECTION, {a, b}));
+    return res;
+}
+FigureId FigureScene::createSubtraction(const FigureId &a, const FigureId &b) {
+    FigureId res(static_cast<int>(m_figures.size()));
+    m_figures.push_back(Figure(CreationType::SUBTRACTION, {a, b}));
     return res;
 }
 
@@ -129,7 +173,7 @@ void FigureScene::initRM() {
 }
 */
 
-FigureScene::FigureScene() : m_curRenderType(RenderType::COMMON) {
+FigureScene::FigureScene() : m_curRenderType(RenderType::RM) {
     m_renders[RenderType::COMMON] = std::make_shared<CommonRender>(*this);
     m_renders[RenderType::RM] = std::make_shared<RMRender>(*this);
 }
@@ -144,6 +188,9 @@ void FigureScene::init() {
 
 // draw scene
 void FigureScene::response() {
+    for (auto &render : m_renders) {
+        render.second->clear();
+    }
     m_renders[m_curRenderType]->render();
 }
 

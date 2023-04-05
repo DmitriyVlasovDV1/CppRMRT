@@ -64,8 +64,8 @@ void render::response() {
         // Calculating current FPS
         glfwSetWindowTitle(
             windowInstance,
-            ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)))
-                .c_str()
+            ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime))+ " | Current render: " +
+                (scene.m_curRenderType == drawable_figures::RenderType::COMMON ? "Common" : "RM")).c_str()
         );
 
         // Response/Render all units
@@ -146,7 +146,7 @@ float render::getDeltaTime() const {
  * RETURNS:
  *   (uint) - window width.
  */
-uint render::getWindowWidth() const {
+int render::getWindowWidth() const {
     return windowWidth;
 }  // End of 'render::getWindowWidth' function
 
@@ -155,7 +155,7 @@ uint render::getWindowWidth() const {
  * RETURNS:
  *   (uint) - window height.
  */
-uint render::getWindowHeight() const {
+int render::getWindowHeight() const {
     return windowHeight;
 }  // End of 'render::getWindowHeight' function
 

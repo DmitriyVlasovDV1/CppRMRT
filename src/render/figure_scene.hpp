@@ -29,7 +29,7 @@ public:
     PrimitiveType m_type;
     const int m_id;
 };
-class SpherePrimitive {
+class  SpherePrimitive {
 public:
     SpherePrimitive(float radius) : m_radius(radius) {
     }
@@ -37,7 +37,7 @@ public:
     float m_radius;
 }; // SpherePrimitive
 
-class BoxPrimitive {
+class  BoxPrimitive {
 public:
     BoxPrimitive(float size) : m_size(size) {
     }
@@ -51,12 +51,16 @@ public:
 class TransformationId {
     // TODO need link to storage
 public:
+    TransformationId() = default;
     TransformationId(int id) : m_id(id) {
     }
 
     // TODO operations with other instances and Transformations
+    TransformationId & operator=(const math::matr4 &matr);
 
-    const int m_id;
+    TransformationId & operator*=(const math::matr4 &matr);
+
+    int m_id;
 }; // TransformationId
 
 enum class TransformationType {
@@ -131,14 +135,25 @@ public:
     // intersection
     FigureId operator&(const FigureId &other);
 
+    FigureId operator|(const FigureId &other);
+
+    FigureId operator/(const FigureId &other);
+
+    FigureId operator&=(const FigureId &other);
+
+    FigureId operator|=(const FigureId &other);
+
+    FigureId operator/=(const FigureId &other);
+
     FigureId & operator<<(const TransformationId &trId);
 
     FigureId & operator<<(const math::matr4 &matr);
 
+
     // add instance for main scene
     void draw() const;
 
-    const int m_id;
+    int m_id;
 }; // FigureId
 
 enum class CreationType {
@@ -155,7 +170,7 @@ public:
     explicit Figure(PrimitiveType type, int id) : m_creationType(CreationType::PRIMITIVE),
           m_sources(PrimitiveId{type, id}), m_transforms() {
     }
-    Figure(CreationType creationType, const std::vector<FigureId> &sources) : m_creationType(CreationType::PRIMITIVE),
+    Figure(CreationType creationType, const std::vector<FigureId> &sources) : m_creationType(creationType),
           m_sources(sources), m_transforms() {
     }
 
@@ -194,7 +209,7 @@ public:
 
     void setRenderType(RenderType renderType);
 
-    FigureId createBox(float size, MaterialId mtl);
+    FigureId createBox(float size);
 
     FigureId createSphere(float radius);
 
@@ -212,7 +227,11 @@ public:
 
     void response() override;
 
+    FigureId createUnion(const FigureId &a, const FigureId &b);
+
     FigureId createIntersection(const FigureId &a, const FigureId &b);
+
+    FigureId createSubtraction(const FigureId &a, const FigureId &b);
 
     std::vector<BoxPrimitive> m_boxes;
     std::vector<SpherePrimitive> m_spheres;

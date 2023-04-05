@@ -172,11 +172,52 @@ public: // TODO
      *       uint bufferBinding.
      */
     template <typename T>
-    explicit shaderStorageBuffer(
+    shaderStorageBuffer(
         const ::std::vector<T> &bufferData,
         uint bufferBinding
-    );
+    ) {
+        if (usedBindings.count(bufferBinding))
+            assert(("SSBO by binding = " + ::std::to_string(bufferBinding) +
+                    "; Try to create ssbo with already used binding")
+                       .c_str());
+        glGenBuffers(1, &bufferId);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferId);
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER, bufferData.size() * sizeof(T),
+            (void *)&bufferData[0], GL_DYNAMIC_COPY
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bufferBinding, bufferId);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }  // End of 'shaderStorageBuffer::shaderStorageBuffer' function
 
+    template <typename T>
+    void setData(
+        const ::std::vector<T> &bufferData,
+        uint bufferBinding
+    ) {
+        if (usedBindings.count(bufferBinding))
+            assert(("SSBO by binding = " + ::std::to_string(bufferBinding) +
+                    "; Try to create ssbo with already used binding")
+                       .c_str());
+        glGenBuffers(1, &bufferId);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferId);
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER, bufferData.size() * sizeof(T),
+            (void*)&bufferData[0], GL_DYNAMIC_COPY
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bufferBinding, bufferId);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }  // End of 'shaderStorageBuffer::shaderStorageBuffer' function
+
+    template <typename T>
+    void updateData(const std::vector<T> &bufferData) {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferId);
+        glBufferData(
+            GL_SHADER_STORAGE_BUFFER, bufferData.size() * sizeof(T),
+            (void*)&bufferData[0], GL_DYNAMIC_COPY
+        );
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }
     // Class destructor
     ~shaderStorageBuffer() final;
 };  // End of 'vertexArray' class

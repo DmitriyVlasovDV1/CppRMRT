@@ -2,6 +2,7 @@
 
 // Project namespace
 namespace hse {
+std::unordered_set<uint> shaderStorageBuffer::usedBindings;  // Used bindings set (for
 // Class default constructor
 buffer::buffer() : bufferId(0) {
 }  // End of 'buffer::buffer' function
@@ -186,31 +187,6 @@ vertexArray::~vertexArray() {
     ::std::cout << "Clear vertex array" << ::std::endl;
 }  // End of 'vertexArray::~vertexArray' function
 
-/* Class constructor.
- * ARGUMENTS:
- *   - buffer's data:
- *       const ::std::vector<T> &bufferData;
- *   - buffer's binding value:
- *       uint bufferBinding.
- */
-template <typename T>
-shaderStorageBuffer::shaderStorageBuffer(
-    const ::std::vector<T> &bufferData,
-    uint bufferBinding
-) {
-    if (usedBindings.count(bufferBinding))
-        assert(("SSBO by binding = " + ::std::to_string(bufferBinding) +
-                "; Try to create ssbo with already used binding")
-                   .c_str());
-    glGenBuffers(1, &bufferId);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferId);
-    glBufferData(
-        GL_SHADER_STORAGE_BUFFER, bufferData.size() * sizeof(T),
-        (void *)&bufferData[0], GL_DYNAMIC_COPY
-    );
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bufferBinding, bufferId);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}  // End of 'shaderStorageBuffer::shaderStorageBuffer' function
 
 // Class destructor
 shaderStorageBuffer::~shaderStorageBuffer() {

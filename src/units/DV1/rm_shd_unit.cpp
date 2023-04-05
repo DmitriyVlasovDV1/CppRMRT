@@ -1,5 +1,6 @@
 #include "rm_shd_unit.hpp"
 #include "../../render/figure_scene.hpp"
+#include <cmath>
 
 // Project namespace
 namespace hse {
@@ -7,78 +8,40 @@ namespace hse {
 
 void rmShdUnit::init() {
     drawable_figures::FigureScene &scene = render::renderInstance.scene;
-    auto translateId = scene.createTranslation(math::vec3(2, 0, 0));
+    translateId = scene.createTranslation(math::vec3(2, 0, 0));
+    rotationId = scene.createRotation(math::vec3(1, 0, 0), 0);
+    auto scaleId = scene.createScale(math::vec3(3, 1, 1));
 
+    auto boxId = scene.createBox(1.3);
+    auto box2Id = scene.createBox(1.5);
     auto sphereId = scene.createSphere(1);
-    sphereId << translateId;
-    sphereId.draw();
+    boxId << scaleId << rotationId << translateId;
+    box2Id << scaleId << math::matr4::rotate(90, math::vec3(0, 0, 1)) << math::matr4::translate(math::vec3(3, 0, 0));
+    auto res = boxId / sphereId;
+    res /= box2Id;
+    res.draw();
 
-
-#if 0
-    using fr = drawable_figures::FigureRender;
-    auto sphereId = fr::figureRender.createSphere(0.5);
-    sphereId.draw();
-
-    // Scene
-    {
-        factory = std::make_unique<FigureFactory>();
-        Material mtl_light_grey;
-        mtl_light_grey.color[0] = 223 / 255.;
-        mtl_light_grey.color[1] = 150 / 255.;
-        mtl_light_grey.color[2] = 44 / 255.;
-        mtl_light_grey.color[3] = 1;
-        Material mtl_dark_grey;
-        mtl_dark_grey.color[0] = 230 / 255.;
-        mtl_dark_grey.color[1] = 230 / 255.;
-        mtl_dark_grey.color[2] = 250 / 255.;
-        mtl_dark_grey.color[3] = 1;
-
-
-        srand(12);
-        Figure wall2 = factory->createBox(0.01, mtl_light_grey);
-        Figure wall = wall2 * (::math::matr4::scale(::math::vec3(50, 30, 1)) * ::math::matr4::translate(math::vec3(0, 0, 0)));
-        const int num_stones = 12;
-        Figure stone = factory->createSphere(0.05, mtl_dark_grey);
-        for (int i = 0; i < num_stones; i++) {
-            wall = wall - (stone * ::math::matr4::translate(::math::vec3(float(rand())/RAND_MAX*0.6-0.3, float(rand())/RAND_MAX*0.6-0.3, float(rand())/RAND_MAX*0.08-0.04)));
-        }
-        Figure wall3 = (wall * (::math::matr4::translate(::math::vec3(0, 100, 10))));// * ::math::matr4::rotateX(math::PI / 2)));
-
-        wall3.draw(unitPrimitive);
-        std::string source = wall3.getFragmentSource("../data/shaders/rm/fragment_src.glsl");
-        std::ofstream file("../data/shaders/rm/fragment.glsl");
-        file << source;
-        file.close();
-    }
-    ::std::vector<int> indexBuffer(6);
-    ::std::vector<float> vertexBuffer = {-1, -1, 0,
-                                         1, -1, 0,
-                                         1, 1, 0,
-                                         -1, -1, 0,
-                                         1, 1, 0,
-                                         -1, 1, 0};
-
-    for (int j = 0; j < 6; j++)
-        indexBuffer[j] = j;
-    unitPrimitive = createPrimitive(
-        "rm", vertexBuffer, "v3", indexBuffer
+    auto pos = math::vec3(10);
+    scene.mainCamera.setPositionWithDirection(
+        pos, math::vec3(0) - pos
     );
-    frameH = new int{static_cast<int>(render::renderInstance.getWindowHeight())};
-    frameW = new int{static_cast<int>(render::renderInstance.getWindowWidth())};
-//    unitPrimitive->addUniform(frameW, "frame_w");
-//    unitPrimitive->addUniform(frameH, "frame_h");
-//    unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
 
-#endif
 }  // End of 'testUnit::initUnit' function
 
 //std::vector<uint> parseFigures(const std::string &str, )
 void rmShdUnit::response() {
     drawable_figures::FigureScene &scene = render::renderInstance.scene;
-    auto pos = math::vec3(10);
-    scene.mainCamera.setPositionWithDirection(
-        pos, math::vec3(0) - pos
-    );
+
+    if (render::renderInstance.keys[GLFW_KEY_C].action == GLFW_PRESS) {
+        scene.setRenderType(drawable_figures::RenderType::COMMON);
+    }
+    if (render::renderInstance.keys[GLFW_KEY_R].action == GLFW_PRESS) {
+        scene.setRenderType(drawable_figures::RenderType::RM);
+    }
+
+    auto time = render::renderInstance.getTime();
+    translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
+    rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
 
 }  // End of 'testUnit::responseUnit' function
 

@@ -3,12 +3,12 @@
 // Project namespace
 namespace hse {
 // Class default constructor
-primitive::primitive()
+Primitive::Primitive()
     : vertexArrayInstance(nullptr),
       shaderProgramId(0),
-      renderType(buffer::renderType::TRIANGLES),
+      renderType(VertexArray::renderType::TRIANGLES),
       isVisible(true) {
-}  // End of 'primitive::primitive' function
+}  // End of 'Primitive::Primitive' function
 
 /* Class constructor.
  * ARGUMENTS:
@@ -21,51 +21,51 @@ primitive::primitive()
  *   - index buffer data:
  *       const ::std::vector<int> &indexBuffer;
  *   - primitive's rendering type:
- *       renderType type_;
+ *       VertexArray::renderType type_;
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-primitive::primitive(
+Primitive::Primitive(
     uint primitiveShaderProgramId_,
     const ::std::vector<float> &vertexBuffer,
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBuffer,
-    buffer::renderType type_
+    VertexArray::renderType type_
 )
     : shaderProgramId(primitiveShaderProgramId_),
       renderType(type_),
       isVisible(true) {
     vertexArrayInstance =
-        new vertexArray(vertexBuffer, vertexBufferFormat, indexBuffer);
-}  // End of 'primitive::primitive' function
+        new VertexArray(vertexBuffer, vertexBufferFormat, indexBuffer);
+}  // End of 'Primitive::Primitive' function
 
 /* Class constructor.
  * ARGUMENTS:
  *   - primitive's shader program id:
  *       uint primitiveShaderProgramId_;
  *   - vertex array:
- *       vertexArray *vertexArrayInstance_;
+ *       VertexArray *vertexArrayInstance_;
  *   - primitive's rendering type:
- *       renderType type_.
+ *       VertexArray::renderType type_.
  */
-primitive::primitive(
+Primitive::Primitive(
     uint primitiveShaderProgramId_,
-    vertexArray *vertexArrayInstance_,
-    buffer::renderType type_
+    VertexArray *vertexArrayInstance_,
+    VertexArray::renderType type_
 )
     : shaderProgramId(primitiveShaderProgramId_),
       vertexArrayInstance(vertexArrayInstance_),
       renderType(type_),
       isVisible(true) {
-}  // End of 'primitive::primitive' function
+}  // End of 'Primitive::Primitive' function
 
-/* Draw primitive function.
+/* Render primitive function.
  * ARGUMENTS:
  *   - camera for rendering primitive:
- *      const camera &camera;
+ *      const Camera &camera;
  * RETURNS: None.
  */
-void primitive::render(const camera &camera) const {
+void Primitive::onRender(const Camera &camera) const {
     glUseProgram(shaderProgramId);
     int uniformLocation;
     for (auto &[uniformName, uniformValue] : shaderUniform1i) {
@@ -110,15 +110,15 @@ void primitive::render(const camera &camera) const {
             uniformLocation, 1, GL_FALSE, (float *)transformMatrix.matrix
         );
 
-    vertexArrayInstance->render(renderType);
+    vertexArrayInstance->onRender(renderType);
     glUseProgram(0);
-}  // End of 'primitive::render' function
+}  // End of 'Primitive::onRender' function
 
 // Class destructor
-primitive::~primitive() {
+Primitive::~Primitive() {
     delete vertexArrayInstance;
     ::std::cout << "Clear primitive" << ::std::endl;
-}  // End of 'primitive::~primitive' function
+}  // End of 'Primitive::~Primitive' function
 
 /* Attach shader program id to the primitive function.
  * ARGUMENTS:
@@ -126,37 +126,37 @@ primitive::~primitive() {
  *       uint shaderProgramId_;
  * RETURNS: None.
  */
-void primitive::setShaderProgram(uint shaderProgramId_) {
+void Primitive::setShaderProgram(uint shaderProgramId_) {
     shaderProgramId = shaderProgramId_;
-}  // End of 'primitive::setShaderProgram' function
+}  // End of 'Primitive::setShaderProgram' function
 
 /* Get primitive rendering type function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (buffer::renderType) - rendering type.
+ *   (VertexArray::renderType) - rendering type.
  */
-buffer::renderType primitive::getRenderType() const {
+VertexArray::renderType Primitive::getRenderType() const {
     return renderType;
-}  // End of 'primitive::getRenderType' function
+}  // End of 'Primitive::getRenderType' function
 
 /* Set primitive rendering type function.
  * ARGUMENTS:
  *   - new rendering type:
- *       buffer::renderType type_:
+ *       VertexArray::renderType type_:
  * RETURNS: None.
  */
-void primitive::setRenderType(buffer::renderType renderType_) {
+void Primitive::setRenderType(VertexArray::renderType renderType_) {
     renderType = renderType_;
-}  // End of 'primitive::setRenderType' function
+}  // End of 'Primitive::setRenderType' function
 
 /* Get primitive's visibility flag function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (bool) - visibility flag.
  */
-bool primitive::getVisibility() const {
+bool Primitive::getVisibility() const {
     return isVisible;
-}  // End of 'primitive::getVisibility' function
+}  // End of 'Primitive::getVisibility' function
 
 /* Set primitive's visibility flag function.
  * ARGUMENTS:
@@ -164,9 +164,9 @@ bool primitive::getVisibility() const {
  *       bool isVisible_;
  * RETURNS: None.
  */
-void primitive::setVisibility(bool isVisible_) {
+void Primitive::setVisibility(bool isVisible_) {
     isVisible = isVisible_;
-}  // End of 'primitive::setVisibility' function
+}  // End of 'Primitive::setVisibility' function
 
 /* Add uniform of one int variable to the shader function.
  * ARGUMENTS:
@@ -176,9 +176,9 @@ void primitive::setVisibility(bool isVisible_) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void primitive::addUniform(int uniformValue, const char *uniformName) {
+void Primitive::addUniform(int uniformValue, const char *uniformName) {
     shaderUniform1i[uniformName] = uniformValue;
-}  // End of 'primitive::addUniform' function
+}  // End of 'Primitive::addUniform' function
 
 /* Add uniform of one float variable to the shader function.
  * ARGUMENTS:
@@ -188,9 +188,9 @@ void primitive::addUniform(int uniformValue, const char *uniformName) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void primitive::addUniform(float uniformValue, const char *uniformName) {
+void Primitive::addUniform(float uniformValue, const char *uniformName) {
     shaderUniform1f[uniformName] = uniformValue;
-}  // End of 'primitive::addUniform' function
+}  // End of 'Primitive::addUniform' function
 
 /* Add uniform of 3-component geom vector to the shader function.
  * ARGUMENTS:
@@ -200,9 +200,9 @@ void primitive::addUniform(float uniformValue, const char *uniformName) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void primitive::addUniform(const math::vec3 &vector, const char *uniformName) {
+void Primitive::addUniform(const math::vec3 &vector, const char *uniformName) {
     shaderUniform3fv[uniformName] = vector;
-}  // End of 'primitive::addUniform' function
+}  // End of 'Primitive::addUniform' function
 
 /* Add uniform of matrix4x4 variable to the shader function.
  * ARGUMENTS:
@@ -210,11 +210,9 @@ void primitive::addUniform(const math::vec3 &vector, const char *uniformName) {
  *       const math::matr4 &uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
- *   - uniforms number:
- *       int uniformCount;
  * RETURNS: None.
  */
-void primitive::addUniform(const math::matr4 &matrix, const char *uniformName) {
+void Primitive::addUniform(const math::matr4 &matrix, const char *uniformName) {
     shaderUniform4fv[uniformName] = matrix;
-}  // End of 'primitive::addUniform' function
+}  // End of 'Primitive::addUniform' function
 }  // namespace hse

@@ -6,27 +6,18 @@
 // Project namespace
 namespace hse {
 // Buffer class declaration
-class buffer {
+class Buffer {
     // Friend classes
-    friend class unit;
-
-public:
-    // Enum for rendering type installation
-    enum renderType {
-        QUADS,
-        TRIANGLES,
-        TRIANGLES_STRIP,
-        LINES
-    };  // End of 'renderType' enum
+    friend class Unit;
 
 protected:
     uint bufferId;  // Buffer id
 
     // Class default constructor
-    explicit buffer();
+    explicit Buffer();
 
     // Class destructor
-    virtual ~buffer() = default;
+    virtual ~Buffer() = default;
 
 public:
     /* Get buffer id function.
@@ -35,20 +26,20 @@ public:
      *   (uint) - buffer id;
      */
     uint getBufferId() const;
-};  // End of 'buffer' class
+};  // End of 'Buffer' class
 
 // Vertex buffer class declaration
-class vertexBuffer final : public buffer {
+class VertexBuffer final : public Buffer {
     // Friend classes
-    friend class unit;
-    friend class primitive;
-    friend class vertexArray;
+    friend class Unit;
+    friend class Primitive;
+    friend class VertexArray;
 
     int sizeOfVertex;  // Size of each vertex in bytes (given by vertex format)
     size_t sizeOfBuffer;  // Size of full vertex buffer data in bytes
 
     // Class default constructor
-    explicit vertexBuffer();
+    explicit VertexBuffer();
 
     /* Class constructor.
      * ARGUMENTS:
@@ -59,7 +50,7 @@ class vertexBuffer final : public buffer {
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    explicit vertexBuffer(
+    explicit VertexBuffer(
         const ::std::vector<float> &bufferData,
         const ::std::string &bufferFormat = "v3"
     );
@@ -81,43 +72,43 @@ public:
 
 private:
     // Class destructor
-    ~vertexBuffer() final;
-};  // End of 'vertexBuffer' class
+    ~VertexBuffer() final;
+};  // End of 'VertexBuffer' class
 
 // Index buffer class declaration
-class indexBuffer final : public buffer {
+class IndexBuffer final : public Buffer {
     // Friend classes
-    friend class unit;
-    friend class primitive;
-    friend class vertexArray;
+    friend class Unit;
+    friend class Primitive;
+    friend class VertexArray;
 
     size_t indexesCount;  // Number of indexes in buffer data
 
     // Class default constructor
-    explicit indexBuffer();
+    explicit IndexBuffer();
 
     /* Class constructor.
      * ARGUMENTS:
      *   - buffer's data;
      *       const ::std::vector<int> &bufferData.
      */
-    explicit indexBuffer(const ::std::vector<int> &bufferData);
+    explicit IndexBuffer(const ::std::vector<int> &bufferData);
 
     // Class destructor
-    ~indexBuffer() final;
-};  // End of 'indexBuffer' class
+    ~IndexBuffer() final;
+};  // End of 'IndexBuffer' class
 
 // Vertex array class declaration
-class vertexArray final : public buffer {
+class VertexArray final : public Buffer {
     // Friend classes
-    friend class unit;
-    friend class primitive;
+    friend class Unit;
+    friend class Primitive;
 
-    vertexBuffer *vertexBufferObject;  // Vertex buffer pointer
-    indexBuffer *indexBufferObject;    // Index buffer pointer
+    VertexBuffer *vertexBufferObject;  // Vertex buffer pointer
+    IndexBuffer *indexBufferObject;    // Index buffer pointer
 
     // Class default constructor
-    explicit vertexArray();
+    explicit VertexArray();
 
     /* Class constructor.
      * ARGUMENTS:
@@ -130,30 +121,38 @@ class vertexArray final : public buffer {
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    explicit vertexArray(
+    explicit VertexArray(
         const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat,
         const ::std::vector<int> &indexBufferData
     );
 
 public:
-    /* Draw vertex array function.
+    // Enum for rendering type installation
+    enum renderType {
+        QUADS,
+        TRIANGLES,
+        TRIANGLES_STRIP,
+        LINES
+    };  // End of 'renderType' enum
+
+    /* Render vertex array function.
      * ARGUMENTS:
      *   - type of buffer rendering:
      *       renderType type;
      * RETURNS: None.
      */
-    void render(renderType type) const;
+    void onRender(renderType type) const;
 
 private:
     // Class destructor
-    ~vertexArray() final;
-};  // End of 'vertexArray' class
+    ~VertexArray() final;
+};  // End of 'VertexArray' class
 
 // Shader storage buffer class declaration
-class shaderStorageBuffer final : public buffer {
+class ShaderStorageBuffer final : public Buffer {
     // Friend classes
-    friend class unit;
+    friend class Unit;
 
     static ::std::unordered_set<uint> usedBindings;  // Used bindings set (for
                                                      // not duplicating or lost
@@ -161,7 +160,7 @@ class shaderStorageBuffer final : public buffer {
                                                      // binding)
 
     // Class default constructor
-    explicit shaderStorageBuffer() = default;
+    explicit ShaderStorageBuffer() = default;
 
     /* Class constructor.
      * ARGUMENTS:
@@ -171,14 +170,14 @@ class shaderStorageBuffer final : public buffer {
      *       uint bufferBinding.
      */
     template <typename T>
-    explicit shaderStorageBuffer(
+    explicit ShaderStorageBuffer(
         const ::std::vector<T> &bufferData,
         uint bufferBinding
     );
 
     // Class destructor
-    ~shaderStorageBuffer() final;
-};  // End of 'vertexArray' class
+    ~ShaderStorageBuffer() final;
+};  // End of 'ShaderStorageBuffer' class
 }  // namespace hse
 
 #endif  // BUFFER_HPP

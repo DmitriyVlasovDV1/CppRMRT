@@ -7,14 +7,14 @@
 // Project namespace
 namespace hse {
 // Model class declaration
-class model {
+class Model {
     // Friend classes
-    friend class unit;
+    friend class Unit;
 
     uint shaderProgramId;                        // Model's shader program id
     bool isVisible;                              // Model's visibility flag
-    buffer::renderType renderType;               // Model rendering type
-    ::std::vector<primitive *> primitivesArray;  // Array of all model's
+    VertexArray::renderType renderType;          // Model rendering type
+    ::std::vector<Primitive *> primitivesArray;  // Array of all model's
                                                  // primitives
 
     ::std::map<const char *, int> shaderUniform1i;           // Integer uniforms
@@ -43,18 +43,18 @@ private:
      *   - model's file name:
      *       const ::std::string &fileName.
      */
-    explicit model(uint shaderProgramId_, const ::std::string &fileName);
+    explicit Model(uint shaderProgramId_, const ::std::string &fileName);
 
     /* Draw model function.
      * ARGUMENTS:
      *   - camera for rendering model:
-     *      const camera &camera;
+     *      const Camera &camera;
      * RETURNS: None.
      */
-    void render(const camera &camera) const;
+    void onRender(const Camera &camera) const;
 
     // Class destructor
-    ~model();
+    ~Model();
 
 public:
     /* Attach shader program id to the model function.
@@ -83,17 +83,17 @@ public:
     /* Get model rendering type function.
      * ARGUMENTS: None.
      * RETURNS:
-     *   (buffer::renderType) - rendering type.
+     *   (VertexArray::renderType) - rendering type.
      */
-    buffer::renderType getRenderType() const;
+    VertexArray::renderType getRenderType() const;
 
     /* Set model rendering type function.
      * ARGUMENTS:
      *   - new rendering type:
-     *       buffer::renderType renderType_:
+     *       VertexArray::renderType renderType_:
      * RETURNS: None.
      */
-    void setRenderType(buffer::renderType renderType_);
+    void setRenderType(VertexArray::renderType renderType_);
 
     /* Get number of primitives in model function.
      * ARGUMENTS: None.
@@ -107,9 +107,9 @@ public:
      *   - index of the primitive:
      *       int index;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the primitive.
+     *   (Primitive *) - not-owning pointer to the primitive.
      */
-    primitive *getChild(int index) const;
+    Primitive *getChild(int index) const;
 
     /* Add uniform of one integer variable to the shader function.
      * ARGUMENTS:
@@ -152,7 +152,7 @@ public:
      * RETURNS: None.
      */
     void addUniform(const math::matr4 &matrix, const char *uniformName);
-};  // End of 'model' class
+};  // End of 'Model' class
 }  // namespace hse
 
 #endif  // MODEL_HPP

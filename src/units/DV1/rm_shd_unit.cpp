@@ -4,7 +4,7 @@
 namespace hse {
 
 
-void rmShdUnit::init() {
+void rmShdUnit::onCreate() {
 
 
     // Scene
@@ -51,8 +51,8 @@ void rmShdUnit::init() {
     unitPrimitive = createPrimitive(
         "rm", vertexBuffer, "v3", indexBuffer
     );
-    frameH = new int{static_cast<int>(render::renderInstance.getWindowHeight())};
-    frameW = new int{static_cast<int>(render::renderInstance.getWindowWidth())};
+    frameH = new int{static_cast<int>(windowHeight)};
+    frameW = new int{static_cast<int>(windowWidth)};
 //    unitPrimitive->addUniform(frameW, "frame_w");
 //    unitPrimitive->addUniform(frameH, "frame_h");
 //    unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
@@ -60,7 +60,7 @@ void rmShdUnit::init() {
 }  // End of 'testUnit::initUnit' function
 
 //std::vector<uint> parseFigures(const std::string &str, )
-void rmShdUnit::response() {
+void rmShdUnit::onUpdate() {
 
 }  // End of 'testUnit::responseUnit' function
 

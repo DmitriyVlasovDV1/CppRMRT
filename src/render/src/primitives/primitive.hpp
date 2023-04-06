@@ -8,15 +8,15 @@
 
 namespace hse {
 // Primitive class declaration
-class primitive {
+class Primitive {
     // Friend classes
-    friend class unit;
-    friend class model;
+    friend class Unit;
+    friend class Model;
 
-    buffer::renderType renderType;     // Rendering type
-    vertexArray *vertexArrayInstance;  // Vertex array instance
-    uint shaderProgramId;              // Primitive's shader instance
-    bool isVisible;                    // Visibility flag
+    VertexArray::renderType renderType;  // Rendering type
+    VertexArray *vertexArrayInstance;    // Vertex array instance
+    uint shaderProgramId;                // Primitive's shader instance
+    bool isVisible;                      // Visibility flag
 
 public:
     math::matr4 transformMatrix;  // Transform matrix
@@ -30,7 +30,7 @@ private:
                                                              // uniforms
 
     // Class default constructor
-    explicit primitive();
+    explicit Primitive();
 
     /* Class constructor.
      * ARGUMENTS:
@@ -43,16 +43,16 @@ private:
      *   - index buffer data:
      *       const ::std::vector<int> &indexBuffer;
      *   - primitive's rendering type:
-     *       renderType type_;
+     *       VertexArray::renderType type_;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    explicit primitive(
+    explicit Primitive(
         uint primitiveShaderProgramId_,
         const ::std::vector<float> &vertexBuffer,
         const ::std::string &vertexBufferFormat = "v3v3",
         const ::std::vector<int> &indexBuffer = ::std::vector<int>(),
-        buffer::renderType type_ = buffer::renderType::TRIANGLES
+        VertexArray::renderType type_ = VertexArray::renderType::TRIANGLES
     );
 
     /* Class constructor.
@@ -62,24 +62,24 @@ private:
      *   - vertex array:
      *       vertexArray *vertexArrayInstance_;
      *   - primitive's rendering type:
-     *       renderType type_.
+     *       VertexArray::renderType type_.
      */
-    explicit primitive(
+    explicit Primitive(
         uint primitiveShaderProgramId_,
-        vertexArray *vertexArrayInstance_,
-        buffer::renderType type_ = buffer::renderType::TRIANGLES
+        VertexArray *vertexArrayInstance_,
+        VertexArray::renderType type_ = VertexArray::renderType::TRIANGLES
     );
 
-    /* Draw primitive function.
+    /* Render primitive function.
      * ARGUMENTS:
      *   - camera for rendering primitive:
      *      const camera &camera;
      * RETURNS: None.
      */
-    void render(const camera &camera) const;
+    void onRender(const Camera &camera) const;
 
     // Class destructor
-    ~primitive();
+    ~Primitive();
 
 public:
     /* Attach shader program id to the primitive function.
@@ -93,17 +93,17 @@ public:
     /* Get primitive rendering type function.
      * ARGUMENTS: None.
      * RETURNS:
-     *   (buffer::renderType) - rendering type.
+     *   (VertexArray::renderType) - rendering type.
      */
-    buffer::renderType getRenderType() const;
+    VertexArray::renderType getRenderType() const;
 
     /* Set primitive rendering type function.
      * ARGUMENTS:
      *   - new rendering type:
-     *       buffer::renderType renderType_:
+     *       VertexArray::renderType renderType_:
      * RETURNS: None.
      */
-    void setRenderType(buffer::renderType renderType_);
+    void setRenderType(VertexArray::renderType renderType_);
 
     /* Get primitive's visibility flag function.
      * ARGUMENTS: None.
@@ -156,12 +156,10 @@ public:
      *       const math::matr4 &uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
-     *   - uniforms number:
-     *       int uniformCount;
      * RETURNS: None.
      */
     void addUniform(const math::matr4 &matrix, const char *uniformName);
-};  // End of 'primitive' class
+};  // End of 'Primitive' class
 }  // namespace hse
 
 #endif  // PRIMITIVE_HPP

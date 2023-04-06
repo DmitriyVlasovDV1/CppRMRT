@@ -6,49 +6,43 @@
 // Project namespace
 namespace hse {
 // Shader class definition
-class shader {
+class Shader {
     // Friend classes
-    friend class unit;
+    friend class Unit;
 
     uint programId;  // Shader program id
 
-    struct {
-        const char *name;  // Shader name
-        int type;          // Shader type
-        int id;            // Shader id
-    } shaders[2] = {
-        {"vertex", GL_VERTEX_SHADER},       // Struct data for vertex shader
-        {"fragment", GL_FRAGMENT_SHADER}};  // Struct data for fragment shader
+    // Shader program structure
+    struct ShaderProgram {
+        const char *name;    // Shader name
+        int type;            // Shader type
+        int id;              // Shader id
+        const char *source;  // Shader source
+    };
+
+    // Shader's programs
+    ::std::vector<ShaderProgram> shaders = {
+        {"vertex", GL_VERTEX_SHADER, 0, nullptr},
+        {"fragment", GL_FRAGMENT_SHADER, 0, nullptr}};
 
     /* Parse shader program from file function.
      * ARGUMENTS:
      *   - shader's program path:
      *       const ::std::string &shaderPath;
-     * RETURNS:
-     *   (::std::pair<::std::string, ::std::string>) - pair of shaders
-     * realization.
+     * RETURNS: None.
      */
-    ::std::pair<::std::string, ::std::string> parseShaderFromFile(
-        const ::std::string &shaderPath
-    ) const;
+    void parseShaderFromFile(const ::std::string &shaderPath);
 
     /* Compile shader program function.
      * ARGUMENTS:
      *   - shader's program path:
      *       const ::std::string &shaderPath;
-     *   - vertex shader realization:
-     *       const char *vertexShaderSource;
-     *   - fragment shader realization:
-     *       const char *fragmentShaderSource;
+     * RETURNS: None.
      */
-    void compileShaderProgram(
-        const ::std::string &shaderPath,
-        const char *vertexShaderSource,
-        const char *fragmentShaderSource
-    );
+    void compileShaderProgram(const ::std::string &shaderPath);
 
     // Class default constructor
-    explicit shader();
+    explicit Shader();
 
     /* Class constructor.
      * ARGUMENTS:
@@ -59,25 +53,10 @@ class shader {
      * the name of this directory you have to pass in this constructor
      * (example: see the test unit in SK4 directory).
      */
-    explicit shader(const ::std::string &shaderPath);
-
-    /* Class constructor.
-     * ARGUMENTS:
-     *   - vertex shader source in string:
-     *       const ::std::string &vertexShaderSource;
-     *   - fragment shader source in string:
-     *       const ::std::string &fragmentShaderSource;
-     *   - shader's program path:
-     *       const ::std::string &shaderPath;
-     */
-    explicit shader(
-        const ::std::string &vertexShaderSource,
-        const ::std::string &fragmentShaderSource,
-        const ::std::string &shaderPath = ""
-    );
+    explicit Shader(const ::std::string &shaderPath);
 
     // Class destructor
-    ~shader();
+    ~Shader();
 
 public:
     /* Get shader id function.
@@ -86,7 +65,7 @@ public:
      *   (uint) - shader id;
      */
     uint getShaderProgramId() const;
-};  // End of 'shader' class
+};  // End of 'Shader' class
 }  // namespace hse
 
 #endif  // SHADER_HPP

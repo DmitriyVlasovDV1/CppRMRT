@@ -191,7 +191,7 @@ namespace hse {
     }
 
 
-    void Figure::draw(primitive *primitive) const {
+    void Figure::draw(Primitive *primitive) const {
         GLuint ssbo, ssbo2, ssbo3, ssbo4, ssbo5, ssbo6;
         glGenBuffers(1, &ssbo);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);

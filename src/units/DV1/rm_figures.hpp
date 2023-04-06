@@ -1,9 +1,7 @@
 #ifndef RM_FIGURES_HPP
 #define RM_FIGURES_HPP
 
-#include <memory>
-#include <exception>
-#include "../../def.hpp"
+#include "../../render/src/units/unit.hpp"
 
 namespace hse {
 
@@ -56,7 +54,7 @@ public:
     std::string getFragmentSource(const std::string &filepath) const;
     std::string getVertexSource(const std::string &filepath) const;
 
-    void draw(primitive *primitive) const;
+    void draw(Primitive *primitive) const;
 
     // TODO |= &= -=
 };

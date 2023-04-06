@@ -1,14 +1,13 @@
 #ifndef TEST_UNIT_HPP
 #define TEST_UNIT_HPP
 
-#include "../../def.hpp"
-#include "../../render/render.hpp"
+#include "../../render/src/units/unit.hpp"
 
 // Project namespace
 namespace hse {
 // Test unit class declaration
-class testUnit final : public unit {
-    model *unitModel;
+class TestUnit final : public Unit {
+    Model *unitModel;
 
     /* Spheres generation function.
      * ARGUMENTS: None.
@@ -22,37 +21,37 @@ class testUnit final : public unit {
      */
     void cubesGeneration();
 
-    /* Camera response function.
+    /* Camera update function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void cameraResponse();
+    void cameraUpdate();
 
-    /* Input (keyboard/mouse) response function.
+    /* Input (keyboard/mouse) update function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    static void inputResponse();
+    static void inputUpdate();
 
 public:
     // Class constructor
-    explicit testUnit() = default;
+    explicit TestUnit() = default;
 
     /* Unit initialization override function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void init() final;
+    void onCreate() final;
 
     /* Unit response override function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void response() final;
+    void onUpdate() final;
 
     // Class override destructor
-    ~testUnit() final;
-};  // End of 'testUnit' class
+    ~TestUnit() final;
+};  // End of 'TestUnit' class
 }  // namespace hse
 
 #endif  // TEST_UNIT_HPP

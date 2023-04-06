@@ -5,56 +5,40 @@ namespace hse {
  * ARGUMENTS:
  *   - shader's program path:
  *       const ::std::string &shaderPath;
- * RETURNS:
- *   (::std::pair<::std::string, ::std::string>) - pair of shaders realization.
+ * RETURNS: None.
  */
-::std::pair<::std::string, ::std::string> shader::parseShaderFromFile(
-    const ::std::string &shaderPath
-) const {
-    int counter = 0;
-    ::std::pair<::std::string, ::std::string> result;
+void Shader::parseShaderFromFile(const ::std::string &shaderPath) {
     ::std::string fullShaderPath;
     std::ifstream shaderFile;
     ::std::string shaderSource;
 
-    for (auto &[name, type, id] : shaders) {
+    for (auto &[name, type, id, source] : shaders) {
+        id = 0;
         fullShaderPath = "../data/shaders/" + shaderPath + "/" + name + ".glsl";
         shaderFile.open(fullShaderPath);
-        if (!shaderFile.is_open()) {
-            assert("Error in shader's path");
-            break;
-        }
+        if (!shaderFile.is_open()) EXCEPTION("Error in shader's path");
         ::std::string line;
         shaderSource = "";
         while (::std::getline(shaderFile, line))
             shaderSource += line + "\n ";
         shaderFile.close();
-        if (counter++ == 0)
-            result.first = shaderSource;
-        else
-            result.second = shaderSource;
+        source = shaderSource.c_str();
     }
-    return result;
-}  // End of 'shader::parseShaderFromFile' function
+}  // End of 'Shader::parseShaderFromFile' function
 
 /* Compile shader program function.
  * ARGUMENTS:
  *   - shader's program path:
  *       const ::std::string &shaderPath;
- *   - vertex shader realization:
- *       const char *vertexShaderSource;
- *   - fragment shader realization:
- *       const char *fragmentShaderSource;
+ * RETURNS: None.
  */
-void shader::compileShaderProgram(
-    const ::std::string &shaderPath,
-    const char *vertexShaderSource,
-    const char *fragmentShaderSource
-) {
+void Shader::compileShaderProgram(const ::std::string &shaderPath) {
+    parseShaderFromFile(shaderPath);
+
     bool isError = false;
     ::std::string fullShaderPath;
 
-    for (auto &[name, type, id] : shaders) {
+    for (auto &[name, type, id, source] : shaders) {
         fullShaderPath = "../data/shaders/" + shaderPath + "/" + name + ".glsl";
         id = glCreateShader(type);
         if (id == 0) {
@@ -62,10 +46,7 @@ void shader::compileShaderProgram(
             isError = true;
             break;
         }
-        if (type == GL_VERTEX_SHADER)
-            glShaderSource(id, 1, &vertexShaderSource, nullptr);
-        else
-            glShaderSource(id, 1, &fragmentShaderSource, nullptr);
+        glShaderSource(id, 1, &source, nullptr);
         glCompileShader(id);
         int compileResult;
         glGetShaderiv(id, GL_COMPILE_STATUS, &compileResult);
@@ -85,9 +66,9 @@ void shader::compileShaderProgram(
     programId = glCreateProgram();
     if (programId == 0) {
         isError = true;
-        assert("Error in creating shader program");
+        EXCEPTION("Error in creating shader program");
     } else {
-        for (auto &[name, type, id] : shaders)
+        for (auto &[name, type, id, source] : shaders)
             if (id != 0) glAttachShader(programId, id);
         glLinkProgram(programId);
         int linkStatus;
@@ -103,7 +84,7 @@ void shader::compileShaderProgram(
         }
     }
     if (isError) {
-        for (auto &[name, type, id] : shaders)
+        for (auto &[name, type, id, source] : shaders)
             if (id != 0) {
                 if (programId != 0) glDetachShader(programId, id);
                 glDeleteShader(id);
@@ -111,11 +92,11 @@ void shader::compileShaderProgram(
         if (programId != 0) glDeleteProgram(programId);
         programId = 0;
     }
-}  // End of 'shader::compileShaderProgram' function
+}  // End of 'Shader::compileShaderProgram' function
 
 // Class default constructor
-shader::shader() : programId(0) {
-}  // End of 'shader::shader' function
+Shader::Shader() : programId(0) {
+}  // End of 'Shader::Shader' function
 
 /* Class constructor.
  * ARGUMENTS:
@@ -126,46 +107,22 @@ shader::shader() : programId(0) {
  * the name of this directory you have to pass in this constructor
  * (example: see test unit in SK4 directory).
  */
-shader::shader(const ::std::string &shaderPath) : programId(0) {
-    const ::std::pair<::std::string, ::std::string> shaderSource =
-        parseShaderFromFile(shaderPath);
-    compileShaderProgram(
-        shaderPath, shaderSource.first.c_str(), shaderSource.second.c_str()
-    );
-}  // End of 'shader::shader' function
-
-/* Class constructor.
- * ARGUMENTS:
- *   - vertex shader source in string:
- *       const ::std::string &vertexShaderSource;
- *   - fragment shader source in string:
- *       const ::std::string &fragmentShaderSource;
- *   - shader's program path:
- *       const ::std::string &shaderPath;
- */
-shader::shader(
-    const ::std::string &vertexShaderSource,
-    const ::std::string &fragmentShaderSource,
-    const ::std::string &shaderPath
-)
-    : programId(0) {
-    compileShaderProgram(
-        shaderPath, vertexShaderSource.c_str(), vertexShaderSource.c_str()
-    );
-}  // End of 'shader::shader' function
+Shader::Shader(const ::std::string &shaderPath) : programId(0) {
+    compileShaderProgram(shaderPath);
+}  // End of 'Shader::Shader' function
 
 /* Get shader id function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (uint) - shader id;
  */
-uint shader::getShaderProgramId() const {
+uint Shader::getShaderProgramId() const {
     return programId;
-}  // End of 'shader::getShaderProgramId' function
+}  // End of 'Shader::getShaderProgramId' function
 
 // Class destructor
-shader::~shader() {
-    for (auto &[name, type, id] : shaders)
+Shader::~Shader() {
+    for (auto &[name, type, id, source] : shaders)
         if (id != 0) {
             if (programId != 0) glDetachShader(programId, id);
             glDeleteShader(id);
@@ -173,5 +130,5 @@ shader::~shader() {
     if (programId != 0) glDeleteProgram(programId);
     programId = 0;
     ::std::cout << "Clear shader" << ::std::endl;
-}  // End of 'shader::~shader' function
+}  // End of 'Shader::~shader' function
 }  // namespace hse

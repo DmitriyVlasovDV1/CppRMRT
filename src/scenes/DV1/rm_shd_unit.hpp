@@ -7,7 +7,7 @@
 namespace hse {
 class Builder;
 // Test unit class declaration
-class rmShdUnit final : public Unit {
+class rmShdUnit final : public Scene {
 private:
     int *frameW;
     int *frameH;

@@ -96,7 +96,7 @@ void Model::parseObj(const ::std::string &fileName) {
             }
         } else {
             // Not really sure that it's the best way
-            EXCEPTION(("Unknown tag in file: " + fileName).c_str());
+            // EXCEPTION(("Unknown tag in file: " + fileName).c_str());
 
             // Skipping unknown tag
             ::std::string line;

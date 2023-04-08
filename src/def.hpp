@@ -76,9 +76,6 @@ void keyboardCallback(
 
 // Function for generate render instance variable
 void factory();
-
-// Primitive class forward declaration
-class Primitive;
 }  // namespace hse
 
 #endif  // DEF_HPP

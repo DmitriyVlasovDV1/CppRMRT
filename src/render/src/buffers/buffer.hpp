@@ -8,7 +8,7 @@ namespace hse {
 // Buffer class declaration
 class Buffer {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
 
 protected:
     uint bufferId;  // Buffer id
@@ -31,7 +31,7 @@ public:
 // Vertex buffer class declaration
 class VertexBuffer final : public Buffer {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
     friend class Primitive;
     friend class VertexArray;
 
@@ -78,7 +78,7 @@ private:
 // Index buffer class declaration
 class IndexBuffer final : public Buffer {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
     friend class Primitive;
     friend class VertexArray;
 
@@ -101,7 +101,7 @@ class IndexBuffer final : public Buffer {
 // Vertex array class declaration
 class VertexArray final : public Buffer {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
     friend class Primitive;
 
     VertexBuffer *vertexBufferObject;  // Vertex buffer pointer
@@ -152,7 +152,7 @@ private:
 // Shader storage buffer class declaration
 class ShaderStorageBuffer final : public Buffer {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
 
     static ::std::unordered_set<uint> usedBindings;  // Used bindings set (for
                                                      // not duplicating or lost

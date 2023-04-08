@@ -1,13 +1,13 @@
 #ifndef TEST_UNIT_HPP
 #define TEST_UNIT_HPP
 
-#include "../../render/src/units/unit.hpp"
+#include "../../render/src/scenes/scene.hpp"
 
 // Project namespace
 namespace hse {
-// Test unit class declaration
-class TestUnit final : public Unit {
-    Model *unitModel;
+// Test scene class declaration
+class TestScene final : public Scene {
+    Model *unitModel = nullptr;
 
     /* Spheres generation function.
      * ARGUMENTS: None.
@@ -35,23 +35,23 @@ class TestUnit final : public Unit {
 
 public:
     // Class constructor
-    explicit TestUnit() = default;
+    explicit TestScene() = default;
 
-    /* Unit initialization override function.
+    /* Scene creation override function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     void onCreate() final;
 
-    /* Unit response override function.
+    /* Scene update override function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     void onUpdate() final;
 
     // Class override destructor
-    ~TestUnit() final;
-};  // End of 'TestUnit' class
+    ~TestScene() final;
+};  // End of 'TestScene' class
 }  // namespace hse
 
 #endif  // TEST_UNIT_HPP

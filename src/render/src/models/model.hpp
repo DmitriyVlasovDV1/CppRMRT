@@ -9,7 +9,7 @@ namespace hse {
 // Model class declaration
 class Model {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
 
     uint shaderProgramId;                        // Model's shader program id
     bool isVisible;                              // Model's visibility flag

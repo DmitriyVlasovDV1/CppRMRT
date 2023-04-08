@@ -10,32 +10,30 @@
 
 namespace hse {
 // Unit class declaration
-class Unit {
+class Scene {
     // Friend classes
     friend class Render;
 
-    bool isVisible;      // Unit's visibility flag
-    bool isInitialized;  // We can have a lot of copies of one unit,
-                         // but we want to initialize it only once
-    ::std::map<::std::string, Shader *> shadersArray;  // Unit's shader programs
-                                                       // array
-    ::std::vector<Primitive *> primitivesArray;  // Unit's primitives array
-    ::std::vector<Model *> modelsArray;          // Unit's models array
-    ::std::vector<Buffer *> buffersArray;        // Unit's buffers array
+    bool isVisible;  // Scene's visibility flag
+    ::std::map<::std::string, Shader *> shadersArray;  // Scene's shader
+                                                       // programs array
+    ::std::vector<Primitive *> primitivesArray;  // Scene's primitives array
+    ::std::vector<Model *> modelsArray;          // Scene's models array
+    ::std::vector<Buffer *> buffersArray;        // Scene's buffers array
 
 protected:
-    Camera mainCamera;   // Unit's main camera (can be changed, but all render
-                         // works from this camera in each unit)
+    Camera mainCamera;  // Scene's main camera (can be changed, but all render
+                        // works from this camera in each Scene)
 
 public:
-    /* Get unit's visibility flag function.
+    /* Get scene's visibility flag function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (bool) - visibility flag.
      */
     bool getVisibility() const;
 
-    /* Set unit's visibility flag function.
+    /* Set scene's visibility flag function.
      * ARGUMENTS:
      *   - new flag:
      *       bool isVisible_;
@@ -270,35 +268,35 @@ public:
 
 protected:
     // Class constructor
-    explicit Unit();
+    explicit Scene();
 
-    /* Unit initialization pure-virtual function.
+    /* Scene initialization pure-virtual function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     virtual void onCreate() = 0;
 
-    /* Unit update pure-virtual function.
+    /* Scene update pure-virtual function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     virtual void onUpdate() = 0;
 
-    /* Render unit function.
+    /* Render scene function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     void onRender() const;
 
-    /* Delete unit function.
+    /* Delete scene function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     void onDelete();
 
     // Class virtual destructor
-    virtual ~Unit() = default;
-};  // End of 'Unit' class
+    virtual ~Scene() = default;
+};  // End of 'Scene' class
 }  // namespace hse
 
 #endif  // UNIT_HPP

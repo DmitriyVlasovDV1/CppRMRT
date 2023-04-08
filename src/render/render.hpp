@@ -2,7 +2,7 @@
 #define RENDER_HPP
 
 #include "../def.hpp"
-#include "src/units/unit.hpp"
+#include "src/scenes/scene.hpp"
 
 // Project namespace
 namespace hse {
@@ -11,8 +11,8 @@ class Render {
     // Friend render instance factory
     friend void factory();
 
-    ::std::map<::std::string, Unit *> unitsArray;  // Units map
-    GLFWwindow *windowInstance;                    // Window instance
+    ::std::map<::std::string, Scene *> scenesArray;  // Scenes map
+    GLFWwindow *windowInstance;                     // Window instance
 
     /* Initializing glew/glfw function.
      * ARGUMENTS:
@@ -28,18 +28,18 @@ class Render {
      */
     void onUpdate();
 
-    /* Add unit instance to the unit's array function.
+    /* Add scene's instance to the scenes array function.
      * ARGUMENTS:
-     *   - unit name:
-     *       const ::std::string &unitName;
-     *   - unit instance:
-     *       unit *unitInstance;
+     *   - scene name:
+     *       const ::std::string &sceneName;
+     *   - scene instance:
+     *       Scene *sceneInstance;
      * RETURNS: None.
      * NOTE:
-     *   Returns value may be changed to (unit *) - not-owning pointer to
+     *   Returns value may be changed to (scene *) - not-owning pointer to
      * the scene, if we want to be able to copy scenes.
      */
-    void addUnit(const ::std::string &unitName, Unit *unitInstance);
+    void addScene(const ::std::string &sceneName, Scene *sceneInstance);
 
     // Class default constructor
     explicit Render();

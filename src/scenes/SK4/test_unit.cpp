@@ -6,7 +6,7 @@ namespace hse {
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void TestUnit::spheresGeneration() {
+void TestScene::spheresGeneration() {
     const size_t spheresNumber = 1000;
     for (int i = 0; i < spheresNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
@@ -22,13 +22,13 @@ void TestUnit::spheresGeneration() {
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
         tmp->addUniform(color, "vertexColor");
     }
-}  // End of 'TestUnit::spheresGeneration' function
+}  // End of 'TestScene::spheresGeneration' function
 
 /* Cubes generation function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void TestUnit::cubesGeneration() {
+void TestScene::cubesGeneration() {
     const size_t cubesNumber = 1000;
     for (int i = 0; i < cubesNumber; i++) {
         float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) *
@@ -46,26 +46,26 @@ void TestUnit::cubesGeneration() {
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
         tmp->addUniform(color, "vertexColor");
     }
-}  // End of 'TestUnit::cubesGeneration' function
+}  // End of 'TestScene::cubesGeneration' function
 
 /* Camera update function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void TestUnit::cameraUpdate() {
+void TestScene::cameraUpdate() {
     math::vec3 newCameraLocation = math::vec3(
         (cos(time / 1.5f) + 1) * 50, 50, (sin(time / 1.5f) + 1) * 50
     );
     mainCamera.setPositionWithDirection(
         newCameraLocation, math::vec3(0) - newCameraLocation
     );
-}  // End of 'TestUnit::cameraUpdate' function
+}  // End of 'TestScene::cameraUpdate' function
 
 /* Input (keyboard/mouse) update function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void TestUnit::inputUpdate() {
+void TestScene::inputUpdate() {
     if (keys[GLFW_KEY_W].action == GLFW_PRESS)
         ::std::cout << 'w' << ::std::endl;
     if (keys[GLFW_KEY_A].action == GLFW_PRESS)
@@ -83,36 +83,36 @@ void TestUnit::inputUpdate() {
         oldAction = GLFW_PRESS;
     } else if (keys[GLFW_KEY_SPACE].action == GLFW_RELEASE)
         oldAction = GLFW_RELEASE;
-}  // End of 'TestUnit::inputUpdate' function
+}  // End of 'TestScene::inputUpdate' function
 
-/* Unit initialization override function.
+/* Unit creation override function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void TestUnit::onCreate() {
+void TestScene::onCreate() {
     unitModel = createModel("obj_model", "tea_cup/tea_cup.obj");
     unitModel->addUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
     unitModel->transformMatrix = math::matr4::translate(math::vec3(0, -1, 0)) *
                                  math::matr4::scale(math::vec3(10));
     spheresGeneration();
     cubesGeneration();
-}  // End of 'TestUnit::onCreate' function
+}  // End of 'TestScene::onCreate' function
 
 /* Unit update override function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void TestUnit::onUpdate() {
+void TestScene::onUpdate() {
     unitModel->transformMatrix =
         math::matr4::translate(math::vec3(0, -1, 0)) *
         math::matr4::scale(math::vec3(10)) * math::matr4::rotateY(time * 50) *
         math::matr4::rotateX(-time * 30) * math::matr4::rotateZ(time * 20);
     cameraUpdate();
     inputUpdate();
-}  // End of 'TestUnit::onUpdate' function
+}  // End of 'TestScene::onUpdate' function
 
 // Class override destructor
-TestUnit::~TestUnit() {
+TestScene::~TestScene() {
     ::std::cout << "Clear test unit" << ::std::endl;
-}  // End of 'TestUnit::~TestUnit' function
+}  // End of 'TestScene::~TestScene' function
 }  // namespace hse

@@ -10,19 +10,20 @@ namespace hse {
 void Shader::parseShaderFromFile(const ::std::string &shaderPath) {
     ::std::string fullShaderPath;
     std::ifstream shaderFile;
-    ::std::string shaderSource;
 
-    for (auto &[name, type, id, source] : shaders) {
-        id = 0;
-        fullShaderPath = "../data/shaders/" + shaderPath + "/" + name + ".glsl";
+    for (auto &shader : shaders) {
+        shader.id = 0;
+        fullShaderPath =
+            "../data/shaders/" + shaderPath + "/" + shader.name + ".glsl";
         shaderFile.open(fullShaderPath);
-        if (!shaderFile.is_open()) EXCEPTION("Error in shader's path");
-        ::std::string line;
+        if (!shaderFile.is_open())
+            EXCEPTION("Error in shader's path: " + shaderPath);
+        ::std::string line, shaderSource;
         shaderSource = "";
         while (::std::getline(shaderFile, line))
             shaderSource += line + "\n ";
+        shader.source = shaderSource;
         shaderFile.close();
-        source = shaderSource.c_str();
     }
 }  // End of 'Shader::parseShaderFromFile' function
 
@@ -35,37 +36,26 @@ void Shader::parseShaderFromFile(const ::std::string &shaderPath) {
 void Shader::compileShaderProgram(const ::std::string &shaderPath) {
     parseShaderFromFile(shaderPath);
 
-    bool isError = false;
-    ::std::string fullShaderPath;
+    for (auto &shader : shaders) {
+        shader.id = glCreateShader(shader.type);
+        if (shader.id == 0) EXCEPTION("Error in shader creation");
 
-    for (auto &[name, type, id, source] : shaders) {
-        fullShaderPath = "../data/shaders/" + shaderPath + "/" + name + ".glsl";
-        id = glCreateShader(type);
-        if (id == 0) {
-            assert("Error in shader creation");
-            isError = true;
-            break;
-        }
-        glShaderSource(id, 1, &source, nullptr);
-        glCompileShader(id);
+        const char *tmp = shader.source.c_str();
+        glShaderSource(shader.id, 1, &tmp, nullptr);
+        glCompileShader(shader.id);
+
         int compileResult;
-        glGetShaderiv(id, GL_COMPILE_STATUS, &compileResult);
+        glGetShaderiv(shader.id, GL_COMPILE_STATUS, &compileResult);
         if (!compileResult) {
             char logBuffer[999];
             glGetShaderInfoLog(
-                id, sizeof(logBuffer), &compileResult, logBuffer
+                shader.id, sizeof(logBuffer), &compileResult, logBuffer
             );
-            ::std::cout << "Error in compiling: " << fullShaderPath
-                        << " logs:\n"
-                        << logBuffer << ::std::endl;
-            isError = true;
-            break;
+            EXCEPTION(shaderPath + ": \n" + logBuffer);
         }
     }
-    if (isError) return;
     programId = glCreateProgram();
     if (programId == 0) {
-        isError = true;
         EXCEPTION("Error in creating shader program");
     } else {
         for (auto &[name, type, id, source] : shaders)
@@ -78,19 +68,8 @@ void Shader::compileShaderProgram(const ::std::string &shaderPath) {
             glGetProgramInfoLog(
                 programId, sizeof(logBuffer), &linkStatus, logBuffer
             );
-            ::std::cout << "Error in linking: " << fullShaderPath
-                        << ::std::endl;
-            isError = true;
+            EXCEPTION(shaderPath + ": \n" + logBuffer);
         }
-    }
-    if (isError) {
-        for (auto &[name, type, id, source] : shaders)
-            if (id != 0) {
-                if (programId != 0) glDetachShader(programId, id);
-                glDeleteShader(id);
-            }
-        if (programId != 0) glDeleteProgram(programId);
-        programId = 0;
     }
 }  // End of 'Shader::compileShaderProgram' function
 

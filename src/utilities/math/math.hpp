@@ -5,5 +5,4 @@
 #include "vectors/vec2.hpp"
 #include "matrices/matr4.hpp"
 
-
 #endif  // MATH_HPP

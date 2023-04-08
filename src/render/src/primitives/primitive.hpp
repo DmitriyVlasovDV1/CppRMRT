@@ -10,7 +10,7 @@ namespace hse {
 // Primitive class declaration
 class Primitive {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
     friend class Model;
 
     VertexArray::renderType renderType;  // Rendering type

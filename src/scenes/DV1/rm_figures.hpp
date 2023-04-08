@@ -1,7 +1,7 @@
 #ifndef RM_FIGURES_HPP
 #define RM_FIGURES_HPP
 
-#include "../../render/src/units/unit.hpp"
+#include "../../render/src/scenes/scene.hpp"
 
 namespace hse {
 

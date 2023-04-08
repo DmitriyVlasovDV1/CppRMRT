@@ -8,22 +8,22 @@ namespace hse {
 // Shader class definition
 class Shader {
     // Friend classes
-    friend class Unit;
+    friend class Scene;
 
     uint programId;  // Shader program id
 
     // Shader program structure
     struct ShaderProgram {
-        const char *name;    // Shader name
-        int type;            // Shader type
-        int id;              // Shader id
-        const char *source;  // Shader source
+        const char *name;      // Shader name
+        int type;              // Shader type
+        int id;                // Shader id
+        ::std::string source;  // Shader source
     };
 
     // Shader's programs
     ::std::vector<ShaderProgram> shaders = {
-        {"vertex", GL_VERTEX_SHADER, 0, nullptr},
-        {"fragment", GL_FRAGMENT_SHADER, 0, nullptr}};
+        {"vertex", GL_VERTEX_SHADER, 0},
+        {"fragment", GL_FRAGMENT_SHADER, 0}};
 
     /* Parse shader program from file function.
      * ARGUMENTS:

@@ -64,7 +64,10 @@ void Render::onCreate(uint windowWidth_, uint windowHeight_) {
     glfwSetFramebufferSizeCallback(windowInstance, frameBufferSizeCallback);
     glfwSetKeyCallback(windowInstance, keyboardCallback);
     glewExperimental = true;
-    if (!glewInit()) EXCEPTION("Error in glew initialization");
+    if (GLenum glewStatus = glewInit(); glewStatus != GLEW_OK) {
+        ::std::cout << glewGetErrorString(glewStatus) << ::std::endl;
+        // EXCEPTION("Error in glew initialization");
+    }
     ::std::cout << "OpenGL: " << glGetString(GL_VERSION) << "\n";
     ::std::cout << "Shader language: "
                 << glGetString(GL_SHADING_LANGUAGE_VERSION) << ::std::endl;
@@ -81,7 +84,7 @@ void Render::onCreate(uint windowWidth_, uint windowHeight_) {
  */
 void Render::onUpdate() {
     // Initializing units
-    for (auto &[unitName, unitInstance] : unitsArray) {
+    for (auto &[unitName, unitInstance] : scenesArray) {
         unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
         unitInstance->onCreate();
     }
@@ -105,13 +108,13 @@ void Render::onUpdate() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
-        for (auto &[unitName, unitInstance] : unitsArray)
-            if (unitInstance->getVisibility()) {
-                unitInstance->mainCamera.setProjection(
+        for (auto &[sceneName, sceneInstance] : scenesArray)
+            if (sceneInstance->getVisibility()) {
+                sceneInstance->mainCamera.setProjection(
                     windowWidth, windowHeight
                 );
-                unitInstance->onUpdate();
-                unitInstance->onRender();
+                sceneInstance->onUpdate();
+                sceneInstance->onRender();
             }
         glFinish();
         glDisable(GL_DEPTH_TEST);
@@ -122,20 +125,20 @@ void Render::onUpdate() {
     }
 }  // End of 'Render::onUpdate' function
 
-/* Add unit instance to the unit's array function.
+/* Add scene's instance to the scenes array function.
  * ARGUMENTS:
- *   - unit name:
- *       const ::std::string &unitName;
- *   - unit instance:
- *       unit *unitInstance;
+ *   - scene name:
+ *       const ::std::string &sceneName;
+ *   - scene instance:
+ *       Scene *sceneInstance;
  * RETURNS: None.
  * NOTE:
  *   Returns value may be changed to (unit *) - not-owning pointer to
  * the scene, if we want to be able to copy scenes.
  */
-void Render::addUnit(const ::std::string &unitName, Unit *unitInstance) {
-    unitsArray[unitName] = unitInstance;
-}  // End of 'Render::addUnit' function
+void Render::addScene(const ::std::string &sceneName, Scene *sceneInstance) {
+    scenesArray[sceneName] = sceneInstance;
+}  // End of 'Render::addScene' function
 
 // Class default constructor
 Render::Render() : windowInstance(nullptr) {
@@ -156,9 +159,9 @@ Render::Render(uint windowWidth_, uint windowHeight_)
 
 // Class destructor
 Render::~Render() {
-    for (auto &[unitName, unitInstance] : unitsArray) {
-        unitInstance->onDelete();
-        delete unitInstance;
+    for (auto &[sceneName, sceneInstance] : scenesArray) {
+        sceneInstance->onDelete();
+        delete sceneInstance;
     }
     glfwDestroyWindow(windowInstance);
     glfwTerminate();

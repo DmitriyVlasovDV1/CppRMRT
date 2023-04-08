@@ -1,25 +1,25 @@
-#include "unit.hpp"
+#include "scene.hpp"
 
 // Project namespace
 namespace hse {
-/* Get unit's visibility flag function.
+/* Get scene's visibility flag function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (bool) - visibility flag.
  */
-bool Unit::getVisibility() const {
+bool Scene::getVisibility() const {
     return isVisible;
-}  // End of 'Unit::getVisibility' function
+}  // End of 'Scene::getVisibility' function
 
-/* Set unit's visibility flag function.
+/* Set scene's visibility flag function.
  * ARGUMENTS:
  *   - new flag:
  *       bool isVisible_;
  * RETURNS: None.
  */
-void Unit::setVisibility(bool isVisible_) {
+void Scene::setVisibility(bool isVisible_) {
     isVisible = isVisible_;
-}  // End of 'Unit::setVisibility' function
+}  // End of 'Scene::setVisibility' function
 
 /* Create vertex buffer function.
  * ARGUMENTS:
@@ -32,14 +32,14 @@ void Unit::setVisibility(bool isVisible_) {
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-VertexBuffer *Unit::createVertexBuffer(
+VertexBuffer *Scene::createVertexBuffer(
     const ::std::vector<float> &vertexBufferData,
     const ::std::string &vertexBufferFormat
 ) {
     auto vertexBuffer = new VertexBuffer(vertexBufferData, vertexBufferFormat);
     buffersArray.emplace_back(vertexBuffer);
     return vertexBuffer;
-}  // End of 'Unit::createVertexBuffer' function
+}  // End of 'Scene::createVertexBuffer' function
 
 /* Create index buffer function.
  * ARGUMENTS:
@@ -48,12 +48,12 @@ VertexBuffer *Unit::createVertexBuffer(
  * RETURNS:
  *   (IndexBuffer *) - not-owning pointer of created buffer;
  */
-IndexBuffer *Unit::createIndexBuffer(const ::std::vector<int> &indexBufferData
+IndexBuffer *Scene::createIndexBuffer(const ::std::vector<int> &indexBufferData
 ) {
     auto indexBuffer = new IndexBuffer(indexBufferData);
     buffersArray.emplace_back(indexBuffer);
     return indexBuffer;
-}  // End of 'Unit::createIndexBuffer' function
+}  // End of 'Scene::createIndexBuffer' function
 
 /* Create vertex array function.
  * ARGUMENTS:
@@ -68,7 +68,7 @@ IndexBuffer *Unit::createIndexBuffer(const ::std::vector<int> &indexBufferData
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-VertexArray *Unit::createVertexArray(
+VertexArray *Scene::createVertexArray(
     const ::std::vector<float> &vertexBufferData,
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBufferData
@@ -77,7 +77,7 @@ VertexArray *Unit::createVertexArray(
         new VertexArray(vertexBufferData, vertexBufferFormat, indexBufferData);
     buffersArray.emplace_back(vertexArray);
     return vertexArray;
-}  // End of 'Unit::createVertexArray' function
+}  // End of 'Scene::createVertexArray' function
 
 /* Create shader storage buffer function.
  * ARGUMENTS:
@@ -89,7 +89,7 @@ VertexArray *Unit::createVertexArray(
  *   (ShaderStorageBuffer *) - not-owning pointer of created buffer.
  */
 template <typename T>
-ShaderStorageBuffer *Unit::createShaderStorageBuffer(
+ShaderStorageBuffer *Scene::createShaderStorageBuffer(
     const ::std::vector<T> &bufferData,
     uint bufferBinding
 ) {
@@ -97,7 +97,7 @@ ShaderStorageBuffer *Unit::createShaderStorageBuffer(
         new ShaderStorageBuffer(bufferData, bufferBinding);
     buffersArray.emplace_back(shaderStorageBuffer);
     return shaderStorageBuffer;
-}  // End of 'Unit::createShaderStorageBuffer' function
+}  // End of 'Scene::createShaderStorageBuffer' function
 
 /* Create shader function.
  * ARGUMENTS:
@@ -106,11 +106,11 @@ ShaderStorageBuffer *Unit::createShaderStorageBuffer(
  * RETURNS:
  *   (Shader *) - not-owning pointer of shader program id.
  */
-Shader *Unit::createShader(const ::std::string &shaderPath) {
+Shader *Scene::createShader(const ::std::string &shaderPath) {
     if (shadersArray[shaderPath]) return shadersArray[shaderPath];
     shadersArray[shaderPath] = new Shader(shaderPath);
     return shadersArray[shaderPath];
-}  // End of 'Unit::createShader' function
+}  // End of 'Scene::createShader' function
 
 /* Create primitive function.
  * ARGUMENTS:
@@ -127,7 +127,7 @@ Shader *Unit::createShader(const ::std::string &shaderPath) {
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-Primitive *Unit::createPrimitive(
+Primitive *Scene::createPrimitive(
     const ::std::string &shaderPath,
     const ::std::vector<float> &vertexBufferData,
     const ::std::string &vertexBufferFormat,
@@ -138,7 +138,7 @@ Primitive *Unit::createPrimitive(
         vertexBufferFormat, indexBufferData
     ));
     return primitivesArray.back();
-}  // End of 'Unit::createPrimitive' function
+}  // End of 'Scene::createPrimitive' function
 
 /* Create primitive function.
  * ARGUMENTS:
@@ -155,7 +155,7 @@ Primitive *Unit::createPrimitive(
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-Primitive *Unit::createPrimitive(
+Primitive *Scene::createPrimitive(
     uint shaderProgramId,
     const ::std::vector<float> &vertexBufferData,
     const ::std::string &vertexBufferFormat,
@@ -165,7 +165,7 @@ Primitive *Unit::createPrimitive(
         shaderProgramId, vertexBufferData, vertexBufferFormat, indexBufferData
     ));
     return primitivesArray.back();
-}  // End of 'Unit::createPrimitive' function
+}  // End of 'Scene::createPrimitive' function
 
 /* Create model function.
  * ARGUMENTS:
@@ -176,7 +176,7 @@ Primitive *Unit::createPrimitive(
  * RETURNS:
  *   (model *) - not-owning pointer to the created model.
  */
-Model *Unit::createModel(
+Model *Scene::createModel(
     const ::std::string &shaderPath,
     const ::std::string &modelFileName
 ) {
@@ -184,7 +184,7 @@ Model *Unit::createModel(
         new Model(createShader(shaderPath)->programId, modelFileName)
     );
     return modelsArray.back();
-}  // End of 'Unit::createModel' function
+}  // End of 'Scene::createModel' function
 
 /* Create model function.
  * ARGUMENTS:
@@ -195,13 +195,13 @@ Model *Unit::createModel(
  * RETURNS:
  *   (model *) - not-owning pointer to the created model.
  */
-Model *Unit::createModel(
+Model *Scene::createModel(
     uint shaderProgramId,
     const ::std::string &modelFileName
 ) {
     modelsArray.push_back(new Model(shaderProgramId, modelFileName));
     return modelsArray.back();
-}  // End of 'Unit::createModel' function
+}  // End of 'Scene::createModel' function
 
 /* Create sphere primitive function.
  * ARGUMENTS:
@@ -216,7 +216,7 @@ Model *Unit::createModel(
  * RETURNS:
  *   (primitive *) - not-owning pointer to the created sphere primitive;
  */
-Primitive *Unit::createSpherePrimitive(
+Primitive *Scene::createSpherePrimitive(
     float radius,
     const math::vec3 &position,
     int stacks,
@@ -293,7 +293,7 @@ Primitive *Unit::createSpherePrimitive(
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
     return primitivesArray.back();
-}  // End of 'Unit::createSpherePrimitive' function
+}  // End of 'Scene::createSpherePrimitive' function
 
 /* Generate vertexes for plane primitive function.
  * ARGUMENTS:
@@ -313,7 +313,7 @@ Primitive *Unit::createSpherePrimitive(
  *       int indexesOffset;
  * RETURNS: None.
  */
-void Unit::generatePlaneVertexData(
+void Scene::generatePlaneVertexData(
     ::std::vector<float> &vertexBufferData,
     ::std::vector<int> &indexBufferData,
     const math::vec3 &width,
@@ -366,7 +366,7 @@ void Unit::generatePlaneVertexData(
     indexBufferData.push_back(indexesOffset + 2);
     indexBufferData.push_back(indexesOffset + 0);
     indexBufferData.push_back(indexesOffset + 3);
-}  // End of 'Unit::generatePlaneVertexData' function
+}  // End of 'Scene::generatePlaneVertexData' function
 
 /* Create plane primitive function.
  * ARGUMENTS:
@@ -379,7 +379,7 @@ void Unit::generatePlaneVertexData(
  * RETURNS:
  *   (primitive *) - not-owning pointer to the created plane primitive.
  */
-Primitive *Unit::createPlanePrimitive(
+Primitive *Scene::createPlanePrimitive(
     float width,
     float height,
     const math::vec3 &position
@@ -398,7 +398,7 @@ Primitive *Unit::createPlanePrimitive(
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
     return primitivesArray.back();
-}  // End of 'Unit::createPlanePrimitive' function
+}  // End of 'Scene::createPlanePrimitive' function
 
 /* Create cube primitive function.
  * ARGUMENTS:
@@ -413,7 +413,7 @@ Primitive *Unit::createPlanePrimitive(
  * RETURNS:
  *   (primitive *) - not-owning pointer to the created cube primitive.
  */
-Primitive *Unit::createCubePrimitive(
+Primitive *Scene::createCubePrimitive(
     float length,
     float width,
     float height,
@@ -464,12 +464,11 @@ Primitive *Unit::createCubePrimitive(
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
     return primitivesArray.back();
-}  // End of 'Unit::createCubePrimitive' function
+}  // End of 'Scene::createCubePrimitive' function
 
 // Class constructor
-Unit::Unit()
-    : isInitialized(false),
-      isVisible(true),
+Scene::Scene()
+    : isVisible(true),
       mainCamera(
           ::math::vec3(0),
           ::math::vec3(1, 0, 0),
@@ -478,25 +477,25 @@ Unit::Unit()
           400,
           400
       ) {
-}  // End of 'Unit::Unit' function
+}  // End of 'Scene::Scene' function
 
-/* Render unit function.
+/* Render scene function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void Unit::onRender() const {
+void Scene::onRender() const {
     for (auto &modelInstance : modelsArray)
         if (modelInstance->getVisibility()) modelInstance->onRender(mainCamera);
     for (auto &primitiveInstance : primitivesArray)
         if (primitiveInstance->getVisibility())
             primitiveInstance->onRender(mainCamera);
-}  // End of 'Unit::onRender' function
+}  // End of 'Scene::onRender' function
 
-/* Delete unit function.
+/* Delete scene function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */
-void Unit::onDelete() {
+void Scene::onDelete() {
     for (auto &bufferInstance : buffersArray)
         delete bufferInstance;
     for (auto &[shaderName, shaderInstance] : shadersArray)
@@ -505,5 +504,5 @@ void Unit::onDelete() {
         delete primitiveInstance;
     for (auto &modelInstance : modelsArray)
         delete modelInstance;
-}  // End of 'Unit::Clear' function
+}  // End of 'Scene::Clear' function
 }  // namespace hse

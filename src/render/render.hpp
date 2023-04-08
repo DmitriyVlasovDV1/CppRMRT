@@ -12,7 +12,7 @@ class Render {
     friend void factory();
 
     ::std::map<::std::string, Scene *> scenesArray;  // Scenes map
-    GLFWwindow *windowInstance;                     // Window instance
+    GLFWwindow *windowInstance;                      // Window instance
 
     /* Initializing glew/glfw function.
      * ARGUMENTS:

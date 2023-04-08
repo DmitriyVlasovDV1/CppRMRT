@@ -39,6 +39,7 @@ private:
         shaderUniform4fvConstant;  // Matrix4x4
                                    // uniforms
 
+public:
     // Class default constructor
     explicit Primitive();
 
@@ -80,6 +81,7 @@ private:
         VertexArray::renderType type_ = VertexArray::renderType::TRIANGLES
     );
 
+private:
     /* Render primitive function.
      * ARGUMENTS:
      *   - camera for rendering primitive:
@@ -88,10 +90,10 @@ private:
      */
     void onRender(const Camera &camera) const;
 
+public:
     // Class destructor
     ~Primitive();
 
-public:
     /* Attach shader program id to the primitive function.
      * ARGUMENTS:
      *   - shader program id:

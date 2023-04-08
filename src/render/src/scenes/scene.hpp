@@ -15,17 +15,51 @@ class Scene {
     friend class Render;
 
     bool isVisible;  // Scene's visibility flag
-    ::std::map<::std::string, Shader *> shadersArray;  // Scene's shader
-                                                       // programs array
-    ::std::vector<Primitive *> primitivesArray;  // Scene's primitives array
-    ::std::vector<Model *> modelsArray;          // Scene's models array
-    ::std::vector<Buffer *> buffersArray;        // Scene's buffers array
+    ::std::map<::std::string, ::std::unique_ptr<Shader>>
+        shadersArray;  // Scene's shader
+                       // programs array
+    ::std::vector<::std::unique_ptr<Primitive>> primitivesArray;  // Scene's
+                                                                  // primitives
+                                                                  // array
+    ::std::vector<::std::unique_ptr<Model>> modelsArray;    // Scene's models
+                                                            // array
+    ::std::vector<::std::unique_ptr<Buffer>> buffersArray;  // Scene's buffers
+                                                            // array
 
-protected:
+public:
     Camera mainCamera;  // Scene's main camera (can be changed, but all render
                         // works from this camera in each Scene)
 
-public:
+    // Class constructor
+    explicit Scene();
+
+    /* Scene initialization pure-virtual function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    virtual void onCreate() = 0;
+
+    /* Scene update pure-virtual function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    virtual void onUpdate() = 0;
+
+    /* Render scene function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void onRender() const;
+
+    /* Delete scene function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void onDelete();
+
+    // Class virtual destructor
+    virtual ~Scene() = default;
+
     /* Get scene's visibility flag function.
      * ARGUMENTS: None.
      * RETURNS:
@@ -265,37 +299,6 @@ public:
         float height,
         const math::vec3 &position
     );
-
-protected:
-    // Class constructor
-    explicit Scene();
-
-    /* Scene initialization pure-virtual function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    virtual void onCreate() = 0;
-
-    /* Scene update pure-virtual function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    virtual void onUpdate() = 0;
-
-    /* Render scene function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    void onRender() const;
-
-    /* Delete scene function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    void onDelete();
-
-    // Class virtual destructor
-    virtual ~Scene() = default;
 };  // End of 'Scene' class
 }  // namespace hse
 

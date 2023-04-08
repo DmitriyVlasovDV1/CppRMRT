@@ -2,6 +2,46 @@
 
 // Project namespace
 namespace hse {
+// Class constructor
+Scene::Scene()
+    : isVisible(true),
+      mainCamera(
+          ::math::vec3(0),
+          ::math::vec3(1, 0, 0),
+          ::math::vec3(0, 0, 1),
+          ::math::vec3(0, 1, 0),
+          400,
+          400
+      ) {
+}  // End of 'Scene::Scene' function
+
+/* Render scene function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+void Scene::onRender() const {
+    for (auto &modelInstance : modelsArray)
+        if (modelInstance->getVisibility()) modelInstance->onRender(mainCamera);
+    for (auto &primitiveInstance : primitivesArray)
+        if (primitiveInstance->getVisibility())
+            primitiveInstance->onRender(mainCamera);
+}  // End of 'Scene::onRender' function
+
+/* Delete scene function.
+ * ARGUMENTS: None.
+ * RETURNS: None.
+ */
+void Scene::onDelete() {
+    for (auto &bufferInstance : buffersArray)
+        bufferInstance.reset();
+    for (auto &[shaderName, shaderInstance] : shadersArray)
+        shaderInstance.reset();
+    for (auto &primitiveInstance : primitivesArray)
+        primitiveInstance.reset();
+    for (auto &modelInstance : modelsArray)
+        modelInstance.reset();
+}  // End of 'Scene::onDelete' function
+
 /* Get scene's visibility flag function.
  * ARGUMENTS: None.
  * RETURNS:
@@ -95,7 +135,9 @@ ShaderStorageBuffer *Scene::createShaderStorageBuffer(
 ) {
     auto shaderStorageBuffer =
         new ShaderStorageBuffer(bufferData, bufferBinding);
-    buffersArray.emplace_back(shaderStorageBuffer);
+    buffersArray.push_back(
+        ::std::make_unique<ShaderStorageBuffer>(shaderStorageBuffer)
+    );
     return shaderStorageBuffer;
 }  // End of 'Scene::createShaderStorageBuffer' function
 
@@ -107,9 +149,9 @@ ShaderStorageBuffer *Scene::createShaderStorageBuffer(
  *   (Shader *) - not-owning pointer of shader program id.
  */
 Shader *Scene::createShader(const ::std::string &shaderPath) {
-    if (shadersArray[shaderPath]) return shadersArray[shaderPath];
-    shadersArray[shaderPath] = new Shader(shaderPath);
-    return shadersArray[shaderPath];
+    if (shadersArray[shaderPath]) return shadersArray[shaderPath].get();
+    shadersArray[shaderPath] = ::std::make_unique<Shader>(shaderPath);
+    return shadersArray[shaderPath].get();
 }  // End of 'Scene::createShader' function
 
 /* Create primitive function.
@@ -133,11 +175,11 @@ Primitive *Scene::createPrimitive(
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBufferData
 ) {
-    primitivesArray.emplace_back(new Primitive(
-        createShader(shaderPath)->programId, vertexBufferData,
+    primitivesArray.emplace_back(::std::make_unique<Primitive>(
+        createShader(shaderPath)->getShaderProgramId(), vertexBufferData,
         vertexBufferFormat, indexBufferData
     ));
-    return primitivesArray.back();
+    return primitivesArray.back().get();
 }  // End of 'Scene::createPrimitive' function
 
 /* Create primitive function.
@@ -161,10 +203,10 @@ Primitive *Scene::createPrimitive(
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBufferData
 ) {
-    primitivesArray.emplace_back(new Primitive(
+    primitivesArray.emplace_back(::std::make_unique<Primitive>(
         shaderProgramId, vertexBufferData, vertexBufferFormat, indexBufferData
     ));
-    return primitivesArray.back();
+    return primitivesArray.back().get();
 }  // End of 'Scene::createPrimitive' function
 
 /* Create model function.
@@ -180,10 +222,10 @@ Model *Scene::createModel(
     const ::std::string &shaderPath,
     const ::std::string &modelFileName
 ) {
-    modelsArray.push_back(
-        new Model(createShader(shaderPath)->programId, modelFileName)
-    );
-    return modelsArray.back();
+    modelsArray.push_back(::std::make_unique<Model>(
+        createShader(shaderPath)->getShaderProgramId(), modelFileName
+    ));
+    return modelsArray.back().get();
 }  // End of 'Scene::createModel' function
 
 /* Create model function.
@@ -199,8 +241,10 @@ Model *Scene::createModel(
     uint shaderProgramId,
     const ::std::string &modelFileName
 ) {
-    modelsArray.push_back(new Model(shaderProgramId, modelFileName));
-    return modelsArray.back();
+    modelsArray.push_back(
+        ::std::make_unique<Model>(shaderProgramId, modelFileName)
+    );
+    return modelsArray.back().get();
 }  // End of 'Scene::createModel' function
 
 /* Create sphere primitive function.
@@ -286,13 +330,13 @@ Primitive *Scene::createSpherePrimitive(
     vertexBufferData.push_back(0.5);
     vertexBufferData.push_back(1);
 
-    primitivesArray.emplace_back(new Primitive(
-        createShader("shape")->programId, vertexBufferData, "v3v3v2",
+    primitivesArray.emplace_back(::std::make_unique<Primitive>(
+        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v2",
         indexBufferData
     ));
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
-    return primitivesArray.back();
+    return primitivesArray.back().get();
 }  // End of 'Scene::createSpherePrimitive' function
 
 /* Generate vertexes for plane primitive function.
@@ -391,13 +435,13 @@ Primitive *Scene::createPlanePrimitive(
         vertexBufferData, indexBufferData, math::vec3(width, 0, 0),
         math::vec3(0, 0, height), math::vec3(0), math::vec3(0, 1, 0)
     );
-    primitivesArray.emplace_back(new Primitive(
-        createShader("shape")->programId, vertexBufferData, "v3v3v2",
+    primitivesArray.emplace_back(::std::make_unique<Primitive>(
+        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v2",
         indexBufferData
     ));
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
-    return primitivesArray.back();
+    return primitivesArray.back().get();
 }  // End of 'Scene::createPlanePrimitive' function
 
 /* Create cube primitive function.
@@ -457,52 +501,12 @@ Primitive *Scene::createCubePrimitive(
         math::vec3(0, height, 0), math::vec3(-1, 0, 0),
         math::vec3(-length / 2, 0, 0), 20
     );
-    primitivesArray.emplace_back(new Primitive(
-        createShader("shape")->programId, vertexBufferData, "v3v3v2",
+    primitivesArray.emplace_back(::std::make_unique<Primitive>(
+        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v2",
         indexBufferData
     ));
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
-    return primitivesArray.back();
+    return primitivesArray.back().get();
 }  // End of 'Scene::createCubePrimitive' function
-
-// Class constructor
-Scene::Scene()
-    : isVisible(true),
-      mainCamera(
-          ::math::vec3(0),
-          ::math::vec3(1, 0, 0),
-          ::math::vec3(0, 0, 1),
-          ::math::vec3(0, 1, 0),
-          400,
-          400
-      ) {
-}  // End of 'Scene::Scene' function
-
-/* Render scene function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-void Scene::onRender() const {
-    for (auto &modelInstance : modelsArray)
-        if (modelInstance->getVisibility()) modelInstance->onRender(mainCamera);
-    for (auto &primitiveInstance : primitivesArray)
-        if (primitiveInstance->getVisibility())
-            primitiveInstance->onRender(mainCamera);
-}  // End of 'Scene::onRender' function
-
-/* Delete scene function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
-void Scene::onDelete() {
-    for (auto &bufferInstance : buffersArray)
-        delete bufferInstance;
-    for (auto &[shaderName, shaderInstance] : shadersArray)
-        delete shaderInstance;
-    for (auto &primitiveInstance : primitivesArray)
-        delete primitiveInstance;
-    for (auto &modelInstance : modelsArray)
-        delete modelInstance;
-}  // End of 'Scene::Clear' function
 }  // namespace hse

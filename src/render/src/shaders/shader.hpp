@@ -7,9 +7,6 @@
 namespace hse {
 // Shader class definition
 class Shader {
-    // Friend classes
-    friend class Scene;
-
     uint programId;  // Shader program id
 
     // Shader program structure
@@ -41,6 +38,7 @@ class Shader {
      */
     void compileShaderProgram(const ::std::string &shaderPath);
 
+public:
     // Class default constructor
     explicit Shader();
 
@@ -58,7 +56,6 @@ class Shader {
     // Class destructor
     ~Shader();
 
-public:
     /* Get shader id function.
      * ARGUMENTS: None.
      * RETURNS:

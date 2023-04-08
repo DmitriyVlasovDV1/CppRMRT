@@ -46,6 +46,7 @@ private:
      */
     void parseObj(const ::std::string &fileName);
 
+public:
     /* Class constructor.
      * ARGUMENTS:
      *   - model's shader program id:
@@ -55,6 +56,7 @@ private:
      */
     explicit Model(uint shaderProgramId_, const ::std::string &fileName);
 
+private:
     /* Draw model function.
      * ARGUMENTS:
      *   - camera for rendering model:
@@ -63,10 +65,10 @@ private:
      */
     void onRender(const Camera &camera) const;
 
+public:
     // Class destructor
     ~Model();
 
-public:
     /* Attach shader program id to the model function.
      * ARGUMENTS:
      *   - shader program id:

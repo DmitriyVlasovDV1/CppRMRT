@@ -110,6 +110,15 @@ IndexBuffer::IndexBuffer(const ::std::vector<int> &bufferData) {
     );
 }  // End of 'IndexBuffer::IndexBuffer' function
 
+/* Get indexes count function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (size_t) - indexes count.
+ */
+size_t IndexBuffer::getIndexesCount() const {
+    return indexesCount;
+}  // End of 'IndexBuffer::getIndexesCount' function
+
 // Class destructor
 IndexBuffer::~IndexBuffer() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -160,8 +169,8 @@ void VertexArray::onRender(renderType type) const {
             : type == TRIANGLES_STRIP ? GL_TRIANGLE_STRIP
             : type == QUADS           ? GL_QUADS
                                       : GL_LINES,
-            static_cast<int>(indexBufferObject->indexesCount), GL_UNSIGNED_INT,
-            nullptr
+            static_cast<int>(indexBufferObject->getIndexesCount()),
+            GL_UNSIGNED_INT, nullptr
         );
     } else
         glDrawArrays(
@@ -186,6 +195,8 @@ VertexArray::~VertexArray() {
     ::std::cout << "Clear vertex array" << ::std::endl;
 }  // End of 'VertexArray::~VertexArray' function
 
+::std::unordered_set<uint> ShaderStorageBuffer::usedBindings;
+
 /* Class constructor.
  * ARGUMENTS:
  *   - buffer's data:
@@ -200,8 +211,8 @@ ShaderStorageBuffer::ShaderStorageBuffer(
 ) {
     if (usedBindings.count(bufferBinding))
         EXCEPTION(("SSBO by binding = " + ::std::to_string(bufferBinding) +
-                "; Try to create ssbo with already used binding")
-                   .c_str());
+                   "; Try to create SSBO with already used binding")
+                      .c_str());
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufferId);
     glBufferData(
@@ -211,6 +222,17 @@ ShaderStorageBuffer::ShaderStorageBuffer(
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bufferBinding, bufferId);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }  // End of 'ShaderStorageBuffer::ShaderStorageBuffer' function
+
+/* Check if binding is free (0 ssbo bound by this number) function.
+ * ARGUMENTS:
+ *   - binding value:
+ *       uint binding;
+ * RETURNS:
+ *   (bool) - true if free, false - otherwise.
+ */
+bool ShaderStorageBuffer::checkBinding(uint binding) {
+    return usedBindings.count(binding);
+}  // End of 'ShaderStorageBuffer::checkBinding' function
 
 // Class destructor
 ShaderStorageBuffer::~ShaderStorageBuffer() {

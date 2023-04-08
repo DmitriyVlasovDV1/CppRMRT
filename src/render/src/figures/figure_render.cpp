@@ -3,25 +3,25 @@
 
 namespace hse {
 void CommonRender::init() {
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     for (auto &box : scene.getBoxes()) {
         auto *tmp = scene.createCubePrimitive(box.size, box.size, box.size, math::vec3(0));
-        tmp->addUniform(render::renderInstance.getTime(), "time");
+        tmp->addUniform(&time, "time");
         math::vec3 color = math::vec3(1, 0, 0);
-        tmp->addUniform(color, "vertexColor");
+        tmp->addUniform(&color, "vertexColor");
         m_boxes.push_back(tmp);
     }
     for (auto &sphere : scene.getSpheres()) {
         auto *tmp = scene.createSpherePrimitive(sphere.radius, math::vec3(0));
-        tmp->addUniform(render::renderInstance.getTime(), "time");
+        tmp->addUniform(&time, "time");
         math::vec3 color = math::vec3(1, 0, 0);
-        tmp->addUniform(color, "vertexColor");
+        tmp->addUniform(&color, "vertexColor");
         m_spheres.push_back(tmp);
     }
 }
 
 void CommonRender::render() {
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     for (auto &id : scene.getScene()) {
         math::matr4 transformation;
         preparePrimitives(id, transformation);
@@ -29,16 +29,16 @@ void CommonRender::render() {
 }
 
 void CommonRender::hide() {
-    for (primitive* prim : m_boxes) {
+    for (Primitive* prim : m_boxes) {
         prim->setVisibility(false);
     }
-    for (primitive* prim : m_spheres) {
+    for (Primitive* prim : m_spheres) {
         prim->setVisibility(false);
     }
 }
 
 void CommonRender::preparePrimitives(const FigureId &id, math::matr4 tranformation) {
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     const Figure &figure = scene.getFigureById(id);
 
     for (int i = figure.getTransformations().size() - 1; i > -1; i--) {
@@ -49,7 +49,7 @@ void CommonRender::preparePrimitives(const FigureId &id, math::matr4 tranformati
     }
     if (figure.creationType() == CreationType::PRIMITIVE) {
         PrimitiveId primId = figure.getSourcePrimitive();
-        primitive* prim = nullptr;
+        Primitive* prim = nullptr;
         if (primId.type() == PrimitiveType::BOX) {
             prim = m_boxes[primId.id()];
         }
@@ -71,7 +71,7 @@ void CommonRender::preparePrimitives(const FigureId &id, math::matr4 tranformati
 
 void RMRender::init() {
     // TODO: create sbo's, fill with data, create primitive and shader
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     m_spheresSSBO.setData(scene.getSpheres(), 2);
     m_boxesSSBO.setData(scene.getBoxes(), 3);
     m_matricesSSBO.setData(scene.getMatrices(), 4);
@@ -88,35 +88,35 @@ void RMRender::init() {
 
     for (int j = 0; j < 6; j++)
         indexBuffer[j] = j;
-    std::string vertexSource = createVertexSource("../data/shaders/rm/vertex.glsl");
-    std::string fragmentSource = createFragmentSource("../data/shaders/rm/fragment_src.glsl");
-    std::cout << fragmentSource << std::endl;
-    uint shdId = scene.createShader(vertexSource, fragmentSource, "rm_render");
-    m_canvas = scene.createPrimitive(shdId, vertexBuffer, "v3", indexBuffer);
-    m_canvas->addUniform(render::renderInstance.getWindowWidth(), "frame_w");
-    m_canvas->addUniform(render::renderInstance.getWindowHeight(), "frame_h");
-    m_canvas->addUniform(render::renderInstance.getTime(), "time");
-    m_canvas->addUniform(scene.mainCamera.getPosition(), "cam_pos");
-    m_canvas->addUniform(scene.mainCamera.getDirection(), "cam_dir");
-    m_canvas->addUniform(scene.mainCamera.getUp(), "cam_up");
-    m_canvas->addUniform(scene.mainCamera.getRight(), "cam_right");
+    //TODO std::string vertexSource = createVertexSource("../data/shaders/rm/vertex.glsl", "../data/shaders/rm_render/vertex.glsl");
+    //TODO std::string fragmentSource = createFragmentSource("../data/shaders/rm/fragment_src.glsl", "../data/shaders/rm_render/fragment.glsl");
+    // TODO uint shdId = scene.createShader(vertexSource, fragmentSource, "rm_render");
+    Shader *shd = scene.createShader("rm_render");
+    m_canvas = scene.createPrimitive(shd->getShaderProgramId(), vertexBuffer, "v3", indexBuffer);
+    m_canvas->addConstantUniform((int)windowWidth, "frame_w");
+    m_canvas->addConstantUniform((int)windowHeight, "frame_h");
+    m_canvas->addUniform(&time, "time");
+    m_canvas->addConstantUniform(scene.mainCamera.getPosition(), "cam_pos");
+    m_canvas->addConstantUniform(scene.mainCamera.getDirection(), "cam_dir");
+    m_canvas->addConstantUniform(scene.mainCamera.getUp(), "cam_up");
+    m_canvas->addConstantUniform(scene.mainCamera.getRight(), "cam_right");
     //    unitPrimitive->addUniform(frameH, "frame_h");
     //    unitPrimitive->addUniform(&render::renderInstance.getTime(), "time");
 }
 
 void RMRender::render() {
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     m_spheresSSBO.updateData(scene.getSpheres());
     m_boxesSSBO.updateData(scene.getBoxes());
     m_matricesSSBO.updateData(scene.getMatrices());
     m_twistsSSBO.updateData(scene.getTwistings());
     m_bendsSSBO.updateData(scene.getBendings());
     m_canvas->setVisibility(true);
-    m_canvas->addUniform(render::renderInstance.getTime(), "time");
-    m_canvas->addUniform(scene.mainCamera.getPosition(), "cam_pos");
-    m_canvas->addUniform(scene.mainCamera.getDirection(), "cam_dir");
-    m_canvas->addUniform(scene.mainCamera.getUp(), "cam_up");
-    m_canvas->addUniform(scene.mainCamera.getRight(), "cam_right");
+    m_canvas->addUniform(&time, "time");
+    m_canvas->addConstantUniform(scene.mainCamera.getPosition(), "cam_pos");
+    m_canvas->addConstantUniform(scene.mainCamera.getDirection(), "cam_dir");
+    m_canvas->addConstantUniform(scene.mainCamera.getUp(), "cam_up");
+    m_canvas->addConstantUniform(scene.mainCamera.getRight(), "cam_right");
 }
 
 void RMRender::hide() {
@@ -133,7 +133,7 @@ std::string RMRender::serializeOperation(const std::string &operationName, const
 
 // TODO maybe ref??
 std::string RMRender::serializeFigureId(const FigureId &id, std::string pos, std::string matr) {
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     const Figure &figure = scene.getFigureById(id);
 
     for (int i = figure.getTransformations().size() - 1; i > -1; i--) {
@@ -183,7 +183,7 @@ std::string RMRender::serializeFigureId(const FigureId &id, std::string pos, std
 }
 
 std::string RMRender::getSDFSceneSource() {
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     std::vector<FigureId> for_draw;
     for (auto figId : scene.getScene()) {
         for_draw.push_back(figId);
@@ -192,16 +192,18 @@ std::string RMRender::getSDFSceneSource() {
         "Surface SDF_scene(vec3 p)\n"
         "{\n"
         "\tvec4 pos = vec4(p.xyz, 1);"
-        "\tSurface res;\n"
-        "\tres = ";
-    res += serializeOperation("unite", for_draw, "pos", "mat4(1)");
-    res += ";\n"
-           "\treturn res;\n"
+        "\tSurface res;\n";
+    if (!for_draw.empty()) {
+        res += "\tres = ";
+        res += serializeOperation("unite", for_draw, "pos", "mat4(1)");
+        res += ";\n";
+    }
+    res += "\treturn res;\n"
            "}\n";
     return res;
 }
 
-std::string RMRender::createFragmentSource(const std::string &filePath) {
+std::string RMRender::createFragmentSource(const std::string &filePath, const std::string &outPath) {
     std::ifstream file(filePath);
     if (!file) {
         // TODO
@@ -216,10 +218,13 @@ std::string RMRender::createFragmentSource(const std::string &filePath) {
         }
     }
 
+    std::ofstream output(outPath);
+    output << source;
+
     return source;
 }
 
-std::string RMRender::createVertexSource(const std::string &filePath) const {
+std::string RMRender::createVertexSource(const std::string &filePath, const std::string &outPath) const {
     std::ifstream file(filePath);
     if (!file) {
         // TODO
@@ -230,6 +235,9 @@ std::string RMRender::createVertexSource(const std::string &filePath) const {
     while (std::getline(file, sourceLine)) {
         source += sourceLine + '\n';
     }
+
+    std::ofstream output(outPath);
+    output << source;
 
     return source;
 }

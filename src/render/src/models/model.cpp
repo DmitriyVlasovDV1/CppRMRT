@@ -7,10 +7,10 @@ namespace hse {
  *       const ::std::string &fileName;
  * RETURNS: None.
  */
-void model::parseObj(const ::std::string &fileName) {
+void Model::parseObj(const ::std::string &fileName) {
     ::std::ifstream fileContent("../data/models/" + fileName);
     if (!fileContent.is_open())
-        assert(("Do not found model file: " + fileName).c_str());
+        EXCEPTION(("Do not found model file: " + fileName).c_str());
 
     ::std::vector<math::vec3> vertexPositions, vertexNormals;
     ::std::vector<math::vec2> vertexTextureCoordinates;
@@ -22,7 +22,7 @@ void model::parseObj(const ::std::string &fileName) {
     while (fileContent >> type) {
         if (type == "o") {
             if (oldType == "f" && !vertexBufferData.empty()) {
-                primitivesArray.push_back(new primitive(
+                primitivesArray.push_back(new Primitive(
                     shaderProgramId, vertexBufferData, "v3v2v3", indexBufferData
                 ));
                 primitivesArray.back()->setRenderType(renderType);
@@ -96,7 +96,7 @@ void model::parseObj(const ::std::string &fileName) {
             }
         } else {
             // Not really sure that it's the best way
-            // assert(("Wrong file format in file: " + fileName).c_str());
+            // EXCEPTION(("Unknown tag in file: " + fileName).c_str());
 
             // Skipping unknown tag
             ::std::string line;
@@ -105,10 +105,10 @@ void model::parseObj(const ::std::string &fileName) {
         oldType = type;
     }
     if (!vertexBufferData.empty())
-        primitivesArray.push_back(new primitive(
+        primitivesArray.push_back(new Primitive(
             shaderProgramId, vertexBufferData, "v3v2v3", indexBufferData
         ));
-}  // End of 'model::parseObj' function
+}  // End of 'Model::parseObj' function
 
 /* Class constructor.
  * ARGUMENTS:
@@ -117,10 +117,10 @@ void model::parseObj(const ::std::string &fileName) {
  *   - model's file name:
  *       const ::std::string &fileName.
  */
-model::model(uint shaderProgramId_, const ::std::string &fileName)
+Model::Model(uint shaderProgramId_, const ::std::string &fileName)
     : shaderProgramId(shaderProgramId_),
       isVisible(true),
-      renderType(buffer::renderType::TRIANGLES) {
+      renderType(VertexArray::renderType::TRIANGLES) {
     ::std::string fileFormat;
     for (size_t iterator = fileName.size() - 1;
          iterator > 0 && fileName[iterator] != '.'; iterator--)
@@ -130,37 +130,78 @@ model::model(uint shaderProgramId_, const ::std::string &fileName)
         parseObj(fileName);
     else
         assert("Wrong file format");
-}  // End of 'model::model' function
+}  // End of 'Model::Model' function
 
 /* Draw model function.
  * ARGUMENTS:
  *   - camera for rendering model:
- *      const camera &camera;
+ *      const Camera &camera;
  * RETURNS: None.
  */
-void model::render(const camera &camera) const {
+void Model::onRender(const Camera &camera) const {
     glUseProgram(shaderProgramId);
     int uniformLocation;
-    for (auto &[uniformName, uniformValue] : shaderUniform1i) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1) glUniform1i(uniformLocation, uniformValue);
+    // Handle all non-constant uniforms
+    {
+        for (auto &[uniformName, uniformValue] : shaderUniform1i) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1i(uniformLocation, *uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform1f) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1f(uniformLocation, *uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform3fv(uniformLocation, 1, &(*uniformValue).x);
+        }
+        for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniformMatrix4fv(
+                    uniformLocation, 1, GL_FALSE, (float *)(*uniformPair).matrix
+                );
+        }
     }
-    for (auto &[uniformName, uniformValue] : shaderUniform1f) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1) glUniform1f(uniformLocation, uniformValue);
+
+    // Handle all constant uniforms
+    {
+        for (auto &[uniformName, uniformValue] : shaderUniform1iConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1i(uniformLocation, uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform1fConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1f(uniformLocation, uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform3fvConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform3fv(uniformLocation, 1, &uniformValue.x);
+        }
+        for (auto &[uniformName, uniformPair] : shaderUniform4fvConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniformMatrix4fv(
+                    uniformLocation, 1, GL_FALSE, (float *)uniformPair.matrix
+                );
+        }
     }
-    for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1)
-            glUniform3fv(uniformLocation, 1, &uniformValue.x);
-    }
-    for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1)
-            glUniformMatrix4fv(
-                uniformLocation, 1, GL_FALSE, (float *)uniformPair.matrix
-            );
-    }
+
+    // Common uniforms for each model
     uniformLocation =
         glGetUniformLocation(shaderProgramId, "modelTransformMatrix");
     if (uniformLocation != -1)
@@ -168,16 +209,18 @@ void model::render(const camera &camera) const {
             uniformLocation, 1, GL_FALSE, (float *)transformMatrix.matrix
         );
     glUseProgram(0);
+
+    // Render model
     for (auto &primitiveInstance : primitivesArray)
-        primitiveInstance->render(camera);
-}  // End of 'model::render' function
+        primitiveInstance->onRender(camera);
+}  // End of 'Model::onRender' function
 
 // Class destructor
-model::~model() {
+Model::~Model() {
     for (auto &primitive : primitivesArray)
         delete primitive;
     ::std::cout << "Clear model" << ::std::endl;
-}  // End of 'model::~model' function
+}  // End of 'Model::~Model' function
 
 /* Attach shader program id to the model function.
  * ARGUMENTS:
@@ -185,18 +228,18 @@ model::~model() {
  *       uint shaderProgramId_;
  * RETURNS: None.
  */
-void model::setShaderProgram(uint shaderProgramId_) {
+void Model::setShaderProgram(uint shaderProgramId_) {
     shaderProgramId = shaderProgramId_;
-}  // End of 'model::setShaderProgram' function
+}  // End of 'Model::setShaderProgram' function
 
 /* Get model's visibility flag function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (bool) - visibility flag.
  */
-bool model::getVisibility() const {
+bool Model::getVisibility() const {
     return isVisible;
-}  // End of 'model::getVisibility' function
+}  // End of 'Model::getVisibility' function
 
 /* Set model's visibility flag function.
  * ARGUMENTS:
@@ -204,52 +247,100 @@ bool model::getVisibility() const {
  *       bool isVisible_;
  * RETURNS: None.
  */
-void model::setVisibility(bool isVisible_) {
+void Model::setVisibility(bool isVisible_) {
     isVisible = isVisible_;
-}  // End of 'model::setVisibility' function
+}  // End of 'Model::setVisibility' function
 
 /* Get model rendering type function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (buffer::renderType) - rendering type.
+ *   (VertexArray::renderType) - rendering type.
  */
-buffer::renderType model::getRenderType() const {
+VertexArray::renderType Model::getRenderType() const {
     return renderType;
-}  // End of 'model::getRenderType' function
+}  // End of 'Model::getRenderType' function
 
 /* Set model rendering type function.
  * ARGUMENTS:
  *   - new rendering type:
- *       buffer::renderType renderType_:
+ *       VertexArray::renderType renderType_:
  * RETURNS: None.
  */
-void model::setRenderType(buffer::renderType renderType_) {
+void Model::setRenderType(VertexArray::renderType renderType_) {
     renderType = renderType_;
     for (auto &primitiveInstance : primitivesArray)
         primitiveInstance->renderType = renderType_;
-}  // End of 'model::setRenderType' function
+}  // End of 'Model::setRenderType' function
 
 /* Get number of primitives in model function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (int) - number of primitives in model.
  */
-int model::getNumberOfChildren() const {
+int Model::getNumberOfChildren() const {
     return static_cast<int>(primitivesArray.size());
-}  // End of 'model::getNumberOfChildren' function
+}  // End of 'Model::getNumberOfChildren' function
 
 /* Get primitive's pointer by index in model function.
  * ARGUMENTS:
  *   - index of the primitive:
  *       int index;
  * RETURNS:
- *   (primitive *) - not-owning pointer to the primitive.
+ *   (Primitive *) - not-owning pointer to the primitive.
  */
-primitive *model::getChild(int index) const {
+Primitive *Model::getChild(int index) const {
     return primitivesArray[index];
-}  // End of 'model::getChild' function
+}  // End of 'Model::getChild' function
 
 /* Add uniform of one integer variable to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const int *uniformValue;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addUniform(const int *uniformValue, const char *uniformName) {
+    shaderUniform1i[uniformName] = uniformValue;
+}  // End of 'Model::addUniform' function
+
+/* Add uniform of one float variable to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const float *uniformValue;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addUniform(const float *uniformValue, const char *uniformName) {
+    shaderUniform1f[uniformName] = uniformValue;
+}  // End of 'Model::addUniform' function
+
+/* Add uniform of 3-component geom vector to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const math::vec3 *vector;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addUniform(const math::vec3 *vector, const char *uniformName) {
+    shaderUniform3fv[uniformName] = vector;
+}  // End of 'Model::addUniform' function
+
+/* Add uniform of matrix4x4 variable to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const math::matr4 *uniformValue;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addUniform(const math::matr4 *matrix, const char *uniformName) {
+    shaderUniform4fv[uniformName] = matrix;
+}  // End of 'Model::addUniform' function
+
+/* Add constant uniform of one integer variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
  *       int uniformValue;
@@ -257,11 +348,11 @@ primitive *model::getChild(int index) const {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void model::addUniform(int uniformValue, const char *uniformName) {
-    shaderUniform1i[uniformName] = uniformValue;
-}  // End of 'model::addUniform' function
+void Model::addConstantUniform(int uniformValue, const char *uniformName) {
+    shaderUniform1iConstant[uniformName] = uniformValue;
+}  // End of 'Model::addConstantUniform' function
 
-/* Add uniform of one float variable to the shader function.
+/* Add constant uniform of one float variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
  *       float uniformValue;
@@ -269,11 +360,11 @@ void model::addUniform(int uniformValue, const char *uniformName) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void model::addUniform(float uniformValue, const char *uniformName) {
-    shaderUniform1f[uniformName] = uniformValue;
-}  // End of 'model::addUniform' function
+void Model::addConstantUniform(float uniformValue, const char *uniformName) {
+    shaderUniform1fConstant[uniformName] = uniformValue;
+}  // End of 'Model::addConstantUniform' function
 
-/* Add uniform of 3-component geom vector to the shader function.
+/* Add constant uniform of 3-component geom vector to the shader function.
  * ARGUMENTS:
  *   - uniform value:
  *       const math::vec3 &vector;
@@ -281,21 +372,25 @@ void model::addUniform(float uniformValue, const char *uniformName) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void model::addUniform(const math::vec3 &vector, const char *uniformName) {
-    shaderUniform3fv[uniformName] = vector;
-}  // End of 'model::addUniform' function
+void Model::addConstantUniform(
+    const math::vec3 &vector,
+    const char *uniformName
+) {
+    shaderUniform3fvConstant[uniformName] = vector;
+}  // End of 'Model::addConstantUniform' function
 
-/* Add uniform of matrix4x4 variable to the shader function.
+/* Add constant uniform of matrix4x4 variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       const math::matr4 &uniformValue;
+ *       const math::matr4 &matrix;
  *   - uniform name on the shader:
  *       const char *uniformName;
- *   - uniforms number:
- *       int uniformCount;
  * RETURNS: None.
  */
-void model::addUniform(const math::matr4 &matrix, const char *uniformName) {
-    shaderUniform4fv[uniformName] = matrix;
-}  // End of 'model::addUniform' function
+void Model::addConstantUniform(
+    const math::matr4 &matrix,
+    const char *uniformName
+) {
+    shaderUniform4fvConstant[uniformName] = matrix;
+}  // End of 'Model::addConstantUniform' function
 }  // namespace hse

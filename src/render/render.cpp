@@ -2,17 +2,57 @@
 
 // Project namespace
 namespace hse {
-render render::renderInstance;  // Render class singleton object for receiving
-                                // public variables (time, delta time, window
-                                // size, ect.)
 
-/* Initialized glew/glfw function.
+FigureScene Render::scene;
+
+/* Resize window callback-function.
+ * ARGUMENTS:
+ *   - window instance:
+ *       GLFWwindow *window;
+ *   - window width and height:
+ *       int width, height;
+ * RETURNS: None.
+ */
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
+    windowWidth = width;
+    windowHeight = height;
+    glViewport(0, 0, width, height);
+}  // End of 'frameBufferSizeCallback' function
+
+/* Keyboard response window callback function.
+ * ARGUMENTS:
+ *   - window instance:
+ *       GLFWwindow *window;
+ *   - key:
+ *       int key;
+ *   - key's scaned code:
+ *       int scancode;
+ *   - key's action:
+ *       int action;
+ *   - key's mods:
+ *       int mods;
+ * RETURNS: None.
+ */
+void keyboardCallback(
+    GLFWwindow *window,
+    int key,
+    int scancode,
+    int action,
+    int mods
+) {
+    keys[key] = {action, mods};
+}  // End of 'keyboardCallback' function
+
+/* Initializing glew/glfw function.
  * ARGUMENTS:
  *   - window width and height:
  *       uint windowWidth_, windowHeight_;
  * RETURNS: None.
  */
-void render::init(uint windowWidth_, uint windowHeight_) {
+void Render::onCreate(uint windowWidth_, uint windowHeight_) {
+    time = 0;
+    deltaTime = 0;
+    isPause = false;
     windowWidth = windowWidth_;
     windowHeight = windowHeight_;
     windowInstance = glfwCreateWindow(
@@ -21,13 +61,16 @@ void render::init(uint windowWidth_, uint windowHeight_) {
     );
     if (!windowInstance) {
         glfwTerminate();
-        assert("Error in glfw window creation");
+        EXCEPTION("Error in glfw window creation");
     }
     glfwMakeContextCurrent(windowInstance);
     glfwSetFramebufferSizeCallback(windowInstance, frameBufferSizeCallback);
     glfwSetKeyCallback(windowInstance, keyboardCallback);
     glewExperimental = true;
-    if (!glewInit()) assert("Error in glew initialization");
+    if (GLenum glewStatus = glewInit(); glewStatus != GLEW_OK) {
+        ::std::cout << glewGetErrorString(glewStatus) << ::std::endl;
+        // EXCEPTION("Error in glew initialization");
+    }
     ::std::cout << "OpenGL: " << glGetString(GL_VERSION) << "\n";
     ::std::cout << "Shader language: "
                 << glGetString(GL_SHADING_LANGUAGE_VERSION) << ::std::endl;
@@ -44,14 +87,13 @@ void render::init(uint windowWidth_, uint windowHeight_) {
  * NOTE:
  *   If we want to create several windows - let's do it in far-far future.
  */
-void render::response() {
+void Render::onUpdate() {
     // Initializing units
-    for (auto &[unitName, unitInstance] : unitsArray) {
+    for (auto &[unitName, unitInstance] : scenesArray) {
         unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
-        unitInstance->init();
+        unitInstance->onCreate();
     }
-    scene.init();
-
+    scene.onCreate();
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
@@ -64,22 +106,26 @@ void render::response() {
         // Calculating current FPS
         glfwSetWindowTitle(
             windowInstance,
-            ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime))+ " | Current render: " +
-                (scene.getRenderType() == RenderType::COMMON ? "Common" : "RM")).c_str()
+            ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)) +
+             " | Render type: " + (scene.getRenderType() == RenderType::COMMON ? "common": "rm") +
+             " (press " + (scene.getRenderType() == RenderType::COMMON ? "\"R\"" : "\"C\"") + " for change)")
+                .c_str()
         );
 
-        // Response/Render all units
+        // Update/Render all units
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
-
-        for (auto &[unitName, unitInstance] : unitsArray)
-            if (unitInstance->getVisibility()) {
-                unitInstance->response();
-                unitInstance->render();
+        for (auto &[sceneName, sceneInstance] : scenesArray)
+            if (sceneInstance->getVisibility()) {
+                sceneInstance->mainCamera.setProjection(
+                    windowWidth, windowHeight
+                );
+                sceneInstance->onUpdate();
+                sceneInstance->onRender();
             }
-        scene.response();
-        scene.render();
+        scene.onUpdate();
+        scene.onRender();
         glFinish();
         glDisable(GL_DEPTH_TEST);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -87,156 +133,48 @@ void render::response() {
         glfwSwapBuffers(windowInstance);
         glfwPollEvents();
     }
-}  // End of 'render::response' function
+}  // End of 'Render::onUpdate' function
 
-/* Add unit instance to the unit's array function.
+/* Add scene's instance to the scenes array function.
  * ARGUMENTS:
- *   - unit name:
- *       const ::std::string &unitName;
- *   - unit instance:
- *       unit *unitInstance;
+ *   - scene name:
+ *       const ::std::string &sceneName;
+ *   - scene instance:
+ *       Scene *sceneInstance;
  * RETURNS: None.
  * NOTE:
  *   Returns value may be changed to (unit *) - not-owning pointer to
  * the scene, if we want to be able to copy scenes.
  */
-void render::addUnit(const ::std::string &unitName, unit *unitInstance) {
-    unitsArray[unitName] = unitInstance;
-}  // End of 'render::addUnit' function
-
-/* Get time value function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (float) - time value.
- */
-float render::getTime() const {
-    return time;
-}  // End of 'render::getTime' function
-
-/* Get pause flag function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (bool) - paused flag.
- */
-bool render::getPauseFlag() const {
-    return isPause;
-}  // End of 'render::getPauseFlag' function
-
-/* Set pause flag function.
- * ARGUMENTS:
- *   - new pause flag value:
- *       bool isPause_;
- * RETURNS: None.
- */
-void render::setPauseFlag(bool isPause_) {
-    isPause = isPause_;
-}  // End of 'render::setPauseFlag' function
-
-/* Get delta time between frames function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (float) - delta time.
- */
-float render::getDeltaTime() const {
-    return deltaTime;
-}  // End of 'render::getDeltaTime' function
-
-/* Get window width function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (uint) - window width.
- */
-int render::getWindowWidth() const {
-    return windowWidth;
-}  // End of 'render::getWindowWidth' function
-
-/* Get window height function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (uint) - window height.
- */
-int render::getWindowHeight() const {
-    return windowHeight;
-}  // End of 'render::getWindowHeight' function
+void Render::addScene(const ::std::string &sceneName, Scene *sceneInstance) {
+    scenesArray[sceneName] = sceneInstance;
+}  // End of 'Render::addScene' function
 
 // Class default constructor
-render::render()
-    : windowWidth(0),
-      windowHeight(0),
-      windowInstance(nullptr),
-      time(0),
-      deltaTime(0),
-      isPause(false) {
-}  // End of 'render::render' function
+Render::Render() : windowInstance(nullptr) {
+    time = 0;
+    deltaTime = 0;
+    isPause = false;
+}  // End of 'Render::Render' function
 
 /* Class constructor.
  * ARGUMENTS:
  *   - window width and height:
  *       uint windowWidth, windowHeight;
  */
-render::render(uint windowWidth_, uint windowHeight_)
-    : windowWidth(0),
-      windowHeight(0),
-      windowInstance(nullptr),
-      time(0),
-      deltaTime(0),
-      isPause(false) {
-    init(windowWidth_, windowHeight_);
-}  // End of 'render::render' function
-
-/* Resize window callback-function.
- * ARGUMENTS:
- *   - window instance:
- *       GLFWwindow *window;
- *   - window width and height:
- *       int width, height;
- * RETURNS: None.
- */
-void render::frameBufferSizeCallback(
-    GLFWwindow *window,
-    int width,
-    int height
-) {
-    renderInstance.windowWidth = width;
-    renderInstance.windowHeight = height;
-    for (auto &[unitName, unitInstance] : renderInstance.unitsArray)
-        unitInstance->mainCamera.setProjection(width, height);
-    glViewport(0, 0, width, height);
-}  // End of 'render::frameBufferSizeCallback' function
-
-/* Keyboard response window callback function.
- * ARGUMENTS:
- *   - window instance:
- *       GLFWwindow *window;
- *   - key:
- *       int key;
- *   - key's scaned code:
- *       int scancode;
- *   - key's action:
- *       int action;
- *   - key's mods:
- *       int mods;
- * RETURNS: None.
- */
-void render::keyboardCallback(
-    GLFWwindow *window,
-    int key,
-    int scancode,
-    int action,
-    int mods
-) {
-    renderInstance.keys[key] = {action, mods};
-}  // End of 'render::keyboardCallback' function
-
+Render::Render(uint windowWidth_, uint windowHeight_)
+    : windowInstance(nullptr) {
+    onCreate(windowWidth_, windowHeight_);
+}  // End of 'Render::Render' function
 
 // Class destructor
-render::~render() {
-    for (auto &[unitName, unitInstance] : unitsArray) {
-        unitInstance->clear();
-        delete unitInstance;
+Render::~Render() {
+    for (auto &[sceneName, sceneInstance] : scenesArray) {
+        sceneInstance->onDelete();
+        delete sceneInstance;
     }
     glfwDestroyWindow(windowInstance);
     glfwTerminate();
     ::std::cout << "Clear render" << ::std::endl;
-}  // End of 'render::~render' function
+}  // End of 'Render::~Render' function
 }  // namespace hse

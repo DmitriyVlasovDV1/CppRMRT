@@ -10,32 +10,64 @@
 
 namespace hse {
 // Unit class declaration
-class unit {
+class Scene {
     // Friend classes
-    friend class render;
+    friend class Render;
 
-    bool isVisible;      // Unit's visibility flag
-    bool isInitialized;  // We can have a lot of copies of one unit,
-                         // but we want to initialize it only once
-    ::std::map<::std::string, shader *> shadersArray;  // Unit's shader programs
-                                                       // array
-    ::std::vector<primitive *> primitivesArray;  // Unit's primitives array
-    ::std::vector<model *> modelsArray;          // Unit's models array
-    ::std::vector<buffer *> buffersArray;        // Unit's buffers array
+    bool isVisible;  // Scene's visibility flag
+    ::std::map<::std::string, ::std::unique_ptr<Shader>>
+        shadersArray;  // Scene's shader
+                       // programs array
+    ::std::vector<::std::unique_ptr<Primitive>> primitivesArray;  // Scene's
+                                                                  // primitives
+                                                                  // array
+    ::std::vector<::std::unique_ptr<Model>> modelsArray;    // Scene's models
+                                                            // array
+    ::std::vector<::std::unique_ptr<Buffer>> buffersArray;  // Scene's buffers
+                                                            // array
 
 public:
-    camera mainCamera;  // Unit's main camera (can be changed, but all render
-                        // works from this camera in each unit)
+    Camera mainCamera;  // Scene's main camera (can be changed, but all render
+                        // works from this camera in each Scene)
 
-public:
-    /* Get unit's visibility flag function.
+    // Class constructor
+    Scene();
+
+    /* Scene initialization pure-virtual function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    virtual void onCreate() = 0;
+
+    /* Scene update pure-virtual function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    virtual void onUpdate() = 0;
+
+    /* Render scene function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void onRender() const;
+
+    /* Delete scene function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void onDelete();
+
+    // Class virtual destructor
+    virtual ~Scene() = default;
+
+    /* Get scene's visibility flag function.
      * ARGUMENTS: None.
      * RETURNS:
      *   (bool) - visibility flag.
      */
     bool getVisibility() const;
 
-    /* Set unit's visibility flag function.
+    /* Set scene's visibility flag function.
      * ARGUMENTS:
      *   - new flag:
      *       bool isVisible_;
@@ -50,11 +82,11 @@ public:
      *   - buffer's format:
      *       const ::std::string &vertexBufferFormat;
      * RETURNS:
-     *   (uint) - created buffer id;
+     *   (VertexBuffer *) - not-owning pointer of created buffer;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    uint createVertexBuffer(
+    VertexBuffer *createVertexBuffer(
         const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat = "v3"
     );
@@ -64,9 +96,9 @@ public:
      *   - buffer's data;
      *       const ::std::vector<int> &indexBufferData.
      * RETURNS:
-     *   (uint) - created buffer id;
+     *   (IndexBuffer *) - not-owning pointer of created buffer;
      */
-    uint createIndexBuffer(const ::std::vector<int> &indexBufferData);
+    IndexBuffer *createIndexBuffer(const ::std::vector<int> &indexBufferData);
 
     /* Create vertex array function.
      * ARGUMENTS:
@@ -77,11 +109,11 @@ public:
      *   - index buffer data:
      *       const ::std::vector<int> &indexBufferData;
      * RETURNS:
-     *   (uint) - created buffer id.
+     *   (VertexArray *) - not-owning pointer of created buffer.
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    uint createVertexArray(
+    VertexArray *createVertexArray(
         const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat,
         const ::std::vector<int> &indexBufferData
@@ -94,10 +126,10 @@ public:
      *   - buffer's binding value:
      *       uint bufferBinding.
      * RETURNS:
-     *   (uint) - created buffer id.
+     *   (ShaderStorageBuffer *) - not-owning pointer of created buffer.
      */
     template <typename T>
-    uint createShaderStorageBuffer(
+    ShaderStorageBuffer *createShaderStorageBuffer(
         const ::std::vector<T> &bufferData,
         uint bufferBinding
     );
@@ -107,26 +139,9 @@ public:
      *   - path to shader's realization (read shader class constructor note)
      *       const ::std::string &shaderPath;
      * RETURNS:
-     *   (uint) - shader program id.
+     *   (Shader *) - not-owning pointer of shader program id.
      */
-    uint createShader(const ::std::string &shaderPath);
-
-    /* Create shader function.
-     * ARGUMENTS:
-     *   - vertex shader source in string:
-     *       const ::std::string &vertexShaderSource;
-     *   - fragment shader source in string:
-     *       const ::std::string &fragmentShaderSource;
-     *   - path to shader's realization (read shader class constructor note)
-     *       const ::std::string &shaderPath;
-     * RETURNS:
-     *   (uint) - shader program id.
-     */
-    uint createShader(
-        const ::std::string &vertexShaderSource,
-        const ::std::string &fragmentShaderSource,
-        const ::std::string &shaderPath = ""
-    );
+    Shader *createShader(const ::std::string &shaderPath);
 
     /* Create primitive function.
      * ARGUMENTS:
@@ -143,7 +158,7 @@ public:
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
-    primitive *createPrimitive(
+    Primitive *createPrimitive(
         const ::std::string &shaderPath,
         const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat = "v3v3",
@@ -163,7 +178,7 @@ public:
      * RETURNS:
      *   (primitive *) - not-owning pointer to the created primitive.
      */
-    primitive *createPrimitive(
+    Primitive *createPrimitive(
         uint shaderProgramId,
         const ::std::vector<float> &vertexBufferData,
         const ::std::string &vertexBufferFormat,
@@ -179,7 +194,7 @@ public:
      * RETURNS:
      *   (model *) - not-owning pointer to the created model.
      */
-    model *createModel(
+    Model *createModel(
         const ::std::string &shaderPath,
         const ::std::string &modelFileName
     );
@@ -193,7 +208,7 @@ public:
      * RETURNS:
      *   (model *) - not-owning pointer to the created model.
      */
-    model *createModel(
+    Model *createModel(
         uint shaderProgramId,
         const ::std::string &modelFileName
     );
@@ -211,7 +226,7 @@ public:
      * RETURNS:
      *   (primitive *) - not-owning pointer to the created sphere primitive.
      */
-    primitive *createSpherePrimitive(
+    Primitive *createSpherePrimitive(
         float radius,
         const math::vec3 &position,
         int stacks = 20,
@@ -259,7 +274,7 @@ public:
      * RETURNS:
      *   (primitive *) - not-owning pointer to the created plane primitive.
      */
-    primitive *createPlanePrimitive(
+    Primitive *createPlanePrimitive(
         float width,
         float height,
         const math::vec3 &position
@@ -278,44 +293,13 @@ public:
      * RETURNS:
      *   (primitive *) - not-owning pointer to the created cube primitive.
      */
-    primitive *createCubePrimitive(
+    Primitive *createCubePrimitive(
         float length,
         float width,
         float height,
         const math::vec3 &position
     );
-
-protected:
-    // Class constructor
-    explicit unit();
-
-    /* Unit initialization pure-virtual function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    virtual void init() = 0;
-
-    /* Unit response pure-virtual function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    virtual void response() = 0;
-
-    /* Render unit function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    void render() const;
-
-    /* Clear unit function.
-     * ARGUMENTS: None.
-     * RETURNS: None.
-     */
-    void clear();
-
-    // Class virtual destructor
-    virtual ~unit() = default;
-};  // End of 'unit' class
+};  // End of 'Scene' class
 }  // namespace hse
 
 #endif  // UNIT_HPP

@@ -16,62 +16,62 @@ int FigureId::id() const {
 }
 
 FigureId FigureId::copy() const {
-    return render::renderInstance.scene.createCopy(*this);
+    return Render::scene.createCopy(*this);
 }
 
 FigureId FigureId::operator&(const FigureId &other) const {
-    return render::renderInstance.scene.createIntersection(*this, other);
+    return Render::scene.createIntersection(*this, other);
 }
 
 FigureId FigureId::operator|(const FigureId &other) const {
-    return render::renderInstance.scene.createUnion(*this, other);
+    return Render::scene.createUnion(*this, other);
 }
 
 FigureId FigureId::operator/(const FigureId &other) const {
-    return render::renderInstance.scene.createSubtraction(*this, other);
+    return Render::scene.createSubtraction(*this, other);
 }
 
 FigureId & FigureId::operator&=(const FigureId &other) {
-    *this = render::renderInstance.scene.createIntersection(*this, other);
+    *this = Render::scene.createIntersection(*this, other);
     return *this;
 }
 
 FigureId & FigureId::operator|=(const FigureId &other) {
-    *this = render::renderInstance.scene.createUnion(*this, other);
+    *this = Render::scene.createUnion(*this, other);
     return *this;
 }
 
 FigureId & FigureId::operator/=(const FigureId &other) {
-    *this = render::renderInstance.scene.createSubtraction(*this, other);
+    *this = Render::scene.createSubtraction(*this, other);
     return *this;
 }
 
 FigureId & FigureId::operator<<(const TransformationMatrixId &trId) {
-    render::renderInstance.scene.getFigureById(*this).addTransformation(trId);
+    Render::scene.getFigureById(*this).addTransformation(trId);
     return *this;
 }
 
 FigureId & FigureId::operator<<(const math::matr4 &matr) {
-    TransformationId trId = render::renderInstance.scene.createTransformation(matr);
-    render::renderInstance.scene.getFigureById(*this).addTransformation(trId);
+    TransformationId trId = Render::scene.createTransformation(matr);
+    Render::scene.getFigureById(*this).addTransformation(trId);
     return *this;
 }
 FigureId & FigureId::operator<<(const TransformationBendId &trId) {
-    render::renderInstance.scene.getFigureById(*this).addTransformation(trId);
+    Render::scene.getFigureById(*this).addTransformation(trId);
     return *this;
 }
 
 FigureId & FigureId::operator<<(const TransformationTwistId &trId) {
-    render::renderInstance.scene.getFigureById(*this).addTransformation(trId);
+    Render::scene.getFigureById(*this).addTransformation(trId);
     return *this;
 }
 
 void FigureId::draw() const {
-    render::renderInstance.scene.draw(*this);
+    Render::scene.draw(*this);
 }
 
 void FigureId::hide() const {
-    render::renderInstance.scene.hide(*this);
+    Render::scene.hide(*this);
 }
 
 CreationType Figure::creationType() const {

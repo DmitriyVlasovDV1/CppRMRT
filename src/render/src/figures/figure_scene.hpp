@@ -4,7 +4,7 @@
 #include <memory>
 #include "../../../def.hpp"
 #include "../buffers/buffer.hpp"
-#include "../units/unit.hpp"
+#include "../scenes/scene.hpp"
 #include "figure_transformation.hpp"
 #include "figure_render.hpp"
 #include "figure.hpp"
@@ -22,13 +22,13 @@ enum class RenderType {
     RT
 };
 
-class FigureScene : public unit {
+class FigureScene : public Scene {
 public:
     FigureScene();
 
-    void init() override;
+    void onCreate() override;
 
-    void response() override;
+    void onUpdate() override;
 
     void setRenderType(RenderType renderType);
 

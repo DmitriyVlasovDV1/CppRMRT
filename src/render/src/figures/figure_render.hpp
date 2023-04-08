@@ -27,19 +27,19 @@ public:
 private:
     void preparePrimitives(const FigureId &id, math::matr4 tranformation);
 
-    std::vector<primitive*> m_boxes;
-    std::vector<primitive*> m_spheres;
+    std::vector<Primitive*> m_boxes;
+    std::vector<Primitive*> m_spheres;
 };
 
 class RMRender : public FigureRender {
 public:
     RMRender() {
     }
-    shaderStorageBuffer m_spheresSSBO;
-    shaderStorageBuffer m_boxesSSBO;
-    shaderStorageBuffer m_matricesSSBO;
-    shaderStorageBuffer m_twistsSSBO;
-    shaderStorageBuffer m_bendsSSBO;
+    ShaderStorageBuffer m_spheresSSBO;
+    ShaderStorageBuffer m_boxesSSBO;
+    ShaderStorageBuffer m_matricesSSBO;
+    ShaderStorageBuffer m_twistsSSBO;
+    ShaderStorageBuffer m_bendsSSBO;
 
     void init() final;
 
@@ -54,11 +54,11 @@ private:
 
     std::string getSDFSceneSource();
 
-    std::string createFragmentSource(const std::string &filePath);
+    std::string createFragmentSource(const std::string &filePath, const std::string &outPath);
 
-    std::string createVertexSource(const std::string &filePath) const;
+    std::string createVertexSource(const std::string &filePath, const std::string &outPath) const;
 
-    primitive *m_canvas;
+    Primitive *m_canvas;
 };
 
 }

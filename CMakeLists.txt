@@ -9,15 +9,18 @@ include_directories(include)
 file(GLOB SOURCE_FILES
         src/main.cpp
         src/render/render.cpp
-        src/render/src/units/unit.cpp
         src/render/src/buffers/buffer.cpp
         src/render/src/primitives/primitive.cpp
         src/render/src/models/model.cpp
         src/render/src/shaders/shader.cpp
-        src/units/SK4/test_unit.cpp
-        src/units/DV1/rm_shd_unit.cpp
-        src/units/DV1/rm_figures.cpp
-        src/render/src/figures/figure_scene.cpp)
+        src/render/src/scenes/scene.cpp
+        src/render/src/figures/figure_scene.cpp
+        src/render/src/figures/figure.cpp
+        src/render/src/figures/figure_render.cpp
+        src/render/src/figures/figure_transformation.cpp
+        src/render/src/figures/figure_material.cpp
+        src/Scenes/SK4/test_unit.cpp
+        src/Scenes/DV1/rm_shd_unit.cpp)
 file(GLOB HEADER_FILES
         src/utilities/math/math.hpp
         src/utilities/math/math_def.hpp
@@ -27,15 +30,18 @@ file(GLOB HEADER_FILES
         src/utilities/camera/camera.hpp
         src/def.hpp
         src/render/render.hpp
-        src/render/src/units/unit.hpp
         src/render/src/buffers/buffer.hpp
         src/render/src/primitives/primitive.hpp
         src/render/src/models/model.hpp
         src/render/src/shaders/shader.hpp
-        src/units/SK4/test_unit.hpp
-        src/units/DV1/rm_shd_unit.hpp
-        src/units/DV1/rm_figures.hpp
-        src/render/src/figures/figure_scene.hpp)
+        src/render/src/scenes/scene.hpp
+        src/render/src/figures/figure_scene.hpp
+        src/render/src/figures/figure.hpp
+        src/render/src/figures/figure_render.hpp
+        src/render/src/figures/figure_transformation.hpp
+        src/render/src/figures/figure_material.hpp
+        src/Scenes/SK4/test_unit.hpp
+        src/Scenes/DV1/rm_shd_unit.hpp)
 
 find_package(OpenGL REQUIRED)
 
@@ -72,6 +78,6 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/render/src/figures/figure.cpp src/render/src/figures/figure_render.cpp src/render/src/figures/figure_transformation.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/scenes/DV1/rm_shd_unit.cpp src/scenes/SK4/test_unit.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

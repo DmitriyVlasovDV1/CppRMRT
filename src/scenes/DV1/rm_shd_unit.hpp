@@ -4,13 +4,13 @@
 #include <memory>
 #include "../../def.hpp"
 #include "../../render/render.hpp"
+#include "../../render/src/scenes/scene.hpp"
 //#include "rm_figures.hpp"
 
 // Project namespace
 namespace hse {
-class Builder;
 // Test unit class declaration
-class rmShdUnit final : public unit {
+class rmShdUnit final : public Scene {
 public:
     TransformationMatrixId translateId;
     TransformationMatrixId rotationId;
@@ -18,9 +18,9 @@ public:
     // Class constructor
     explicit rmShdUnit() = default;
 
-    void init() final;
+    void onCreate() final;
 
-    void response() final;
+    void onUpdate() final;
 
     ~rmShdUnit() final;
 };  // End of 'rmShdUnit' class

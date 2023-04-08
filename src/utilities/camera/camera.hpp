@@ -5,7 +5,7 @@
 #include "../math/math.hpp"
 
 // Camera class declaration
-class camera {
+class Camera {
     math::vec3 position,               // Camera position
         direction,                     // Camera direction
         right,                         // Camera right direction
@@ -20,7 +20,7 @@ class camera {
 
 public:
     // Class default constructor
-    explicit camera()
+    explicit Camera()
         : position(math::vec3(0)),
           direction(math::vec3(0)),
           right(math::vec3(0)),
@@ -31,7 +31,7 @@ public:
           view(math::matr4::identity()),
           projection(math::matr4::identity()),
           viewProjection(math::matr4::identity()) {
-    }  // End of 'camera' function
+    }  // End of 'Camera' function
 
     /* Class constructor function.
      * ARGUMENTS:
@@ -41,7 +41,7 @@ public:
      *       const vec3 &direction_;
      * NOTE: Near and far can be changed in the future.
      */
-    explicit camera(
+    explicit Camera(
         const math::vec3 &position_,
         const math::vec3 &direction_,
         const uint width_,
@@ -50,9 +50,9 @@ public:
         : width(width_), height(height_), projectionSize(0.1) {
         setProjection();
         setPositionWithDirection(position_, direction_);
-    }  // End of 'camera' function
+    }  // End of 'Camera' function
 
-    explicit camera(
+    explicit Camera(
         const math::vec3 &position_,
         const math::vec3 &direction_,
         const math::vec3 &right_,
@@ -70,7 +70,7 @@ public:
         setProjection();
         view = math::matr4::getView(position, direction, right, up);
         viewProjection = view * projection;
-    }  // End of 'camera' function
+    }  // End of 'Camera' function
 
     /* Set projection matrix function. (when window sizes have been changed)
      * ARGUMENTS:
@@ -358,9 +358,9 @@ public:
     }  // End of 'getViewProjection' function
 
     // Class destructor
-    ~camera() {
+    ~Camera() {
         ::std::cout << "Clear camera" << ::std::endl;
-    }  // End of '~camera' function
-};     // End of 'camera' class
+    }  // End of '~Camera' function
+};     // End of 'Camera' class
 
 #endif  // CAMERA_HPP

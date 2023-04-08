@@ -2,23 +2,22 @@
 
 // Project namespace
 namespace hse {
-std::unordered_set<uint> shaderStorageBuffer::usedBindings;  // Used bindings set (for
 // Class default constructor
-buffer::buffer() : bufferId(0) {
-}  // End of 'buffer::buffer' function
+Buffer::Buffer() : bufferId(0) {
+}  // End of 'Buffer::Buffer' function
 
 /* Get buffer id function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (uint) - buffer id;
  */
-uint buffer::getBufferId() const {
+uint Buffer::getBufferId() const {
     return bufferId;
-}  // End of 'buffer::getBufferId' function
+}  // End of 'Buffer::getBufferId' function
 
 // Class default constructor
-vertexBuffer::vertexBuffer() : sizeOfVertex(0), sizeOfBuffer(0) {
-}  // End of 'vertexBuffer::vertexBuffer' function
+VertexBuffer::VertexBuffer() : sizeOfVertex(0), sizeOfBuffer(0) {
+}  // End of 'VertexBuffer::vertexBuffer' function
 
 /* Class constructor.
  * ARGUMENTS:
@@ -29,7 +28,7 @@ vertexBuffer::vertexBuffer() : sizeOfVertex(0), sizeOfBuffer(0) {
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-vertexBuffer::vertexBuffer(
+VertexBuffer::VertexBuffer(
     const ::std::vector<float> &bufferData,
     const ::std::string &bufferFormat
 )
@@ -64,43 +63,43 @@ vertexBuffer::vertexBuffer(
         localOffset +=
             vertexBufferOffsets[offsetNumber] * static_cast<int>(sizeof(float));
     }
-}  // End of 'vertexBuffer::vertexBuffer' function
+}  // End of 'VertexBuffer::vertexBuffer' function
 
 /* Get size of one vertex function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (int) - vertex size.
  */
-int vertexBuffer::getVertexSize() const {
+int VertexBuffer::getVertexSize() const {
     return sizeOfVertex;
-}  // End of 'vertexBuffer::getVertexSize' function
+}  // End of 'VertexBuffer::getVertexSize' function
 
 /* Get size of buffer data function.
  * ARGUMENTS: None.
  * RETURNS:
  *   (size_t) - size of buffer data.
  */
-size_t vertexBuffer::getBufferSize() const {
+size_t VertexBuffer::getBufferSize() const {
     return sizeOfBuffer;
-}  // End of 'vertexBuffer::getBufferSize' function
+}  // End of 'VertexBuffer::getBufferSize' function
 
 // Class destructor
-vertexBuffer::~vertexBuffer() {
+VertexBuffer::~VertexBuffer() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDeleteBuffers(1, &bufferId);
     ::std::cout << "Clear vertex buffer" << ::std::endl;
-}  // End of 'vertexBuffer::~vertexBuffer' function
+}  // End of 'VertexBuffer::~vertexBuffer' function
 
 // Class default constructor
-indexBuffer::indexBuffer() : indexesCount(0) {
-}  // End of 'indexBuffer::indexBuffer' function
+IndexBuffer::IndexBuffer() : indexesCount(0) {
+}  // End of 'IndexBuffer::IndexBuffer' function
 
 /* Class constructor.
  * ARGUMENTS:
  *   - buffer's data;
  *       const ::std::vector<int> &bufferData.
  */
-indexBuffer::indexBuffer(const ::std::vector<int> &bufferData) {
+IndexBuffer::IndexBuffer(const ::std::vector<int> &bufferData) {
     indexesCount = bufferData.size();
     glGenBuffers(1, &bufferId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferId);
@@ -109,19 +108,28 @@ indexBuffer::indexBuffer(const ::std::vector<int> &bufferData) {
         static_cast<GLsizeiptr>(indexesCount * sizeof(int)), &bufferData[0],
         GL_STATIC_DRAW
     );
-}  // End of 'indexBuffer::indexBuffer' function
+}  // End of 'IndexBuffer::IndexBuffer' function
+
+/* Get indexes count function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (size_t) - indexes count.
+ */
+size_t IndexBuffer::getIndexesCount() const {
+    return indexesCount;
+}  // End of 'IndexBuffer::getIndexesCount' function
 
 // Class destructor
-indexBuffer::~indexBuffer() {
+IndexBuffer::~IndexBuffer() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glDeleteBuffers(1, &bufferId);
     ::std::cout << "Clear index buffer" << ::std::endl;
-}  // End of 'indexBuffer::~indexBuffer' function
+}  // End of 'IndexBuffer::~IndexBuffer' function
 
 // Class default constructor
-vertexArray::vertexArray()
+VertexArray::VertexArray()
     : vertexBufferObject(nullptr), indexBufferObject(nullptr) {
-}  // End of 'vertexArray::vertexArray' function
+}  // End of 'VertexArray::VertexArray' function
 
 /* Class constructor.
  * ARGUMENTS:
@@ -134,18 +142,18 @@ vertexArray::vertexArray()
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
  * position, color, normal, texture coordinate.
  */
-vertexArray::vertexArray(
+VertexArray::VertexArray(
     const ::std::vector<float> &vertexBufferData,
     const ::std::string &vertexBufferFormat,
     const ::std::vector<int> &indexBufferData
 ) {
     glGenVertexArrays(1, &bufferId);
     glBindVertexArray(bufferId);
-    vertexBufferObject = new vertexBuffer(vertexBufferData, vertexBufferFormat);
+    vertexBufferObject = new VertexBuffer(vertexBufferData, vertexBufferFormat);
     if (!indexBufferData.empty())
-        indexBufferObject = new indexBuffer(indexBufferData);
+        indexBufferObject = new IndexBuffer(indexBufferData);
     glBindVertexArray(0);
-}  // End of 'vertexArray::vertexArray' function
+}  // End of 'VertexArray::VertexArray' function
 
 /* Render vertex array function.
  * ARGUMENTS:
@@ -153,7 +161,7 @@ vertexArray::vertexArray(
  *       renderType type;
  * RETURNS: None.
  */
-void vertexArray::render(renderType type) const {
+void VertexArray::onRender(renderType type) const {
     glBindVertexArray(bufferId);
     if (indexBufferObject) {
         glDrawElements(
@@ -161,8 +169,8 @@ void vertexArray::render(renderType type) const {
             : type == TRIANGLES_STRIP ? GL_TRIANGLE_STRIP
             : type == QUADS           ? GL_QUADS
                                       : GL_LINES,
-            static_cast<int>(indexBufferObject->indexesCount), GL_UNSIGNED_INT,
-            nullptr
+            static_cast<int>(indexBufferObject->getIndexesCount()),
+            GL_UNSIGNED_INT, nullptr
         );
     } else
         glDrawArrays(
@@ -175,23 +183,25 @@ void vertexArray::render(renderType type) const {
                 vertexBufferObject->getVertexSize()
         );
     glBindVertexArray(0);
-}  // End of 'vertexArray::render' function
+}  // End of 'VertexArray::render' function
 
 // Class destructor
-vertexArray::~vertexArray() {
+VertexArray::~VertexArray() {
     glBindVertexArray(bufferId);
     delete vertexBufferObject;
     delete indexBufferObject;
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &bufferId);
     ::std::cout << "Clear vertex array" << ::std::endl;
-}  // End of 'vertexArray::~vertexArray' function
+}  // End of 'VertexArray::~VertexArray' function
+
+::std::unordered_set<uint> ShaderStorageBuffer::usedBindings;
 
 
 // Class destructor
-shaderStorageBuffer::~shaderStorageBuffer() {
+ShaderStorageBuffer::~ShaderStorageBuffer() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     glDeleteBuffers(1, &bufferId);
     ::std::cout << "Clear shader storage buffer" << ::std::endl;
-}  // End of 'shaderStorageBuffer::~shaderStorageBuffer' function
+}  // End of 'ShaderStorageBuffer::~ShaderStorageBuffer' function
 }  // namespace hse

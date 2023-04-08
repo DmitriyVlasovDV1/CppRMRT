@@ -6,9 +6,9 @@
 namespace hse {
 
 
-void rmShdUnit::init() {
+void rmShdUnit::onCreate() {
     using namespace math;
-    FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = Render::scene;
     translateId = scene.createTranslation(math::vec3(0, 0, 0));
     rotationId = scene.createRotation(math::vec3(0, 1, 0), 0);
 
@@ -48,17 +48,16 @@ void rmShdUnit::init() {
 }  // End of 'testUnit::initUnit' function
 
 //std::vector<uint> parseFigures(const std::string &str, )
-void rmShdUnit::response() {
-    FigureScene &scene = render::renderInstance.scene;
+void rmShdUnit::onUpdate() {
+    FigureScene &scene = Render::scene;
 
-    if (render::renderInstance.keys[GLFW_KEY_C].action == GLFW_PRESS) {
+    if (keys[GLFW_KEY_C].action == GLFW_PRESS) {
         scene.setRenderType(RenderType::COMMON);
     }
-    if (render::renderInstance.keys[GLFW_KEY_R].action == GLFW_PRESS) {
+    if (keys[GLFW_KEY_R].action == GLFW_PRESS) {
         scene.setRenderType(RenderType::RM);
     }
 
-    auto time = render::renderInstance.getTime();
     rotationId.set(math::matr4::rotate(time * 10, math::vec3(0, 1, 0)));
     //translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
     //rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));

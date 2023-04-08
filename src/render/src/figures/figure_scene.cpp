@@ -13,13 +13,13 @@ FigureScene::FigureScene() : m_curRenderType(RenderType::RM) {
     m_renders[RenderType::RM] = std::make_shared<RMRender>();
 }
 
-void FigureScene::init() {
+void FigureScene::onCreate() {
     for (auto &render : m_renders) {
         render.second->init();
     }
 }
 
-void FigureScene::response() {
+void FigureScene::onUpdate() {
     for (auto &render : m_renders) {
         render.second->hide();
     }

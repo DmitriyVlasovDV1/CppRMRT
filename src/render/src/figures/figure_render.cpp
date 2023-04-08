@@ -41,8 +41,11 @@ void CommonRender::preparePrimitives(const FigureId &id, math::matr4 tranformati
     FigureScene &scene = render::renderInstance.scene;
     const Figure &figure = scene.getFigureById(id);
 
-    for (auto it = figure.getTransformations().rbegin(); it != figure.getTransformations().rend(); it++) {
-        tranformation = scene.getMatrixById(*it) * tranformation;
+    for (int i = figure.getTransformations().size() - 1; i > -1; i--) {
+        auto &trId = figure.getTransformations()[i];
+        if (trId.type() == TransformationType::MATRIX) {
+            tranformation = scene.getMatrixById(trId) * tranformation;
+        }
     }
     if (figure.creationType() == CreationType::PRIMITIVE) {
         PrimitiveId primId = figure.getSourcePrimitive();
@@ -72,6 +75,8 @@ void RMRender::init() {
     m_spheresSSBO.setData(scene.getSpheres(), 2);
     m_boxesSSBO.setData(scene.getBoxes(), 3);
     m_matricesSSBO.setData(scene.getMatrices(), 4);
+    m_twistsSSBO.setData(scene.getTwistings(), 5);
+    m_bendsSSBO.setData(scene.getBendings(), 6);
 
     std::vector<int> indexBuffer(6);
     std::vector<float> vertexBuffer = {-1, -1, 0,
@@ -104,46 +109,74 @@ void RMRender::render() {
     m_spheresSSBO.updateData(scene.getSpheres());
     m_boxesSSBO.updateData(scene.getBoxes());
     m_matricesSSBO.updateData(scene.getMatrices());
+    m_twistsSSBO.updateData(scene.getTwistings());
+    m_bendsSSBO.updateData(scene.getBendings());
     m_canvas->setVisibility(true);
     m_canvas->addUniform(render::renderInstance.getTime(), "time");
+    m_canvas->addUniform(scene.mainCamera.getPosition(), "cam_pos");
+    m_canvas->addUniform(scene.mainCamera.getDirection(), "cam_dir");
+    m_canvas->addUniform(scene.mainCamera.getUp(), "cam_up");
+    m_canvas->addUniform(scene.mainCamera.getRight(), "cam_right");
 }
 
 void RMRender::hide() {
     m_canvas->setVisibility(false);
 }
 
-std::string RMRender::serializeOperation(const std::string &operationName, const std::vector<FigureId> &sources, const std::string &transformation) {
-    std::string res = serializeFigureId(sources.front(), transformation);
+std::string RMRender::serializeOperation(const std::string &operationName, const std::vector<FigureId> &sources, const std::string &pos, const std::string &matr) {
+    std::string res = serializeFigureId(sources.front(), pos, matr);
     for (auto it = sources.begin() + 1; it != sources.end(); it++) {
-        res = operationName + "(" + res + ", " + serializeFigureId(*it, transformation) + ")";
+        res = operationName + "(" + res + ", " + serializeFigureId(*it, pos, matr) + ")";
     }
     return res;
 }
 
 // TODO maybe ref??
-std::string RMRender::serializeFigureId(const FigureId &id, std::string transformation) {
+std::string RMRender::serializeFigureId(const FigureId &id, std::string pos, std::string matr) {
     FigureScene &scene = render::renderInstance.scene;
     const Figure &figure = scene.getFigureById(id);
 
-    for (auto trId : figure.getTransformations()) {
-        transformation += " * inverse(matrices_buffer.matrices[" + std::to_string(trId.id()) + "])";
+    for (int i = figure.getTransformations().size() - 1; i > -1; i--) {
+        auto &trId = figure.getTransformations()[i];
+        if (trId.type() == TransformationType::MATRIX) {
+            pos = "inverse(matrices_buffer.matrices[" + std::to_string(trId.id()) + "]) * " + pos;
+            matr = "inverse(matrices_buffer.matrices[" + std::to_string(trId.id()) + "]) * " + matr;
+        } else if (trId.type() == TransformationType::BEND) {
+            std::string m = "mat4(1)";
+            for (int j = 0; j < i; j++) {
+                auto &trId2 = figure.getTransformations()[j];
+                if (figure.getTransformations()[i].type() == TransformationType::MATRIX) {
+                    m = m + "* matrices_buffer.matrices[" + std::to_string(trId2.id()) + "]";
+                }
+            }
+            pos = "bend(" + pos + ", " + m + ", bend_buffer.bends[" + std::to_string(trId.id()) + "])";
+        } else if (trId.type() == TransformationType::TWIST) {
+            std::string m = "mat4(1)";
+            for (int j = 0; j < i; j++) {
+                auto &trId2 = figure.getTransformations()[j];
+                if (figure.getTransformations()[i].type() == TransformationType::MATRIX) {
+                    m = m + "* matrices_buffer.matrices[" + std::to_string(trId2.id()) + "]";
+                }
+            }
+            pos = "twist(" + pos + ", " + matr + ", twist_buffer.twists[" + std::to_string(trId.id()) + "])";
+        }
     }
     if (figure.creationType() == CreationType::PRIMITIVE) {
         PrimitiveId primId = figure.getSourcePrimitive();
         if (primId.type() == PrimitiveType::BOX) {
-            return "SDF_box(pos, " + transformation + ", box_buffer.boxes[" + std::to_string(primId.id()) + "])";
+            return "SDF_box(" + pos + ", box_buffer.boxes[" + std::to_string(primId.id()) + "])";
         } else if (primId.type() == PrimitiveType::SPHERE) {
-            return "SDF_sphere(pos, " + transformation + ", sphere_buffer.spheres[" + std::to_string(primId.id()) + "])";
+            return "SDF_sphere(" + pos + ", sphere_buffer.spheres[" + std::to_string(primId.id()) + "])";
         }
     } else if (figure.creationType() == CreationType::INTERSECTION) {
         std::vector<FigureId> sources = figure.getSourceFigures();
-        return serializeOperation("inter", sources, transformation);
+        return serializeOperation("inter", sources, pos, matr);
     } else if (figure.creationType() == CreationType::UNION) {
         std::vector<FigureId> sources = figure.getSourceFigures();
-        return serializeOperation("unite", sources, transformation);
+        return serializeOperation("unite", sources, pos, matr);
     } else if (figure.creationType() == CreationType::SUBTRACTION) {
         std::vector<FigureId> sources = figure.getSourceFigures();
-        return serializeOperation("sub", sources, transformation);
+        return serializeOperation("sub", sources, pos, matr);
     }
     return "0";
 
@@ -156,11 +189,12 @@ std::string RMRender::getSDFSceneSource() {
         for_draw.push_back(figId);
     }
     std::string res =\
-        "Surface SDF_scene(vec3 pos)\n"
+        "Surface SDF_scene(vec3 p)\n"
         "{\n"
+        "\tvec4 pos = vec4(p.xyz, 1);"
         "\tSurface res;\n"
         "\tres = ";
-    res += serializeOperation("unite", for_draw, "mat4(1)");
+    res += serializeOperation("unite", for_draw, "pos", "mat4(1)");
     res += ";\n"
            "\treturn res;\n"
            "}\n";

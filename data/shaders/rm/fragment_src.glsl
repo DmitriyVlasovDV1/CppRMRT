@@ -7,16 +7,16 @@ in vec3 inColor;
 uniform float time;
 uniform int frame_w;
 uniform int frame_h;
-/*
 uniform vec3 cam_pos;
 uniform vec3 cam_dir;
 uniform vec3 cam_up;
 uniform vec3 cam_right;
-*/
+/*
 vec3 cam_pos = vec3(0, 0, 10);
 vec3 cam_dir = vec3(0, 0, -1);
 vec3 cam_up = vec3(0, 1, 0);
 vec3 cam_right = vec3(-1, 0, 0);
+*/
 
 /*****
  * Globals
@@ -61,6 +61,18 @@ struct Surface {
     float sdf;
 };
 
+struct Twist {
+    vec4 cen;
+    vec4 dir;
+    float intensity;
+};
+
+struct Bend {
+    vec4 cen;
+    vec4 dir;
+    vec4 rad;
+};
+
 /*****
  * SSBO's
  *****/
@@ -80,6 +92,15 @@ layout(binding = 4, std430) buffer MatricesBuffer
     mat4 matrices[];
 } matrices_buffer;
 
+layout(binding = 5, std430) buffer TwistBuffer
+{
+    Twist twists[];
+} twist_buffer;
+
+layout(binding = 6, std430) buffer BendBuffer
+{
+    Bend bends[];
+} bend_buffer;
 /*****
  * SDF's
  *****/
@@ -119,11 +140,11 @@ Surface sub( Surface a, Surface b )
     return res;
 }
 
-Surface SDF_sphere(vec3 p, mat4 matr, Sphere sphere)
+Surface SDF_sphere(vec4 p, Sphere sphere)
 {
-    vec3 pos_matr = (matr * vec4(p, 0)).xyz;
+    vec3 pos = p.xyz;
     Surface res;
-    res.sdf = length(pos_matr) - sphere.radius;
+    res.sdf = length(pos) - sphere.radius;
     //res.mtl = sphere.mtl;
     return res;
 }
@@ -131,15 +152,15 @@ Surface SDF_sphere(vec3 p, mat4 matr, Sphere sphere)
 
 
 
-Surface SDF_box(vec3 p, mat4 matr, Box box)
+Surface SDF_box(vec4 p, Box box)
 {
-    vec3 pos_matr = (matr * vec4(p, 1)).xyz;
+    vec3 pos = p.xyz;
     /*float c = cos(pos_matr.x);
     float s = sin(pos_matr.x);
     mat2  m = mat2(c,-s,s,c);
     vec3  pp = vec3(pos_matr.x,m*pos_matr.yz);*/
     Surface res;
-    vec3 q = abs(pos_matr) - vec3(box.radius / 2);
+    vec3 q = abs(pos) - vec3(box.radius / 2);
 
     res.sdf = length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
     //res.mtl = box.mtl;
@@ -168,13 +189,31 @@ mat4 rotateRad(float angle, vec3 axis) {
     cosine + axis.z * axis.z * cosine1, 0, 0, 0, 0, 1);
 }
 
-vec3 twist(vec3 p, mat4 matr) {
+vec4 bend(vec4 p, mat4 matr, Bend bnd) {
+    vec3 cen = (matr * bnd.cen).xyz;
+    vec3 dir = (matr * normalize(bnd.dir)).xyz;
+    vec3 rad = (matr * normalize(bnd.rad)).xyz;
+    vec3 right = cross(rad, dir);
+
+    mat4 m = rotateRad(atan(dot(p.xyz - cen, right), dot(p.xyz - cen, rad)), dir);
+    return m * p;
+}
+
+vec4 twist(vec4 p, mat4 matr, Twist tw) {
+    vec3 cen = (matr * tw.cen).xyz;
+    vec3 dir = (matr * normalize(tw.dir)).xyz;
+
+    mat4 m = rotateRad(dot(p.xyz - cen, dir) * tw.intensity, dir);
+    return m * p;
+}
+/*
+vec3 twist1(vec3 p, mat4 matr) {
     vec3 pos = (matr * vec4(p, 1)).xyz;
-    /*
+
     vec3 c = (matr * vec4(c_, 1)).xyz;
     vec3 dir = (matr * vec4(dir_, 0)).xyz;
-    vec3 rad = (matr * vec4(rad_, 0)).xyz;
-    */
+   vec3 rad = (matr * vec4(rad_, 0)).xyz;
+
     //vec3 pos = p;
     vec3 c = c_;
     vec3 dir = dir_;
@@ -188,17 +227,22 @@ vec3 twist(vec3 p, mat4 matr) {
     vec3 res = a;//dir * dot(dir, pos) + a + b;
     return res;
 }
+*/
 
-Surface SDF_scene(vec3 pos)
+/*
+Surface SDF_scene1(vec3 pos)
 {
     Surface res;
     mat4 m1 = inverse(matrices_buffer.matrices[2]) * inverse(matrices_buffer.matrices[1]) * inverse(matrices_buffer.matrices[0]);
-    mat4 m2 = mat4(1) * inverse(matrices_buffer.matrices[2]);// * inverse(matrices_buffer.matrices[3]);// */ inverse(matrices_buffer.matrices[4]);
+    mat4 m2 = mat4(1) * inverse(matrices_buffer.matrices[2]);// * inverse(matrices_buffer.matrices[3]);//  inverse(matrices_buffer.matrices[4]);
     res = unite(unite(SDF_box(pos, m1, box_buffer.boxes[0]), SDF_sphere(pos, mat4(1), sphere_buffer.spheres[0])), SDF_box(twist(pos, m2), mat4(1), box_buffer.boxes[1]));
     sphere_buffer.spheres[0].radius = 0.2;
     res = unite(SDF_box(twist(pos, m2), mat4(1), box_buffer.boxes[0]), SDF_sphere(pos - c_, mat4(1), sphere_buffer.spheres[0]));
     return res;
 }
+*/
+
+#include SDF_scene
 
 /*****
  * Utils
@@ -271,7 +315,7 @@ Material trace(vec3 org, vec3 dir)
         t += srf.sdf;
     }
     Material res;
-    res.color = vec4(0, 0, 0, 1);
+    res.color = vec4(vec3(176, 196, 222) / 255, 1);
     return res;
 }
 

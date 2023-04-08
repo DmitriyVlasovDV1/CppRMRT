@@ -7,21 +7,40 @@ namespace hse {
 
 
 void rmShdUnit::init() {
+    using namespace math;
     FigureScene &scene = render::renderInstance.scene;
     translateId = scene.createTranslation(math::vec3(0, 0, 0));
-    rotationId = scene.createRotation(math::vec3(1, 0, 0), 0);
-    auto scaleId = scene.createScale(math::vec3(5, 1, 1));
+    rotationId = scene.createRotation(math::vec3(0, 1, 0), 0);
 
-    auto boxId = scene.createBox(1.3);
-    auto box2Id = scene.createBox(1.5);
-    auto sphereId = scene.createSphere(1);
-    boxId << scaleId << rotationId << translateId;
-    box2Id << scaleId << math::matr4::translate(math::vec3(0, 1, 0)) << math::matr4::identity();//math::matr4::rotate(90, math::vec3(0, 0, 1)) << math::matr4::translate(math::vec3(3, 0, 0));
-    auto res = boxId | sphereId;
-    res |= box2Id;
-    res.draw();
+    auto stone = scene.createSphere(0.5);
+    auto pat = scene.createBox(0.1);
+    auto box = scene.createBox(1);
+    auto handle = scene.createBox(0.3);
+    auto bnd = scene.createBend(vec3(1, 0, 0), vec3(0, 0, 1), vec3(-1, 0, 0));
+    auto tw = scene.createTwist(vec3(0, 0, 0), vec3(0, 1, 0), 8);
+    pat << matr4::scale(vec3(3, 10, 1)) << bnd << matr4::translate(vec3(-0.5, 0, 0)) << tw;
+    int n = 6;
+    for (int i = 0; i < n; i++) {
+        stone /= (pat.copy() << matr4::rotate(float(360) * i / n, vec3(0, 1, 0)));
+    }
+    stone << matr4::scale(vec3(1, 2.4, 1));
+    box << matr4::scale(vec3(0.5, 2, 0.5)) * matr4::translate(vec3(0.5, 0, 0));
+    stone.draw();
 
-    auto pos = math::vec3(10);
+    auto bnd2 = scene.createBend(vec3(0, -2, 0), vec3(0, 0, 1), vec3(0, -1, 0));
+    auto hole = scene.createSphere(0.4);
+    handle << matr4::scale(vec3(3, 1, 0.7)) << bnd2 << matr4::translate(vec3(0, -1.2, 0));
+    handle |= handle.copy() << matr4::rotate(90, vec3(0, 1, 0));
+    handle << matr4::rotate(45, vec3(0, 1, 0));
+    hole << matr4::translate(vec3(0, -1.4, 0));
+    handle /= hole;
+
+    handle.draw();
+
+    stone << rotationId;
+
+
+    auto pos = math::vec3(0, 0.2, 1) * 7;
     scene.mainCamera.setPositionWithDirection(
         pos, math::vec3(0) - pos
     );
@@ -40,8 +59,15 @@ void rmShdUnit::response() {
     }
 
     auto time = render::renderInstance.getTime();
+    rotationId.set(math::matr4::rotate(time * 10, math::vec3(0, 1, 0)));
     //translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
     //rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
+    /*
+    auto pos = math::vec3(sin(time), 0, cos(time)) * 7;
+    scene.mainCamera.setPositionWithDirection(
+        pos, math::vec3(0) - pos
+    );
+     */
 
 }  // End of 'testUnit::responseUnit' function
 

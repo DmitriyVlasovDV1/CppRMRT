@@ -81,8 +81,22 @@ const std::vector<math::matr4> & FigureScene::getMatrices() const {
     return m_matrices;
 }
 
+const std::vector<TransformationTwist> & FigureScene::getTwistings() const {
+    return m_twistings;
+}
+
+const std::vector<TransformationBend> & FigureScene::getBendings() const {
+    return m_bendings;
+}
+
 std::set<FigureId, FigureIdHasher> & FigureScene::getScene() {
     return m_scene;
+}
+
+FigureId FigureScene::createCopy(const FigureId &id) {
+    FigureId res(static_cast<int>(m_figures.size()));
+    m_figures.push_back(m_figures[id.id()]);
+    return res;
 }
 
 FigureId FigureScene::createBox(float size) {

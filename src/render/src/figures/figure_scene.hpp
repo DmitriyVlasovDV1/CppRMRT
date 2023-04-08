@@ -56,7 +56,13 @@ public:
 
     const std::vector<math::matr4> & getMatrices() const;
 
+    const std::vector<TransformationTwist> & getTwistings() const;
+
+    const std::vector<TransformationBend> & getBendings() const;
+
     std::set<FigureId, FigureIdHasher> & getScene();
+
+    FigureId createCopy(const FigureId &id);
 
     FigureId createBox(float size);
 

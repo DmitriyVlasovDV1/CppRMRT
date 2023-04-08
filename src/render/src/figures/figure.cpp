@@ -15,6 +15,10 @@ int FigureId::id() const {
     return m_id;
 }
 
+FigureId FigureId::copy() const {
+    return render::renderInstance.scene.createCopy(*this);
+}
+
 FigureId FigureId::operator&(const FigureId &other) const {
     return render::renderInstance.scene.createIntersection(*this, other);
 }
@@ -54,10 +58,12 @@ FigureId & FigureId::operator<<(const math::matr4 &matr) {
 }
 FigureId & FigureId::operator<<(const TransformationBendId &trId) {
     render::renderInstance.scene.getFigureById(*this).addTransformation(trId);
+    return *this;
 }
 
 FigureId & FigureId::operator<<(const TransformationTwistId &trId) {
     render::renderInstance.scene.getFigureById(*this).addTransformation(trId);
+    return *this;
 }
 
 void FigureId::draw() const {

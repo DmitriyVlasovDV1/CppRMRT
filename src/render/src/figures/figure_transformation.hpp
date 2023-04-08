@@ -84,10 +84,12 @@ struct alignas(16) TransformationTwist {
         pos[0] = pos_.x;
         pos[1] = pos_.y;
         pos[2] = pos_.z;
+        pos[3] = 1;
 
         dir[0] = dir_.x;
         dir[1] = dir_.y;
         dir[2] = dir_.z;
+        dir[3] = 0;
     }
 };
 
@@ -106,14 +108,17 @@ struct alignas(16) TransformationBend {
         pos[0] = pos_.x;
         pos[1] = pos_.y;
         pos[2] = pos_.z;
+        pos[3] = 1;
 
         dir[0] = dir_.x;
         dir[1] = dir_.y;
         dir[2] = dir_.z;
+        dir[3] = 0;
 
         rad[0] = rad_.x;
         rad[1] = rad_.y;
         rad[2] = rad_.z;
+        rad[3] = 0;
     }
 };
 } // namespace "hse"

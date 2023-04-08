@@ -38,6 +38,8 @@ public:
     shaderStorageBuffer m_spheresSSBO;
     shaderStorageBuffer m_boxesSSBO;
     shaderStorageBuffer m_matricesSSBO;
+    shaderStorageBuffer m_twistsSSBO;
+    shaderStorageBuffer m_bendsSSBO;
 
     void init() final;
 
@@ -46,9 +48,9 @@ public:
     void hide() final;
 
 private:
-    std::string serializeOperation(const std::string &operationName, const std::vector<FigureId> &sources, const std::string &transformation);
+    std::string serializeOperation(const std::string &operationName, const std::vector<FigureId> &sources, const std::string &pos, const std::string &matr);
     // TODO maybe ref??
-    std::string serializeFigureId(const FigureId &id, std::string transformation);
+    std::string serializeFigureId(const FigureId &id, std::string pos, std::string matr);
 
     std::string getSDFSceneSource();
 

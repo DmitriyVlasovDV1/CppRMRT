@@ -41,6 +41,8 @@ public:
 
     int id() const;
 
+    FigureId copy() const;
+
     FigureId operator&(const FigureId &other) const;
 
     FigureId operator|(const FigureId &other) const;

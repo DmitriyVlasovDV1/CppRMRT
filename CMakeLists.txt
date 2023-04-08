@@ -14,9 +14,9 @@ file(GLOB SOURCE_FILES
         src/render/src/primitives/primitive.cpp
         src/render/src/models/model.cpp
         src/render/src/shaders/shader.cpp
-        src/scenes/SK4/test_unit.cpp
-        src/scenes/DV1/rm_shd_unit.cpp
-        src/scenes/DV1/rm_figures.cpp)
+        src/Scenes/SK4/test_unit.cpp
+        src/Scenes/DV1/rm_shd_unit.cpp
+        src/Scenes/DV1/rm_figures.cpp)
 file(GLOB HEADER_FILES
         src/utilities/math/math.hpp
         src/utilities/math/math_def.hpp
@@ -31,9 +31,9 @@ file(GLOB HEADER_FILES
         src/render/src/primitives/primitive.hpp
         src/render/src/models/model.hpp
         src/render/src/shaders/shader.hpp
-        src/scenes/SK4/test_unit.hpp
-        src/scenes/DV1/rm_shd_unit.hpp
-        src/scenes/DV1/rm_figures.hpp)
+        src/Scenes/SK4/test_unit.hpp
+        src/Scenes/DV1/rm_shd_unit.hpp
+        src/Scenes/DV1/rm_figures.hpp)
 
 find_package(OpenGL REQUIRED)
 

@@ -114,22 +114,22 @@ public:
     /* Add uniform of one integer variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
-     *       int uniformValue;
+     *       int &uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void addUniform(int uniformValue, const char *uniformName);
+    void addUniform(int &uniformValue, const char *uniformName);
 
     /* Add uniform of one float variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
-     *       float uniformValue;
+     *       float &uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void addUniform(float uniformValue, const char *uniformName);
+    void addUniform(float &uniformValue, const char *uniformName);
 
     /* Add uniform of 3-component geom vector to the shader function.
      * ARGUMENTS:

@@ -252,24 +252,24 @@ Primitive *Model::getChild(int index) const {
 /* Add uniform of one integer variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       int uniformValue;
+ *       int &uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Model::addUniform(int uniformValue, const char *uniformName) {
+void Model::addUniform(int &uniformValue, const char *uniformName) {
     shaderUniform1i[uniformName] = uniformValue;
 }  // End of 'Model::addUniform' function
 
 /* Add uniform of one float variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       float uniformValue;
+ *       float &uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Model::addUniform(float uniformValue, const char *uniformName) {
+void Model::addUniform(float &uniformValue, const char *uniformName) {
     shaderUniform1f[uniformName] = uniformValue;
 }  // End of 'Model::addUniform' function
 

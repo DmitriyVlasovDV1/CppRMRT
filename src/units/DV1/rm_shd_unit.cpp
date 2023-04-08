@@ -1,24 +1,24 @@
 #include "rm_shd_unit.hpp"
-#include "../../render/figure_scene.hpp"
 #include <cmath>
+#include "../../render/src/figures/figure_scene.hpp"
 
 // Project namespace
 namespace hse {
 
 
 void rmShdUnit::init() {
-    drawable_figures::FigureScene &scene = render::renderInstance.scene;
-    translateId = scene.createTranslation(math::vec3(2, 0, 0));
+    FigureScene &scene = render::renderInstance.scene;
+    translateId = scene.createTranslation(math::vec3(0, 0, 0));
     rotationId = scene.createRotation(math::vec3(1, 0, 0), 0);
-    auto scaleId = scene.createScale(math::vec3(3, 1, 1));
+    auto scaleId = scene.createScale(math::vec3(5, 1, 1));
 
     auto boxId = scene.createBox(1.3);
     auto box2Id = scene.createBox(1.5);
     auto sphereId = scene.createSphere(1);
     boxId << scaleId << rotationId << translateId;
-    box2Id << scaleId << math::matr4::rotate(90, math::vec3(0, 0, 1)) << math::matr4::translate(math::vec3(3, 0, 0));
-    auto res = boxId / sphereId;
-    res /= box2Id;
+    box2Id << scaleId << math::matr4::translate(math::vec3(0, 1, 0)) << math::matr4::identity();//math::matr4::rotate(90, math::vec3(0, 0, 1)) << math::matr4::translate(math::vec3(3, 0, 0));
+    auto res = boxId | sphereId;
+    res |= box2Id;
     res.draw();
 
     auto pos = math::vec3(10);
@@ -30,18 +30,18 @@ void rmShdUnit::init() {
 
 //std::vector<uint> parseFigures(const std::string &str, )
 void rmShdUnit::response() {
-    drawable_figures::FigureScene &scene = render::renderInstance.scene;
+    FigureScene &scene = render::renderInstance.scene;
 
     if (render::renderInstance.keys[GLFW_KEY_C].action == GLFW_PRESS) {
-        scene.setRenderType(drawable_figures::RenderType::COMMON);
+        scene.setRenderType(RenderType::COMMON);
     }
     if (render::renderInstance.keys[GLFW_KEY_R].action == GLFW_PRESS) {
-        scene.setRenderType(drawable_figures::RenderType::RM);
+        scene.setRenderType(RenderType::RM);
     }
 
     auto time = render::renderInstance.getTime();
-    translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
-    rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
+    //translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
+    //rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
 
 }  // End of 'testUnit::responseUnit' function
 

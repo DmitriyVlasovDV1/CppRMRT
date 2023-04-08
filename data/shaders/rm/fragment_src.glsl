@@ -7,10 +7,16 @@ in vec3 inColor;
 uniform float time;
 uniform int frame_w;
 uniform int frame_h;
+/*
 uniform vec3 cam_pos;
 uniform vec3 cam_dir;
 uniform vec3 cam_up;
 uniform vec3 cam_right;
+*/
+vec3 cam_pos = vec3(0, 0, 10);
+vec3 cam_dir = vec3(0, 0, -1);
+vec3 cam_up = vec3(0, 1, 0);
+vec3 cam_right = vec3(-1, 0, 0);
 
 /*****
  * Globals
@@ -123,9 +129,15 @@ Surface SDF_sphere(vec3 p, mat4 matr, Sphere sphere)
 }
 
 
+
+
 Surface SDF_box(vec3 p, mat4 matr, Box box)
 {
     vec3 pos_matr = (matr * vec4(p, 1)).xyz;
+    /*float c = cos(pos_matr.x);
+    float s = sin(pos_matr.x);
+    mat2  m = mat2(c,-s,s,c);
+    vec3  pp = vec3(pos_matr.x,m*pos_matr.yz);*/
     Surface res;
     vec3 q = abs(pos_matr) - vec3(box.radius / 2);
 
@@ -134,8 +146,59 @@ Surface SDF_box(vec3 p, mat4 matr, Box box)
     return res;
 }
 
+vec3 c_ = vec3(cos(time) * 4, 2 * sin(time), 0 );
+vec3 dir_ = vec3(0, 0, 1);
+vec3 rad_ = normalize(-c_);//normalize(vec3(0, 0, -1));
+float d_ = 1;
 
-#include SDF_scene
+mat4 rotateRad(float angle, vec3 axis) {
+    axis = normalize(axis);
+    const float sine = sin(angle), cosine = cos(angle),
+    cosine1 = 1 - cosine;
+
+    return mat4(
+    cosine + axis.x * axis.x * cosine1,
+    axis.x * axis.y * cosine1 + axis.z * sine,
+    axis.x * axis.z * cosine1 - axis.y * sine, 0,
+    axis.y * axis.x * cosine1 - axis.z * sine,
+    cosine + axis.y * axis.y * cosine1,
+    axis.y * axis.z * cosine1 + axis.x * sine, 0,
+    axis.z * axis.x * cosine1 + axis.y * sine,
+    axis.z * axis.y * cosine1 - axis.x * sine,
+    cosine + axis.z * axis.z * cosine1, 0, 0, 0, 0, 1);
+}
+
+vec3 twist(vec3 p, mat4 matr) {
+    vec3 pos = (matr * vec4(p, 1)).xyz;
+    /*
+    vec3 c = (matr * vec4(c_, 1)).xyz;
+    vec3 dir = (matr * vec4(dir_, 0)).xyz;
+    vec3 rad = (matr * vec4(rad_, 0)).xyz;
+    */
+    //vec3 pos = p;
+    vec3 c = c_;
+    vec3 dir = dir_;
+    vec3 rad = rad_;
+    vec3 right = cross(rad, dir);
+
+    vec3 dlt = (matr * vec4(p - c_, 1)).xyz;
+    mat4 m = rotateRad(atan(dot(pos - c, right), dot(pos - c, rad)), dir);
+
+    vec3 a = (m * vec4(pos, 1)).xyz;
+    vec3 res = a;//dir * dot(dir, pos) + a + b;
+    return res;
+}
+
+Surface SDF_scene(vec3 pos)
+{
+    Surface res;
+    mat4 m1 = inverse(matrices_buffer.matrices[2]) * inverse(matrices_buffer.matrices[1]) * inverse(matrices_buffer.matrices[0]);
+    mat4 m2 = mat4(1) * inverse(matrices_buffer.matrices[2]);// * inverse(matrices_buffer.matrices[3]);// */ inverse(matrices_buffer.matrices[4]);
+    res = unite(unite(SDF_box(pos, m1, box_buffer.boxes[0]), SDF_sphere(pos, mat4(1), sphere_buffer.spheres[0])), SDF_box(twist(pos, m2), mat4(1), box_buffer.boxes[1]));
+    sphere_buffer.spheres[0].radius = 0.2;
+    res = unite(SDF_box(twist(pos, m2), mat4(1), box_buffer.boxes[0]), SDF_sphere(pos - c_, mat4(1), sphere_buffer.spheres[0]));
+    return res;
+}
 
 /*****
  * Utils
@@ -143,7 +206,7 @@ Surface SDF_box(vec3 p, mat4 matr, Box box)
 
 vec3 get_norm(vec3 pos)
 {
-    vec2 step = vec2(0.01 * eps, 0);
+    vec2 step = vec2(eps, 0);
     vec3 norm;
     /*
     for (int i = 0; i < 8; i++) {
@@ -187,6 +250,7 @@ Material trace(vec3 org, vec3 dir)
     while (t < max_dist)
     {
         vec3 pos = org + dir * t;
+        vec3 c = vec3(1, 1, 1);
         Surface srf = SDF_scene(pos);
 
         if (srf.sdf < eps)
@@ -198,6 +262,7 @@ Material trace(vec3 org, vec3 dir)
             vec3 nrm = get_norm(pos);
             depth = min(pow(depth, 1.2), 1.0);
             srf.mtl.color = vec4(lightResponse(pos, nrm, vec3(1, 0, 0)) * depth, 1);
+            //srf.mtl.color = vec4(nrm.xyz, 1);
             //srf.mtl.color = vec4(get_norm(pos, -dir), 1);
             //srf.mtl.color = vec4(1, 0, 0, 1);
             //res.color = vec4(1, 0, 0, 1);

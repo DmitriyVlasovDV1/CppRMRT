@@ -65,7 +65,7 @@ void render::response() {
         glfwSetWindowTitle(
             windowInstance,
             ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime))+ " | Current render: " +
-                (scene.m_curRenderType == drawable_figures::RenderType::COMMON ? "Common" : "RM")).c_str()
+                (scene.getRenderType() == RenderType::COMMON ? "Common" : "RM")).c_str()
         );
 
         // Response/Render all units

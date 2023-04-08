@@ -17,7 +17,7 @@ file(GLOB SOURCE_FILES
         src/units/SK4/test_unit.cpp
         src/units/DV1/rm_shd_unit.cpp
         src/units/DV1/rm_figures.cpp
-        src/render/figure_scene.cpp)
+        src/render/src/figures/figure_scene.cpp)
 file(GLOB HEADER_FILES
         src/utilities/math/math.hpp
         src/utilities/math/math_def.hpp
@@ -35,7 +35,7 @@ file(GLOB HEADER_FILES
         src/units/SK4/test_unit.hpp
         src/units/DV1/rm_shd_unit.hpp
         src/units/DV1/rm_figures.hpp
-        src/render/figure_scene.hpp)
+        src/render/src/figures/figure_scene.hpp)
 
 find_package(OpenGL REQUIRED)
 
@@ -72,6 +72,6 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/render/src/figures/figure.cpp src/render/src/figures/figure_render.cpp src/render/src/figures/figure_transformation.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

@@ -22,12 +22,22 @@ public:
     math::matr4 transformMatrix;  // Transform matrix
 
 private:
-    ::std::map<const char *, int> shaderUniform1i;           // Integer uniforms
-    ::std::map<const char *, float> shaderUniform1f;         // Floats uniforms
-    ::std::map<const char *, math::vec3> shaderUniform3fv;   // 3d-vector
-                                                             // uniforms
-    ::std::map<const char *, math::matr4> shaderUniform4fv;  // Matrix4x4
-                                                             // uniforms
+    ::std::map<const char *, const int *> shaderUniform1i;  // Integer uniforms
+    ::std::map<const char *, const float *> shaderUniform1f;  // Floats uniforms
+    ::std::map<const char *, const math::vec3 *> shaderUniform3fv;  // 3d-vector
+                                                                    // uniforms
+    ::std::map<const char *, const math::matr4 *>
+        shaderUniform4fv;  // Matrix4x4
+                           // uniforms
+
+    ::std::map<const char *, int> shaderUniform1iConstant;    // Integer
+                                                              // uniforms
+    ::std::map<const char *, float> shaderUniform1fConstant;  // Floats uniforms
+    ::std::map<const char *, math::vec3> shaderUniform3fvConstant;  // 3d-vector
+                                                                    // uniforms
+    ::std::map<const char *, math::matr4>
+        shaderUniform4fvConstant;  // Matrix4x4
+                                   // uniforms
 
     // Class default constructor
     explicit Primitive();
@@ -123,14 +133,54 @@ public:
     /* Add uniform to the shader function.
      * ARGUMENTS:
      *   - uniform value:
+     *       const int *uniformValue;
+     *   - uniform name on the shader:
+     *       const char *uniformName;
+     * RETURNS: None.
+     */
+    void addUniform(const int *uniformValue, const char *uniformName);
+
+    /* Add uniform of one float variable to the shader function.
+     * ARGUMENTS:
+     *   - uniform value:
+     *       const float *uniformValue;
+     *   - uniform name on the shader:
+     *       const char *uniformName;
+     * RETURNS: None.
+     */
+    void addUniform(const float *uniformValue, const char *uniformName);
+
+    /* Add uniform of 3-component geom vector to the shader function.
+     * ARGUMENTS:
+     *   - uniform value:
+     *       const math::vec3 *vector;
+     *   - uniform name on the shader:
+     *       const char *uniformName;
+     * RETURNS: None.
+     */
+    void addUniform(const math::vec3 *vector, const char *uniformName);
+
+    /* Add uniform of matrix4x4 variable to the shader function.
+     * ARGUMENTS:
+     *   - uniform value:
+     *       const math::matr4 *matrix;
+     *   - uniform name on the shader:
+     *       const char *uniformName;
+     * RETURNS: None.
+     */
+    void addUniform(const math::matr4 *matrix, const char *uniformName);
+
+    /* Add constant uniform of one integer variable to the shader function.
+     * ARGUMENTS:
+     *   - uniform value:
      *       int uniformValue;
      *   - uniform name on the shader:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void addUniform(int uniformValue, const char *uniformName);
+    void addConstantUniform(int uniformValue, const char *uniformName);
 
-    /* Add uniform of one float variable to the shader function.
+    /* Add constant uniform of one float variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       float uniformValue;
@@ -138,9 +188,9 @@ public:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void addUniform(float uniformValue, const char *uniformName);
+    void addConstantUniform(float uniformValue, const char *uniformName);
 
-    /* Add uniform of 3-component geom vector to the shader function.
+    /* Add constant uniform of 3-component geom vector to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const math::vec3 &vector;
@@ -148,17 +198,17 @@ public:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void addUniform(const math::vec3 &vector, const char *uniformName);
+    void addConstantUniform(const math::vec3 &vector, const char *uniformName);
 
-    /* Add uniform of matrix4x4 variable to the shader function.
+    /* Add constant uniform of matrix4x4 variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
-     *       const math::matr4 &uniformValue;
+     *       const math::matr4 &matrix;
      *   - uniform name on the shader:
      *       const char *uniformName;
      * RETURNS: None.
      */
-    void addUniform(const math::matr4 &matrix, const char *uniformName);
+    void addConstantUniform(const math::matr4 &matrix, const char *uniformName);
 };  // End of 'Primitive' class
 }  // namespace hse
 

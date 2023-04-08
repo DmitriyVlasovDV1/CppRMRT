@@ -18,9 +18,9 @@ void TestScene::spheresGeneration() {
         Primitive *tmp = createSpherePrimitive(
             1, math::vec3(x - 50, y - 50, z - 50), 20, 20
         );
-        tmp->addUniform(time, "time");
+        tmp->addUniform(&time, "time");
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
-        tmp->addUniform(color, "vertexColor");
+        tmp->addConstantUniform(color, "vertexColor");
     }
 }  // End of 'TestScene::spheresGeneration' function
 
@@ -42,9 +42,9 @@ void TestScene::cubesGeneration() {
         tmp->transformMatrix = math::matr4::rotateX(z) *
                                math::matr4::rotateY(x) *
                                math::matr4::rotateZ(y) * tmp->transformMatrix;
-        tmp->addUniform(time, "time");
+        tmp->addUniform(&time, "time");
         math::vec3 color = math::vec3(x / 100, y / 100, z / 100);
-        tmp->addUniform(color, "vertexColor");
+        tmp->addConstantUniform(color, "vertexColor");
     }
 }  // End of 'TestScene::cubesGeneration' function
 
@@ -91,7 +91,7 @@ void TestScene::inputUpdate() {
  */
 void TestScene::onCreate() {
     unitModel = createModel("obj_model", "tea_cup/tea_cup.obj");
-    unitModel->addUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
+    unitModel->addConstantUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
     unitModel->transformMatrix = math::matr4::translate(math::vec3(0, -1, 0)) *
                                  math::matr4::scale(math::vec3(10));
     spheresGeneration();

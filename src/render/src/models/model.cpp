@@ -141,26 +141,67 @@ Model::Model(uint shaderProgramId_, const ::std::string &fileName)
 void Model::onRender(const Camera &camera) const {
     glUseProgram(shaderProgramId);
     int uniformLocation;
-    for (auto &[uniformName, uniformValue] : shaderUniform1i) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1) glUniform1i(uniformLocation, uniformValue);
+    // Handle all non-constant uniforms
+    {
+        for (auto &[uniformName, uniformValue] : shaderUniform1i) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1i(uniformLocation, *uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform1f) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1f(uniformLocation, *uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform3fv(uniformLocation, 1, &(*uniformValue).x);
+        }
+        for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniformMatrix4fv(
+                    uniformLocation, 1, GL_FALSE, (float *)(*uniformPair).matrix
+                );
+        }
     }
-    for (auto &[uniformName, uniformValue] : shaderUniform1f) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1) glUniform1f(uniformLocation, uniformValue);
+
+    // Handle all constant uniforms
+    {
+        for (auto &[uniformName, uniformValue] : shaderUniform1iConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1i(uniformLocation, uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform1fConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform1f(uniformLocation, uniformValue);
+        }
+        for (auto &[uniformName, uniformValue] : shaderUniform3fvConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniform3fv(uniformLocation, 1, &uniformValue.x);
+        }
+        for (auto &[uniformName, uniformPair] : shaderUniform4fvConstant) {
+            uniformLocation =
+                glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1)
+                glUniformMatrix4fv(
+                    uniformLocation, 1, GL_FALSE, (float *)uniformPair.matrix
+                );
+        }
     }
-    for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1)
-            glUniform3fv(uniformLocation, 1, &uniformValue.x);
-    }
-    for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
-        uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
-        if (uniformLocation != -1)
-            glUniformMatrix4fv(
-                uniformLocation, 1, GL_FALSE, (float *)uniformPair.matrix
-            );
-    }
+
+    // Common uniforms for each model
     uniformLocation =
         glGetUniformLocation(shaderProgramId, "modelTransformMatrix");
     if (uniformLocation != -1)
@@ -168,6 +209,8 @@ void Model::onRender(const Camera &camera) const {
             uniformLocation, 1, GL_FALSE, (float *)transformMatrix.matrix
         );
     glUseProgram(0);
+
+    // Render model
     for (auto &primitiveInstance : primitivesArray)
         primitiveInstance->onRender(camera);
 }  // End of 'Model::onRender' function
@@ -252,28 +295,76 @@ Primitive *Model::getChild(int index) const {
 /* Add uniform of one integer variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       int &uniformValue;
+ *       const int *uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Model::addUniform(int &uniformValue, const char *uniformName) {
+void Model::addUniform(const int *uniformValue, const char *uniformName) {
     shaderUniform1i[uniformName] = uniformValue;
 }  // End of 'Model::addUniform' function
 
 /* Add uniform of one float variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       float &uniformValue;
+ *       const float *uniformValue;
  *   - uniform name on the shader:
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Model::addUniform(float &uniformValue, const char *uniformName) {
+void Model::addUniform(const float *uniformValue, const char *uniformName) {
     shaderUniform1f[uniformName] = uniformValue;
 }  // End of 'Model::addUniform' function
 
 /* Add uniform of 3-component geom vector to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const math::vec3 *vector;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addUniform(const math::vec3 *vector, const char *uniformName) {
+    shaderUniform3fv[uniformName] = vector;
+}  // End of 'Model::addUniform' function
+
+/* Add uniform of matrix4x4 variable to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       const math::matr4 *uniformValue;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addUniform(const math::matr4 *matrix, const char *uniformName) {
+    shaderUniform4fv[uniformName] = matrix;
+}  // End of 'Model::addUniform' function
+
+/* Add constant uniform of one integer variable to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       int uniformValue;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addConstantUniform(int uniformValue, const char *uniformName) {
+    shaderUniform1iConstant[uniformName] = uniformValue;
+}  // End of 'Model::addConstantUniform' function
+
+/* Add constant uniform of one float variable to the shader function.
+ * ARGUMENTS:
+ *   - uniform value:
+ *       float uniformValue;
+ *   - uniform name on the shader:
+ *       const char *uniformName;
+ * RETURNS: None.
+ */
+void Model::addConstantUniform(float uniformValue, const char *uniformName) {
+    shaderUniform1fConstant[uniformName] = uniformValue;
+}  // End of 'Model::addConstantUniform' function
+
+/* Add constant uniform of 3-component geom vector to the shader function.
  * ARGUMENTS:
  *   - uniform value:
  *       const math::vec3 &vector;
@@ -281,21 +372,25 @@ void Model::addUniform(float &uniformValue, const char *uniformName) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Model::addUniform(const math::vec3 &vector, const char *uniformName) {
-    shaderUniform3fv[uniformName] = vector;
-}  // End of 'Model::addUniform' function
+void Model::addConstantUniform(
+    const math::vec3 &vector,
+    const char *uniformName
+) {
+    shaderUniform3fvConstant[uniformName] = vector;
+}  // End of 'Model::addConstantUniform' function
 
-/* Add uniform of matrix4x4 variable to the shader function.
+/* Add constant uniform of matrix4x4 variable to the shader function.
  * ARGUMENTS:
  *   - uniform value:
- *       const math::matr4 &uniformValue;
+ *       const math::matr4 &matrix;
  *   - uniform name on the shader:
  *       const char *uniformName;
- *   - uniforms number:
- *       int uniformCount;
  * RETURNS: None.
  */
-void Model::addUniform(const math::matr4 &matrix, const char *uniformName) {
-    shaderUniform4fv[uniformName] = matrix;
-}  // End of 'Model::addUniform' function
+void Model::addConstantUniform(
+    const math::matr4 &matrix,
+    const char *uniformName
+) {
+    shaderUniform4fvConstant[uniformName] = matrix;
+}  // End of 'Model::addConstantUniform' function
 }  // namespace hse

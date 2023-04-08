@@ -23,10 +23,6 @@
 
 #define EXCEPTION(message) throw ::std::runtime_error(message)
 
-// Typedefs (only for our convenience)
-typedef unsigned char uchar;
-typedef unsigned int uint;
-
 // Project namespace
 namespace hse {
 // Key struct for callback

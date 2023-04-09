@@ -44,8 +44,11 @@ void TestScene::cubesGeneration() {
  * RETURNS: None.
  */
 void TestScene::cameraUpdate() {
-    math::vec3 newCameraLocation = math::vec3((cos(time / 1.5f) + 1) * 50, 50, (sin(time / 1.5f) + 1) * 50);
-    mainCamera.setPositionWithDirection(newCameraLocation, math::vec3(0) - newCameraLocation);
+    math::vec3 newCameraLocation = math::vec3((cos(time / 1.5f) + 1) * 50, 50, (sin(time / 1.5f) + 1) * 50), up, right;
+    up = (newCameraLocation + math::vec3(0, 1, 0)).normalize();
+    right = (up % newCameraLocation).normalize();
+    up = (newCameraLocation % right).normalize();
+    mainCamera.setAllAxis(newCameraLocation, math::vec3(0) - newCameraLocation, up, right);
 }  // End of 'TestScene::cameraUpdate' function
 
 /* Input (keyboard/mouse) update function.
@@ -95,6 +98,6 @@ void TestScene::onUpdate() {
 
 // Class override destructor
 TestScene::~TestScene() {
-    ::std::cout << "Clear test unit" << ::std::endl;
+    std::cout << "Clear test unit" << std::endl;
 }  // End of 'TestScene::~TestScene' function
 }  // namespace hse

@@ -7,6 +7,8 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: false
+SortIncludes: Never
+ColumnLimit: 120
 
 # Only from clang-format 14.0.0
 AlignAfterOpenBracket: BlockIndent

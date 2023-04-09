@@ -51,12 +51,12 @@ void Shader::compileShaderProgram(const ::std::string &shaderPath) {
             glGetShaderInfoLog(
                 shader.id, sizeof(logBuffer), &compileResult, logBuffer
             );
-            EXCEPTION(shaderPath + ": \n" + logBuffer);
+            EXCEPTION("Shader log:\n" + shaderPath + ": \n" + logBuffer);
         }
     }
     programId = glCreateProgram();
     if (programId == 0) {
-        EXCEPTION("Error in creating shader program");
+        EXCEPTION("Error in creating shader program: " + shaderPath);
     } else {
         for (auto &[name, type, id, source] : shaders)
             if (id != 0) glAttachShader(programId, id);
@@ -68,7 +68,7 @@ void Shader::compileShaderProgram(const ::std::string &shaderPath) {
             glGetProgramInfoLog(
                 programId, sizeof(logBuffer), &linkStatus, logBuffer
             );
-            EXCEPTION(shaderPath + ": \n" + logBuffer);
+            EXCEPTION("Shader log:\n" + shaderPath + ": \n" + logBuffer);
         }
     }
 }  // End of 'Shader::compileShaderProgram' function

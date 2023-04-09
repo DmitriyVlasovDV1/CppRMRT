@@ -84,7 +84,7 @@ void Render::onCreate(uint windowWidth_, uint windowHeight_) {
     glfwSetTime(time);
 }  // End of 'render::init' function
 
-/* Response window function.
+/* Start window response/render infinity cycle function.
  * ARGUMENTS: None.
  * RETURNS: None.
  */

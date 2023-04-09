@@ -27,7 +27,7 @@ private:
      */
     void onCreate(uint windowWidth_ = 400, uint windowHeight_ = 400);
 
-    /* Update window frame function.
+    /* Start window response/render infinity cycle function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */

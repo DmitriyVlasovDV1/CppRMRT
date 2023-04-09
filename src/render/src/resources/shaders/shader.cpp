@@ -90,7 +90,14 @@ Shader::Shader(const std::string &shaderPath) : programId(0) {
  *   - fragment shader source:
  *       const std::string &fragmentShaderSource.
  */
-Shader::Shader(const std::string &vertexShaderSource, const std::string &fragmentShaderSource) {
+Shader::Shader(const std::string &vertexShaderSource, const std::string &fragmentShaderSource) : programId(0) {
+    for (auto &[name, type, id, source] : shaders) {
+        if (name == "vertex")
+            source = vertexShaderSource;
+        else if (name == "fragment")
+            source = fragmentShaderSource;
+    }
+    createShaderProgram("Shader created by strings");
 }  // End of 'Shader::Shader' function
 
 /* Get shader id function.

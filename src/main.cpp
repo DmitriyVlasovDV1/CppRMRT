@@ -16,7 +16,7 @@ void hse::factory() {
     hse::Render renderInstance;
 
     renderInstance.onCreate(800, 600);
-    renderInstance.addScene(new hse::rmShdScene());
+//    renderInstance.addScene(new hse::rmShdScene());
     renderInstance.addScene(new hse::TestScene());
     renderInstance.startRenderLoop();
 }  // End of 'hse::factory' function

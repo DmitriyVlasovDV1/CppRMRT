@@ -24,6 +24,8 @@
 
 #define EXCEPTION(message) throw ::std::runtime_error(message)
 
+typedef unsigned int uint;
+
 // Project namespace
 namespace hse {
 // Key struct for callback

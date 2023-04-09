@@ -1,7 +1,6 @@
 #ifndef VEC3_HPP
 #define VEC3_HPP
 
-#include <cmath>
 #include "../math_def.hpp"
 
 // Math module namespace
@@ -20,8 +19,7 @@ public:
      *   - vector coordinates:
      *       const float x_, y_, z_.
      */
-    explicit vec3(const float x_, const float y_, const float z_)
-        : x(x_), y(y_), z(z_) {
+    explicit vec3(const float x_, const float y_, const float z_) : x(x_), y(y_), z(z_) {
     }  // End of 'vec3' function
 
     /* Class constructor.
@@ -50,7 +48,7 @@ public:
      *   (float) - vector's length.
      */
     inline float operator!() const {
-        return ::std::sqrt(x * x + y * y + z * z);
+        return std::sqrt(x * x + y * y + z * z);
     }  // End of 'operator!' function
 
     /* Get vector length squared function.
@@ -67,8 +65,7 @@ public:
      * RETURNS: None.
      */
     inline void print() const {
-        ::std::cout << "vec3: x:" << x << "; y: " << y << "; z:" << z
-                    << ::std::endl;
+        std::cout << "vec3: x:" << x << "; y: " << y << "; z:" << z << std::endl;
     }  // End of 'print' function
 
     /* Compare function.
@@ -79,8 +76,7 @@ public:
      *   (bool) - result of compare.
      */
     inline bool operator>(const vec3 &other) const {
-        return x > other.x ||
-               (x == other.x && (y > other.y || (y == other.y && z > other.z)));
+        return x > other.x || (x == other.x && (y > other.y || (y == other.y && z > other.z)));
     }  // End of 'operator>' function
 
     /* Compare function.
@@ -91,8 +87,7 @@ public:
      *   (bool) - result of compare.
      */
     inline bool operator<(const vec3 &other) const {
-        return x < other.x ||
-               (x == other.x && (y < other.y || (y == other.y && z < other.z)));
+        return x < other.x || (x == other.x && (y < other.y || (y == other.y && z < other.z)));
     }  // End of 'operator<' function
 
     /* Compare function.
@@ -245,10 +240,7 @@ public:
      *   (vec3) - result of cross product.
      */
     inline vec3 operator%(const vec3 &other) const {
-        return vec3(
-            y * other.z - z * other.y, z * other.x - x * other.z,
-            x * other.y - y * other.x
-        );
+        return vec3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
     }  // End of 'operator%' function
 
     /* Self-cross product of two vectors function.
@@ -296,8 +288,7 @@ public:
      */
     inline dword toDword() const {
         vec3 tmp = this->normalizing();
-        return (static_cast<int>(tmp.z * 255) << 0) |
-               (static_cast<int>(tmp.y * 255) << 8) |
+        return (static_cast<int>(tmp.z * 255) << 0) | (static_cast<int>(tmp.y * 255) << 8) |
                (static_cast<int>(tmp.x * 255) << 16) | 0xFF000000;
     } /* End of 'toDword' function */
 
@@ -309,10 +300,7 @@ public:
      *   (vec3) - minimum vector.
      */
     inline static vec3 min(const vec3 &v1, const vec3 &v2) {
-        return vec3(
-            ::std::min(v1.x, v2.x), ::std::min(v1.y, v2.y),
-            ::std::min(v1.z, v2.z)
-        );
+        return vec3(std::min(v1.x, v2.x), std::min(v1.y, v2.y), std::min(v1.z, v2.z));
     }  // End of 'min' function
 
     /* Get maximum of two vectors function.
@@ -323,10 +311,7 @@ public:
      *   (vec3) - maximum vector.
      */
     inline static vec3 max(const vec3 &v1, const vec3 &v2) {
-        return vec3(
-            ::std::max(v1.x, v2.x), ::std::max(v1.y, v2.y),
-            ::std::max(v1.z, v2.z)
-        );
+        return vec3(std::max(v1.x, v2.x), std::max(v1.y, v2.y), std::max(v1.z, v2.z));
     }  // End of 'max' function
 
     /* Get angle between (0-pi) two vectors function.

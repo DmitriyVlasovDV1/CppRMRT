@@ -11,8 +11,7 @@ public:
     float matrix[4][4];
 
     // Class default constructor
-    explicit matr4()
-        : matrix{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {
+    explicit matr4() : matrix{{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}} {
     }
 
     /* Class constructor.
@@ -38,11 +37,7 @@ public:
         const float A32,
         const float A33
     )
-        : matrix{
-              {A00, A01, A02, A03},
-              {A10, A11, A12, A13},
-              {A20, A21, A22, A23},
-              {A30, A31, A32, A33}} {
+        : matrix{{A00, A01, A02, A03}, {A10, A11, A12, A13}, {A20, A21, A22, A23}, {A30, A31, A32, A33}} {
     }  // End of 'matr4' function
 
     /* Class constructor.
@@ -130,8 +125,7 @@ public:
         const float A21,
         const float A22
     ) {
-        return A00 * (A11 * A22 - A12 * A21) - A01 * (A10 * A22 - A12 * A20) +
-               A02 * (A10 * A21 - A11 * A20);
+        return A00 * (A11 * A22 - A12 * A21) - A01 * (A10 * A22 - A12 * A20) + A02 * (A10 * A21 - A11 * A20);
     }  // End of 'matr3Det' function
 
     /* Count matrix 4x4 determinant function.
@@ -141,23 +135,19 @@ public:
      */
     inline float det() const {
         return matrix[0][0] * matr3Det(
-                                  matrix[1][1], matrix[1][2], matrix[1][3],
-                                  matrix[2][1], matrix[2][2], matrix[2][3],
+                                  matrix[1][1], matrix[1][2], matrix[1][3], matrix[2][1], matrix[2][2], matrix[2][3],
                                   matrix[3][1], matrix[3][2], matrix[3][3]
                               ) -
                matrix[0][1] * matr3Det(
-                                  matrix[1][0], matrix[1][2], matrix[1][3],
-                                  matrix[2][0], matrix[2][2], matrix[2][3],
+                                  matrix[1][0], matrix[1][2], matrix[1][3], matrix[2][0], matrix[2][2], matrix[2][3],
                                   matrix[3][0], matrix[3][2], matrix[3][3]
                               ) +
                matrix[0][2] * matr3Det(
-                                  matrix[1][0], matrix[1][1], matrix[1][3],
-                                  matrix[2][0], matrix[2][1], matrix[2][3],
+                                  matrix[1][0], matrix[1][1], matrix[1][3], matrix[2][0], matrix[2][1], matrix[2][3],
                                   matrix[3][0], matrix[3][1], matrix[3][3]
                               ) -
                matrix[0][3] * matr3Det(
-                                  matrix[1][0], matrix[1][1], matrix[1][2],
-                                  matrix[2][0], matrix[2][1], matrix[2][2],
+                                  matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0], matrix[2][1], matrix[2][2],
                                   matrix[3][0], matrix[3][1], matrix[3][2]
                               );
     }  // End of 'det' function
@@ -363,87 +353,71 @@ public:
         if (det != 0)
             return matr4(
                 matr3Det(
-                    matrix[1][1], matrix[1][2], matrix[1][3], matrix[2][1],
-                    matrix[2][2], matrix[2][3], matrix[3][1], matrix[3][2],
-                    matrix[3][3]
+                    matrix[1][1], matrix[1][2], matrix[1][3], matrix[2][1], matrix[2][2], matrix[2][3], matrix[3][1],
+                    matrix[3][2], matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[2][1],
-                    matrix[2][2], matrix[2][3], matrix[3][1], matrix[3][2],
-                    matrix[3][3]
+                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[2][1], matrix[2][2], matrix[2][3], matrix[3][1],
+                    matrix[3][2], matrix[3][3]
                 ) / det,
                 matr3Det(
-                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][1],
-                    matrix[1][2], matrix[1][3], matrix[3][1], matrix[3][2],
-                    matrix[3][3]
+                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][1], matrix[1][2], matrix[1][3], matrix[3][1],
+                    matrix[3][2], matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][1],
-                    matrix[1][2], matrix[1][3], matrix[2][1], matrix[2][2],
-                    matrix[2][3]
+                    matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][1], matrix[1][2], matrix[1][3], matrix[2][1],
+                    matrix[2][2], matrix[2][3]
                 ) / det,
 
                 -matr3Det(
-                    matrix[1][0], matrix[1][2], matrix[1][3], matrix[2][0],
-                    matrix[2][2], matrix[2][3], matrix[3][0], matrix[3][2],
-                    matrix[3][3]
+                    matrix[1][0], matrix[1][2], matrix[1][3], matrix[2][0], matrix[2][2], matrix[2][3], matrix[3][0],
+                    matrix[3][2], matrix[3][3]
                 ) / det,
                 matr3Det(
-                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[2][0],
-                    matrix[2][2], matrix[2][3], matrix[3][0], matrix[3][2],
-                    matrix[3][3]
+                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[2][0], matrix[2][2], matrix[2][3], matrix[3][0],
+                    matrix[3][2], matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[1][0],
-                    matrix[1][2], matrix[1][3], matrix[3][0], matrix[3][2],
-                    matrix[3][3]
+                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[1][0], matrix[1][2], matrix[1][3], matrix[3][0],
+                    matrix[3][2], matrix[3][3]
                 ) / det,
                 matr3Det(
-                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[1][0],
-                    matrix[1][2], matrix[1][3], matrix[2][0], matrix[2][2],
-                    matrix[2][3]
+                    matrix[0][0], matrix[0][2], matrix[0][3], matrix[1][0], matrix[1][2], matrix[1][3], matrix[2][0],
+                    matrix[2][2], matrix[2][3]
                 ) / det,
 
                 matr3Det(
-                    matrix[1][0], matrix[1][1], matrix[1][3], matrix[2][0],
-                    matrix[2][1], matrix[2][3], matrix[3][0], matrix[3][1],
-                    matrix[3][3]
+                    matrix[1][0], matrix[1][1], matrix[1][3], matrix[2][0], matrix[2][1], matrix[2][3], matrix[3][0],
+                    matrix[3][1], matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[2][0],
-                    matrix[2][1], matrix[2][3], matrix[3][0], matrix[3][1],
-                    matrix[3][3]
+                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[2][0], matrix[2][1], matrix[2][3], matrix[3][0],
+                    matrix[3][1], matrix[3][3]
                 ) / det,
                 matr3Det(
-                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[1][0],
-                    matrix[1][1], matrix[1][3], matrix[3][0], matrix[3][1],
-                    matrix[3][3]
+                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[1][0], matrix[1][1], matrix[1][3], matrix[3][0],
+                    matrix[3][1], matrix[3][3]
                 ) / det,
                 -matr3Det(
-                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[1][0],
-                    matrix[1][1], matrix[1][3], matrix[2][0], matrix[2][1],
-                    matrix[2][3]
+                    matrix[0][0], matrix[0][1], matrix[0][3], matrix[1][0], matrix[1][1], matrix[1][3], matrix[2][0],
+                    matrix[2][1], matrix[2][3]
                 ) / det,
 
                 -matr3Det(
-                    matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0],
-                    matrix[2][1], matrix[2][2], matrix[3][0], matrix[3][1],
-                    matrix[3][2]
+                    matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0], matrix[2][1], matrix[2][2], matrix[3][0],
+                    matrix[3][1], matrix[3][2]
                 ) / det,
                 matr3Det(
-                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[2][0],
-                    matrix[2][1], matrix[2][2], matrix[3][0], matrix[3][1],
-                    matrix[3][2]
+                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[2][0], matrix[2][1], matrix[2][2], matrix[3][0],
+                    matrix[3][1], matrix[3][2]
                 ) / det,
                 -matr3Det(
-                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0],
-                    matrix[1][1], matrix[1][2], matrix[3][0], matrix[3][1],
-                    matrix[3][2]
+                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0], matrix[1][1], matrix[1][2], matrix[3][0],
+                    matrix[3][1], matrix[3][2]
                 ) / det,
                 matr3Det(
-                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0],
-                    matrix[1][1], matrix[1][2], matrix[2][0], matrix[2][1],
-                    matrix[2][2]
+                    matrix[0][0], matrix[0][1], matrix[0][2], matrix[1][0], matrix[1][1], matrix[1][2], matrix[2][0],
+                    matrix[2][1], matrix[2][2]
                 ) / det
             );
         return matr4();
@@ -478,10 +452,9 @@ public:
      */
     inline matr4 transposing() const {
         return matr4(
-            matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0],
-            matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1],
-            matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2],
-            matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]
+            matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0], matrix[0][1], matrix[1][1], matrix[2][1],
+            matrix[3][1], matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2], matrix[0][3], matrix[1][3],
+            matrix[2][3], matrix[3][3]
         );
     }  // End of 'transposing' function
 
@@ -505,18 +478,12 @@ public:
      * RETURNS:
      *   (matr4) - view matrix.
      */
-    inline static matr4 getView(
-        const vec3 &location,
-        const vec3 &at,
-        const vec3 &up_
-    ) {
-        vec3 direction((at - location).normalize()),
-            right((direction % up_).normalize()), up(right % direction);
+    inline static matr4 getView(const vec3 &location, const vec3 &at, const vec3 &up_) {
+        vec3 direction((at - location).normalize()), right((direction % up_).normalize()), up(right % direction);
 
         return matr4(
-            right.x, up.x, -direction.x, 0, right.y, up.y, -direction.y, 0,
-            right.z, up.z, -direction.z, 0, -(location & right),
-            -(location & up), location & direction, 1
+            right.x, up.x, -direction.x, 0, right.y, up.y, -direction.y, 0, right.z, up.z, -direction.z, 0,
+            -(location & right), -(location & up), location & direction, 1
         );
     }  // End of 'getView' function
 
@@ -533,16 +500,9 @@ public:
      * RETURNS:
      *   (matr4) - view matrix.
      */
-    inline static matr4 getView(
-        const vec3 &location,
-        const vec3 &direction,
-        const vec3 &right,
-        const vec3 &up
-    ) {
+    inline static matr4 getView(const vec3 &location, const vec3 &direction, const vec3 &right, const vec3 &up) {
         return matr4(
-            right.x, up.x, -direction.x, 0,
-            right.y, up.y, -direction.y, 0,
-            right.z, up.z, -direction.z, 0,
+            right.x, up.x, -direction.x, 0, right.y, up.y, -direction.y, 0, right.z, up.z, -direction.z, 0,
             -(location & right), -(location & up), location & direction, 1
         );
     }  // End of 'getView' function
@@ -563,9 +523,8 @@ public:
         const float far
     ) {
         return matr4(
-            2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0,
-            -2 / (far - near), 0, -(right + left) / (right - left),
-            -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1
+            2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0, -2 / (far - near), 0,
+            -(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1
         );
     }  // End of 'getOrthographic' function
 
@@ -585,16 +544,14 @@ public:
         const float far
     ) {
         return matr4(
-            2 * near / (right - left), 0, 0, 0, 0, 2 * near / (top - bottom), 0,
-            0, (right + left) / (right - left), (top + bottom) / (top - bottom),
-            -(far + near) / (far - near), -1, 0, 0,
-            -2 * far * near / (far - near), 0
+            2 * near / (right - left), 0, 0, 0, 0, 2 * near / (top - bottom), 0, 0, (right + left) / (right - left),
+            (top + bottom) / (top - bottom), -(far + near) / (far - near), -1, 0, 0, -2 * far * near / (far - near), 0
         );
-//        return matr4(
-//            2 * near / (right - left), 0, 0, 0, 0, 2 * near / (top - bottom), 0,
-//            0, (right + left) / (right - left), (top + bottom) / (top - bottom),
-//            -(far) / (far - near), -1, 0, 0, -far * near / (far - near), 0
-//        );
+        //        return matr4(
+        //            2 * near / (right - left), 0, 0, 0, 0, 2 * near / (top - bottom), 0,
+        //            0, (right + left) / (right - left), (top + bottom) / (top - bottom),
+        //            -(far) / (far - near), -1, 0, 0, -far * near / (far - near), 0
+        //        );
     }  // End of 'getProjection' function
 
     /* Get scale matrix function.
@@ -605,9 +562,7 @@ public:
      *   (matr4) - scale matrix.
      */
     inline static matr4 scale(const vec3 value) {
-        return matr4(
-            value.x, 0, 0, 0, 0, value.y, 0, 0, 0, 0, value.z, 0, 0, 0, 0, 1
-        );
+        return matr4(value.x, 0, 0, 0, 0, value.y, 0, 0, 0, 0, value.z, 0, 0, 0, 0, 1);
     }  // End of 'scale' function
 
     /* Get translate matrix function.
@@ -618,9 +573,7 @@ public:
      *   (matr4) - translate matrix.
      */
     inline static matr4 translate(const vec3 &value) {
-        return matr4(
-            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, value.x, value.y, value.z, 1
-        );
+        return matr4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, value.x, value.y, value.z, 1);
     }  // End of 'translate' function
 
     /* Get rotating matrix by random axis function.
@@ -634,18 +587,13 @@ public:
      */
     inline static matr4 rotateRad(float angle, vec3 axis) {
         axis.normalize();
-        const float sine = sin(angle), cosine = cos(angle),
-                    cosine1 = 1 - cosine;
+        const float sine = sin(angle), cosine = cos(angle), cosine1 = 1 - cosine;
 
         return matr4(
-            cosine + axis.x * axis.x * cosine1,
-            axis.x * axis.y * cosine1 + axis.z * sine,
-            axis.x * axis.z * cosine1 - axis.y * sine, 0,
-            axis.y * axis.x * cosine1 - axis.z * sine,
-            cosine + axis.y * axis.y * cosine1,
-            axis.y * axis.z * cosine1 + axis.x * sine, 0,
-            axis.z * axis.x * cosine1 + axis.y * sine,
-            axis.z * axis.y * cosine1 - axis.x * sine,
+            cosine + axis.x * axis.x * cosine1, axis.x * axis.y * cosine1 + axis.z * sine,
+            axis.x * axis.z * cosine1 - axis.y * sine, 0, axis.y * axis.x * cosine1 - axis.z * sine,
+            cosine + axis.y * axis.y * cosine1, axis.y * axis.z * cosine1 + axis.x * sine, 0,
+            axis.z * axis.x * cosine1 + axis.y * sine, axis.z * axis.y * cosine1 - axis.x * sine,
             cosine + axis.z * axis.z * cosine1, 0, 0, 0, 0, 1
         );
     }  // End of 'rotateRad' function
@@ -672,9 +620,7 @@ public:
      */
     inline static matr4 rotateYRad(float angle) {
         const float sine(sin(angle)), cosine(cos(angle));
-        return matr4(
-            cosine, 0, -sine, 0, 0, 1, 0, 0, sine, 0, cosine, 0, 0, 0, 0, 1
-        );
+        return matr4(cosine, 0, -sine, 0, 0, 1, 0, 0, sine, 0, cosine, 0, 0, 0, 0, 1);
     }  // End of 'rotateYRad' function
 
     /* Get rotating by y axis matrix function.
@@ -697,9 +643,7 @@ public:
      */
     inline static matr4 rotateXRad(float angle) {
         const float sine(sin(angle)), cosine(cos(angle));
-        return matr4(
-            1, 0, 0, 0, 0, cosine, sine, 0, 0, -sine, cosine, 0, 0, 0, 0, 1
-        );
+        return matr4(1, 0, 0, 0, 0, cosine, sine, 0, 0, -sine, cosine, 0, 0, 0, 0, 1);
     }  // End of 'rotateXRad' function
 
     /* Get rotating by x axis matrix function.
@@ -722,9 +666,7 @@ public:
      */
     inline static matr4 rotateZRad(float angle) {
         const float sine(sin(angle)), cosine(cos(angle));
-        return matr4(
-            cosine, sine, 0, 0, -sine, cosine, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
-        );
+        return matr4(cosine, sine, 0, 0, -sine, cosine, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     }  // End of 'RotateZRad' function
 
     /* Get rotating by z axis matrix function.
@@ -747,28 +689,25 @@ public:
      */
     inline vec3 transformPoint(const vec3 &point) const {
         return vec3(
-            point.x * matrix[0][0] + point.y * matrix[1][0] +
-                point.z * matrix[2][0] + matrix[3][0],
-            point.x * matrix[0][1] + point.y * matrix[1][1] +
-                point.z * matrix[2][1] + matrix[3][1],
-            point.x * matrix[0][2] + point.y * matrix[1][2] +
-                point.z * matrix[2][2] + matrix[3][2]
+            point.x * matrix[0][0] + point.y * matrix[1][0] + point.z * matrix[2][0] + matrix[3][0],
+            point.x * matrix[0][1] + point.y * matrix[1][1] + point.z * matrix[2][1] + matrix[3][1],
+            point.x * matrix[0][2] + point.y * matrix[1][2] + point.z * matrix[2][2] + matrix[3][2]
         );
-    } // End of 'transformPoint' function
+    }  // End of 'transformPoint' function
 
     /* Print matrix function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     inline void print() const {
-        ::std::cout << "Matrix: { ";
+        std::cout << "Matrix: { ";
         for (auto i : matrix) {
-            ::std::cout << "{";
+            std::cout << "{";
             for (int j = 0; j < 4; j++)
-                ::std::cout << i[j] << (j != 3 ? ", " : "");
-            ::std::cout << "} ";
+                std::cout << i[j] << (j != 3 ? ", " : "");
+            std::cout << "} ";
         }
-        ::std::cout << "}" << ::std::endl;
+        std::cout << "}" << std::endl;
     }  // End of 'print' function
 };     // End of 'matr4' class
 }  // namespace math

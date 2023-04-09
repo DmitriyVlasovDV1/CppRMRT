@@ -57,7 +57,7 @@ public:
      *   (float) - vector's length.
      */
     inline float operator!() const {
-        return ::std::sqrt(x * x + y * y);
+        return std::sqrt(x * x + y * y);
     }  // End of 'operator!' function
 
     /* Get vector length squared function.
@@ -74,7 +74,7 @@ public:
      * RETURNS: None.
      */
     inline void print() const {
-        ::std::cout << "vec3: x:" << x << "; y: " << y << ::std::endl;
+        std::cout << "vec3: x:" << x << "; y: " << y << std::endl;
     }  // End of 'print' function
 
     /* Compare function.
@@ -269,7 +269,7 @@ public:
      *   (vec2) - minimum vector.
      */
     inline static vec2 min(const vec2 &v1, const vec2 &v2) {
-        return vec2(::std::min(v1.x, v2.x), ::std::min(v1.y, v2.y));
+        return vec2(std::min(v1.x, v2.x), std::min(v1.y, v2.y));
     }  // End of 'min' function
 
     /* Get maximum of two vectors function.
@@ -280,7 +280,7 @@ public:
      *   (vec2) - maximum vector.
      */
     inline static vec2 max(const vec2 &v1, const vec2 &v2) {
-        return vec2(::std::max(v1.x, v2.x), ::std::max(v1.y, v2.y));
+        return vec2(std::max(v1.x, v2.x), std::max(v1.y, v2.y));
     }  // End of 'max' function
 };     // End of 'vec2' class
 }  // namespace math

@@ -41,12 +41,7 @@ public:
      *       const vec3 &direction_;
      * NOTE: Near and far can be changed in the future.
      */
-    explicit Camera(
-        const math::vec3 &position_,
-        const math::vec3 &direction_,
-        const uint width_,
-        const uint height_
-    )
+    explicit Camera(const math::vec3 &position_, const math::vec3 &direction_, const uint width_, const uint height_)
         : width(width_), height(height_), projectionSize(0.1) {
         setProjection();
         setPositionWithDirection(position_, direction_);
@@ -91,19 +86,12 @@ public:
      * RETURNS: None.
      */
     void setProjection() {
-        const float projectionWidth = ::std::max(
-                                          1.0f, static_cast<float>(width) /
-                                                    static_cast<float>(height)
-                                      ) *
-                                      projectionSize,
-                    projectionHeight = ::std::max(
-                                           1.0f, static_cast<float>(height) /
-                                                     static_cast<float>(width)
-                                       ) *
-                                       projectionSize;
+        const float projectionWidth =
+                        std::max(1.0f, static_cast<float>(width) / static_cast<float>(height)) * projectionSize,
+                    projectionHeight =
+                        std::max(1.0f, static_cast<float>(height) / static_cast<float>(width)) * projectionSize;
         projection = math::matr4::getProjection(
-            -projectionWidth / 2, projectionWidth / 2, -projectionHeight / 2,
-            projectionHeight / 2, projectionSize, far
+            -projectionWidth / 2, projectionWidth / 2, -projectionHeight / 2, projectionHeight / 2, projectionSize, far
         );
         viewProjection = view * projection;
     }  // End of 'setProjection' function
@@ -130,7 +118,7 @@ public:
         right = transformMatrix.transformPoint(right);
         up = transformMatrix.transformPoint(up);
         setView();
-    } // End of 'setView' function
+    }  // End of 'setView' function
 
     /* Set view matrix function.
      * ARGUMENTS:
@@ -142,11 +130,7 @@ public:
      *       const vec3 &up_;
      * RETURNS: None.
      */
-    void setPositionWithAtDirection(
-        const math::vec3 &position_,
-        const math::vec3 &at_,
-        const math::vec3 &up_
-    ) {
+    void setPositionWithAtDirection(const math::vec3 &position_, const math::vec3 &at_, const math::vec3 &up_) {
         position = position_;
         direction = (at_ + math::vec3(0.00001) - position).normalize();
         if (up_ != math::vec3(0))
@@ -165,10 +149,7 @@ public:
      *       const math::vec3 &up_;
      * RETURNS: None.
      */
-    void setDirectionWithUp(
-        const math::vec3 &direction_,
-        const math::vec3 &up_
-    ) {
+    void setDirectionWithUp(const math::vec3 &direction_, const math::vec3 &up_) {
         direction = direction_.normalizing();
         up = up_.normalizing();
         right = (direction % up).normalize();
@@ -183,10 +164,7 @@ public:
      *       const math::vec3 &right_;
      * RETURNS: None.
      */
-    void setDirectionWithRight(
-        const math::vec3 &direction_,
-        const math::vec3 &right_
-    ) {
+    void setDirectionWithRight(const math::vec3 &direction_, const math::vec3 &right_) {
         direction = direction_.normalizing();
         right = right_.normalizing();
         up = (right % direction).normalize();
@@ -217,10 +195,7 @@ public:
      *       const math::vec3 &right_;
      * RETURNS: None.
      */
-    void setPositionWithRight(
-        const math::vec3 &position_,
-        const math::vec3 &right_
-    ) {
+    void setPositionWithRight(const math::vec3 &position_, const math::vec3 &right_) {
         position = position_;
         right = right_.normalizing();
         up = (right % direction).normalize();
@@ -235,17 +210,11 @@ public:
      *       const vec3 &direction_;
      * RETURNS: None.
      */
-    void setPositionWithDirection(
-        const math::vec3 &position_,
-        const math::vec3 &direction_
-    ) {
+    void setPositionWithDirection(const math::vec3 &position_, const math::vec3 &direction_) {
         position = position_;
         direction = direction_.normalizing();
         if (up != math::vec3(0))
-            up =
-                (((direction + ((direction % right).normalize() / 1000)) % up) %
-                 direction)
-                    .normalize();
+            up = (((direction + ((direction % right).normalize() / 1000)) % up) % direction).normalize();
         else
             up = (right % direction).normalize();
         right = (direction % up).normalize();
@@ -359,7 +328,7 @@ public:
 
     // Class destructor
     ~Camera() {
-        ::std::cout << "Clear camera" << ::std::endl;
+        std::cout << "Clear camera" << std::endl;
     }  // End of '~Camera' function
 };     // End of 'Camera' class
 

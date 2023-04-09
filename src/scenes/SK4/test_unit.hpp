@@ -1,7 +1,7 @@
 #ifndef TEST_UNIT_HPP
 #define TEST_UNIT_HPP
 
-#include "../../render/src/scenes/scene.hpp"
+#include "../../render/src/resources/scenes/scene.hpp"
 
 // Project namespace
 namespace hse {

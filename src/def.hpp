@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
 #include "utilities/math/math.hpp"
 
 #define EXCEPTION(message) throw ::std::runtime_error(message)
@@ -36,7 +37,7 @@ extern float deltaTime;            // Global delta time variable
 extern bool isPause;               // Pause flag
 extern unsigned int windowWidth,   // Window width
     windowHeight;                  // Window height
-extern ::std::map<int, Key> keys;  // Keys map for input response
+extern std::map<int, Key> keys;  // Keys map for input response
 
 /* Resize window callback function.
  * ARGUMENTS:

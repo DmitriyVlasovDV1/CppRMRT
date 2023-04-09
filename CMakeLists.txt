@@ -9,11 +9,11 @@ include_directories(include)
 file(GLOB SOURCE_FILES
         src/main.cpp
         src/render/render.cpp
-        src/render/src/buffers/buffer.cpp
-        src/render/src/primitives/primitive.cpp
-        src/render/src/models/model.cpp
-        src/render/src/shaders/shader.cpp
-        src/render/src/scenes/scene.cpp
+        src/render/src/resources/buffers/buffer.cpp
+        src/render/src/resources/primitives/primitive.cpp
+        src/render/src/resources/models/model.cpp
+        src/render/src/resources/shaders/shader.cpp
+        src/render/src/resources/scenes/scene.cpp
         src/render/src/figures/figure_scene.cpp
         src/render/src/figures/figure.cpp
         src/render/src/figures/figure_render.cpp
@@ -21,6 +21,7 @@ file(GLOB SOURCE_FILES
         src/render/src/figures/figure_material.cpp
         src/Scenes/SK4/test_unit.cpp
         src/Scenes/DV1/rm_shd_unit.cpp)
+
 file(GLOB HEADER_FILES
         src/utilities/math/math.hpp
         src/utilities/math/math_def.hpp
@@ -30,11 +31,11 @@ file(GLOB HEADER_FILES
         src/utilities/camera/camera.hpp
         src/def.hpp
         src/render/render.hpp
-        src/render/src/buffers/buffer.hpp
-        src/render/src/primitives/primitive.hpp
-        src/render/src/models/model.hpp
-        src/render/src/shaders/shader.hpp
-        src/render/src/scenes/scene.hpp
+        src/render/src/resources/buffers/buffer.hpp
+        src/render/src/resources/primitives/primitive.hpp
+        src/render/src/resources/models/model.hpp
+        src/render/src/resources/shaders/shader.hpp
+        src/render/src/resources/scenes/scene.hpp
         src/render/src/figures/figure_scene.hpp
         src/render/src/figures/figure.hpp
         src/render/src/figures/figure_render.hpp

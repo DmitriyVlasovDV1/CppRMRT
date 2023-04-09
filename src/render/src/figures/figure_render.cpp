@@ -58,7 +58,7 @@ void CommonRender::preparePrimitives(const FigureId &id, math::matr4 tranformati
         }
         if (prim) {
             prim->setVisibility(true);
-            prim->transformMatrix = tranformation;
+            prim->setTransformMatrix(tranformation);
         }
     }
     else {

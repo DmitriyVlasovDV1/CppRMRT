@@ -2,7 +2,6 @@
 
 // Project namespace
 namespace hse {
-
 FigureScene Render::scene;
 
 /* Resize window callback-function.
@@ -33,13 +32,7 @@ void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
  *       int mods;
  * RETURNS: None.
  */
-void keyboardCallback(
-    GLFWwindow *window,
-    int key,
-    int scancode,
-    int action,
-    int mods
-) {
+void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     keys[key] = {action, mods};
 }  // End of 'keyboardCallback' function
 
@@ -55,9 +48,20 @@ void Render::onCreate(uint windowWidth_, uint windowHeight_) {
     isPause = false;
     windowWidth = windowWidth_;
     windowHeight = windowHeight_;
+
+    // Glfw initialization and its version setting
+    {
+        if (!glfwInit()) EXCEPTION("Error in glfw initialization");
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+    }
+
     windowInstance = glfwCreateWindow(
-        static_cast<int>(windowWidth), static_cast<int>(windowHeight),
-        "HSE project", nullptr, nullptr
+        static_cast<int>(windowWidth), static_cast<int>(windowHeight), "HSE project", nullptr, nullptr
     );
     if (!windowInstance) {
         glfwTerminate();
@@ -72,8 +76,7 @@ void Render::onCreate(uint windowWidth_, uint windowHeight_) {
         // EXCEPTION("Error in glew initialization");
     }
     ::std::cout << "OpenGL: " << glGetString(GL_VERSION) << "\n";
-    ::std::cout << "Shader language: "
-                << glGetString(GL_SHADING_LANGUAGE_VERSION) << ::std::endl;
+    ::std::cout << "Shader language: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << ::std::endl;
 
     glEnable(GL_PRIMITIVE_RESTART);
     glPrimitiveRestartIndex(-1);
@@ -84,12 +87,10 @@ void Render::onCreate(uint windowWidth_, uint windowHeight_) {
 /* Response window function.
  * ARGUMENTS: None.
  * RETURNS: None.
- * NOTE:
- *   If we want to create several windows - let's do it in far-far future.
  */
-void Render::onUpdate() {
+void Render::startRenderLoop() {
     // Initializing units
-    for (auto &[unitName, unitInstance] : scenesArray) {
+    for (auto &unitInstance : scenesArray) {
         unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
         unitInstance->onCreate();
     }
@@ -105,22 +106,19 @@ void Render::onUpdate() {
         }
         // Calculating current FPS
         glfwSetWindowTitle(
-            windowInstance,
-            ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)) +
-             " | Render type: " + (scene.getRenderType() == RenderType::COMMON ? "common": "rm") +
-             " (press " + (scene.getRenderType() == RenderType::COMMON ? "\"R\"" : "\"C\"") + " for change)")
-                .c_str()
+            windowInstance, ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)) + " | Render type: " +
+                             (scene.getRenderType() == RenderType::COMMON ? "common" : "rm") + " (press " +
+                             (scene.getRenderType() == RenderType::COMMON ? "\"R\"" : "\"C\"") + " for change)")
+                                .c_str()
         );
 
         // Update/Render all units
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
-        for (auto &[sceneName, sceneInstance] : scenesArray)
+        for (auto &sceneInstance : scenesArray)
             if (sceneInstance->getVisibility()) {
-                sceneInstance->mainCamera.setProjection(
-                    windowWidth, windowHeight
-                );
+                sceneInstance->mainCamera.setProjection(windowWidth, windowHeight);
                 sceneInstance->onUpdate();
                 sceneInstance->onRender();
             }
@@ -137,17 +135,15 @@ void Render::onUpdate() {
 
 /* Add scene's instance to the scenes array function.
  * ARGUMENTS:
- *   - scene name:
- *       const ::std::string &sceneName;
  *   - scene instance:
  *       Scene *sceneInstance;
  * RETURNS: None.
  * NOTE:
- *   Returns value may be changed to (unit *) - not-owning pointer to
+ *   Returns value may be changed to (Scene *) - not-owning pointer to
  * the scene, if we want to be able to copy scenes.
  */
-void Render::addScene(const ::std::string &sceneName, Scene *sceneInstance) {
-    scenesArray[sceneName] = sceneInstance;
+void Render::addScene(Scene *sceneInstance) {
+    scenesArray.push_back(sceneInstance);
 }  // End of 'Render::addScene' function
 
 // Class default constructor
@@ -162,19 +158,18 @@ Render::Render() : windowInstance(nullptr) {
  *   - window width and height:
  *       uint windowWidth, windowHeight;
  */
-Render::Render(uint windowWidth_, uint windowHeight_)
-    : windowInstance(nullptr) {
+Render::Render(uint windowWidth_, uint windowHeight_) : windowInstance(nullptr) {
     onCreate(windowWidth_, windowHeight_);
 }  // End of 'Render::Render' function
 
 // Class destructor
 Render::~Render() {
-    for (auto &[sceneName, sceneInstance] : scenesArray) {
+    for (auto &sceneInstance : scenesArray) {
         sceneInstance->onDelete();
         delete sceneInstance;
     }
     glfwDestroyWindow(windowInstance);
     glfwTerminate();
-    ::std::cout << "Clear render" << ::std::endl;
+    std::cout << "Clear render" << std::endl;
 }  // End of 'Render::~Render' function
 }  // namespace hse

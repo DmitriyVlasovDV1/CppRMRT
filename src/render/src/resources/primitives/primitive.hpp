@@ -1,8 +1,8 @@
 #ifndef PRIMITIVE_HPP
 #define PRIMITIVE_HPP
 
-#include "../../../def.hpp"
-#include "../../../utilities/camera/camera.hpp"
+#include "../../../../def.hpp"
+#include "../../../../utilities/camera/camera.hpp"
 #include "../buffers/buffer.hpp"
 #include "../shaders/shader.hpp"
 
@@ -11,33 +11,23 @@ namespace hse {
 class Primitive {
     // Friend classes
     friend class Scene;
-    friend class Model;
 
-    VertexArray::renderType renderType;  // Rendering type
+protected:
     VertexArray *vertexArrayInstance;    // Vertex array instance
+    VertexArray::renderType renderType;  // Rendering type
     uint shaderProgramId;                // Primitive's shader instance
     bool isVisible;                      // Visibility flag
+    math::matr4 transformMatrix;         // Transform matrix
 
-public:
-    math::matr4 transformMatrix;  // Transform matrix
+    std::map<const char *, const int *> shaderUniform1i;           // Integer uniforms
+    std::map<const char *, const float *> shaderUniform1f;         // Floats uniforms
+    std::map<const char *, const math::vec3 *> shaderUniform3fv;   // 3d-vector uniforms
+    std::map<const char *, const math::matr4 *> shaderUniform4fv;  // Matrix4x4 uniforms
 
-private:
-    ::std::map<const char *, const int *> shaderUniform1i;  // Integer uniforms
-    ::std::map<const char *, const float *> shaderUniform1f;  // Floats uniforms
-    ::std::map<const char *, const math::vec3 *> shaderUniform3fv;  // 3d-vector
-                                                                    // uniforms
-    ::std::map<const char *, const math::matr4 *>
-        shaderUniform4fv;  // Matrix4x4
-                           // uniforms
-
-    ::std::map<const char *, int> shaderUniform1iConstant;    // Integer
-                                                              // uniforms
-    ::std::map<const char *, float> shaderUniform1fConstant;  // Floats uniforms
-    ::std::map<const char *, math::vec3> shaderUniform3fvConstant;  // 3d-vector
-                                                                    // uniforms
-    ::std::map<const char *, math::matr4>
-        shaderUniform4fvConstant;  // Matrix4x4
-                                   // uniforms
+    std::map<const char *, int> shaderUniform1iConstant;           // Integer constant uniforms
+    std::map<const char *, float> shaderUniform1fConstant;         // Floats constant uniforms
+    std::map<const char *, math::vec3> shaderUniform3fvConstant;   // 3d-vector constant uniforms
+    std::map<const char *, math::matr4> shaderUniform4fvConstant;  // Matrix4x4 constant uniforms
 
 public:
     // Class default constructor
@@ -48,11 +38,11 @@ public:
      *   - primitive's shader program id:
      *       uint primitiveShaderProgramId_;
      *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBuffer;
+     *       const std::vector<float> &vertexBuffer;
      *   - vertex buffer format:
-     *       const ::std::string &vertexBufferFormat;
+     *       const std::string &vertexBufferFormat;
      *   - index buffer data:
-     *       const ::std::vector<int> &indexBuffer;
+     *       const std::vector<int> &indexBuffer;
      *   - primitive's rendering type:
      *       VertexArray::renderType type_;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
@@ -60,9 +50,9 @@ public:
      */
     explicit Primitive(
         uint primitiveShaderProgramId_,
-        const ::std::vector<float> &vertexBuffer,
-        const ::std::string &vertexBufferFormat = "v3v3",
-        const ::std::vector<int> &indexBuffer = ::std::vector<int>(),
+        const std::vector<float> &vertexBuffer,
+        const std::string &vertexBufferFormat = "v3v3",
+        const std::vector<int> &indexBuffer = ::std::vector<int>(),
         VertexArray::renderType type_ = VertexArray::renderType::TRIANGLES
     );
 
@@ -81,16 +71,15 @@ public:
         VertexArray::renderType type_ = VertexArray::renderType::TRIANGLES
     );
 
-private:
     /* Render primitive function.
      * ARGUMENTS:
      *   - camera for rendering primitive:
      *      const camera &camera;
-     * RETURNS: None.
+     * RETURNS: None;
+     * NOTE: Don't use it - use interface in scene, primitives will render automatically.
      */
-    void onRender(const Camera &camera) const;
+    virtual void onRender(const Camera &camera) const;
 
-public:
     // Class destructor
     ~Primitive();
 
@@ -101,6 +90,21 @@ public:
      * RETURNS: None.
      */
     void setShaderProgram(uint shaderProgramId_);
+
+    /* Get primitive's transform matrix function.
+     * ARGUMENTS: None.
+     * RETURNS:
+     *   (math::matr4) - primitive's transform matrix.
+     */
+    math::matr4 getTransformMatrix() const;
+
+    /* Set primitive's transform matrix function.
+     * ARGUMENTS:
+     *   - new primitive transform matrix:
+     *       const math::matr4 &transformMatrix_;
+     * RETURNS: None.
+     */
+    void setTransformMatrix(const math::matr4 &transformMatrix_);
 
     /* Get primitive rendering type function.
      * ARGUMENTS: None.
@@ -132,7 +136,7 @@ public:
      */
     void setVisibility(bool isVisible_);
 
-    /* Add uniform to the shader function.
+    /* Add dynamic uniform to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const int *uniformValue;
@@ -142,7 +146,7 @@ public:
      */
     void addUniform(const int *uniformValue, const char *uniformName);
 
-    /* Add uniform of one float variable to the shader function.
+    /* Add dynamic uniform of one float variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const float *uniformValue;
@@ -152,7 +156,7 @@ public:
      */
     void addUniform(const float *uniformValue, const char *uniformName);
 
-    /* Add uniform of 3-component geom vector to the shader function.
+    /* Add dynamic uniform of 3-component geom vector to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const math::vec3 *vector;
@@ -162,7 +166,7 @@ public:
      */
     void addUniform(const math::vec3 *vector, const char *uniformName);
 
-    /* Add uniform of matrix4x4 variable to the shader function.
+    /* Add dynamic uniform of matrix4x4 variable to the shader function.
      * ARGUMENTS:
      *   - uniform value:
      *       const math::matr4 *matrix;

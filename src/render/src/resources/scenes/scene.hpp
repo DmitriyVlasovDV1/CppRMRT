@@ -1,8 +1,8 @@
 #ifndef UNIT_HPP
 #define UNIT_HPP
 
-#include "../../../def.hpp"
-#include "../../../utilities/camera/camera.hpp"
+#include "../../../../def.hpp"
+#include "../../../../utilities/camera/camera.hpp"
 #include "../buffers/buffer.hpp"
 #include "../models/model.hpp"
 #include "../primitives/primitive.hpp"
@@ -14,24 +14,31 @@ class Scene {
     // Friend classes
     friend class Render;
 
-    bool isVisible;  // Scene's visibility flag
-    ::std::map<::std::string, ::std::unique_ptr<Shader>>
-        shadersArray;  // Scene's shader
-                       // programs array
-    ::std::vector<::std::unique_ptr<Primitive>> primitivesArray;  // Scene's
-                                                                  // primitives
-                                                                  // array
-    ::std::vector<::std::unique_ptr<Model>> modelsArray;    // Scene's models
-                                                            // array
-    ::std::vector<::std::unique_ptr<Buffer>> buffersArray;  // Scene's buffers
-                                                            // array
+    bool isVisible = true;  // Scene's visibility flag
+    std::string sceneName;  // Scene's name
+
+    std::map<std::string, std::unique_ptr<Shader>> shadersArray;                  // Scene's shader programs array
+    std::vector<std::unique_ptr<Primitive>> primitivesArray;                      // Scene's primitives array
+    std::vector<std::unique_ptr<Model>> modelsArray;                              // Scene's models array
+    std::vector<std::unique_ptr<VertexBuffer>> vertexBuffersArray;                // Scene's vertex buffers array
+    std::vector<std::unique_ptr<IndexBuffer>> indexBuffersArray;                  // Scene's index buffers array
+    std::vector<std::unique_ptr<VertexArray>> vertexArraysArray;                  // Scene's VA array
+    std::vector<std::unique_ptr<ShaderStorageBuffer>> shaderStorageBuffersArray;  // Scene's SSBO array
 
 public:
-    Camera mainCamera;  // Scene's main camera (can be changed, but all render
-                        // works from this camera in each Scene)
+    Camera mainCamera;  // Scene's main camera, can be changed by user,
+                        // all render works from this camera in each scene
 
-    // Class constructor
-    Scene();
+protected:
+    // Class default constructor
+    explicit Scene() = default;
+
+    /* Class constructor.
+     * ARGUMENTS:
+     *   - scene's name;
+     *       const std::string &sceneName_.
+     */
+    explicit Scene(const std::string &sceneName_);
 
     /* Scene initialization pure-virtual function.
      * ARGUMENTS: None.
@@ -45,6 +52,10 @@ public:
      */
     virtual void onUpdate() = 0;
 
+    // Class virtual destructor
+    virtual ~Scene() = default;
+
+private:
     /* Render scene function.
      * ARGUMENTS: None.
      * RETURNS: None.
@@ -57,9 +68,7 @@ public:
      */
     void onDelete();
 
-    // Class virtual destructor
-    virtual ~Scene() = default;
-
+public:
     /* Get scene's visibility flag function.
      * ARGUMENTS: None.
      * RETURNS:
@@ -78,91 +87,91 @@ public:
     /* Create vertex buffer function.
      * ARGUMENTS:
      *   - buffer's data:
-     *       const ::std::vector<float> &vertexBufferData;
+     *       const std::vector<float> &vertexBufferData;
      *   - buffer's format:
-     *       const ::std::string &vertexBufferFormat;
+     *       const std::string &vertexBufferFormat;
      * RETURNS:
      *   (VertexBuffer *) - not-owning pointer of created buffer;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
     VertexBuffer *createVertexBuffer(
-        const ::std::vector<float> &vertexBufferData,
-        const ::std::string &vertexBufferFormat = "v3"
+        const std::vector<float> &vertexBufferData,
+        const std::string &vertexBufferFormat = "v3"
     );
 
     /* Create index buffer function.
      * ARGUMENTS:
      *   - buffer's data;
-     *       const ::std::vector<int> &indexBufferData.
+     *       const std::vector<int> &indexBufferData.
      * RETURNS:
      *   (IndexBuffer *) - not-owning pointer of created buffer;
      */
-    IndexBuffer *createIndexBuffer(const ::std::vector<int> &indexBufferData);
+    IndexBuffer *createIndexBuffer(const std::vector<int> &indexBufferData);
 
     /* Create vertex array function.
      * ARGUMENTS:
      *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBufferData;
+     *       const std::vector<float> &vertexBufferData;
      *   - vertex buffer format:
-     *       const ::std::string &vertexBufferFormat;
+     *       const std::string &vertexBufferFormat;
      *   - index buffer data:
-     *       const ::std::vector<int> &indexBufferData;
+     *       const std::vector<int> &indexBufferData;
      * RETURNS:
      *   (VertexArray *) - not-owning pointer of created buffer.
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
     VertexArray *createVertexArray(
-        const ::std::vector<float> &vertexBufferData,
-        const ::std::string &vertexBufferFormat,
-        const ::std::vector<int> &indexBufferData
+        const std::vector<float> &vertexBufferData,
+        const std::string &vertexBufferFormat,
+        const std::vector<int> &indexBufferData
     );
 
     /* Create shader storage buffer function.
      * ARGUMENTS:
      *   - buffer's data:
-     *       const ::std::vector<T> &bufferData;
+     *       const std::vector<T> &bufferData;
      *   - buffer's binding value:
      *       uint bufferBinding.
      * RETURNS:
      *   (ShaderStorageBuffer *) - not-owning pointer of created buffer.
      */
     template <typename T>
-    ShaderStorageBuffer *createShaderStorageBuffer(
-        const ::std::vector<T> &bufferData,
-        uint bufferBinding
-    );
+    ShaderStorageBuffer *createShaderStorageBuffer(const std::vector<T> &bufferData, uint bufferBinding) {
+        shaderStorageBuffersArray.push_back(std::make_unique<ShaderStorageBuffer>(bufferData, bufferBinding));
+        return shaderStorageBuffersArray.back().get();
+    }  // End of 'createShaderStorageBuffer' function
 
     /* Create shader function.
      * ARGUMENTS:
      *   - path to shader's realization (read shader class constructor note)
-     *       const ::std::string &shaderPath;
+     *       const std::string &shaderPath;
      * RETURNS:
      *   (Shader *) - not-owning pointer of shader program id.
      */
-    Shader *createShader(const ::std::string &shaderPath);
+    Shader *createShader(const std::string &shaderPath);
 
     /* Create primitive function.
      * ARGUMENTS:
      *   - path to primitive's shader:
-     *       const ::std::string &shaderPath;
+     *       const std::string &shaderPath;
      *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBufferData;
+     *       const std::vector<float> &vertexBufferData;
      *   - vertex buffer format:
-     *       const ::std::string &vertexBufferFormat;
+     *       const std::string &vertexBufferFormat;
      *   - index buffer data:
-     *       const ::std::vector<int> &indexBufferData;
+     *       const std::vector<int> &indexBufferData;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created primitive;
+     *   (Primitive *) - not-owning pointer to the created primitive;
      * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
      * position, color, normal, texture coordinate.
      */
     Primitive *createPrimitive(
-        const ::std::string &shaderPath,
-        const ::std::vector<float> &vertexBufferData,
-        const ::std::string &vertexBufferFormat = "v3v3",
-        const ::std::vector<int> &indexBufferData = ::std::vector<int>()
+        const std::string &shaderPath,
+        const std::vector<float> &vertexBufferData,
+        const std::string &vertexBufferFormat = "v3v3",
+        const std::vector<int> &indexBufferData = std::vector<int>()
     );
 
     /* Create primitive function.
@@ -170,48 +179,42 @@ public:
      *   - shader program id:
      *       uint shaderProgramId;
      *   - vertex buffer data:
-     *       const ::std::vector<float> &vertexBufferData;
+     *       const std::vector<float> &vertexBufferData;
      *   - vertex buffer format:
-     *       const ::std::string &vertexBufferFormat;
+     *       const std::string &vertexBufferFormat;
      *   - index buffer data:
-     *       const ::std::vector<int> &indexBufferData;
+     *       const std::vector<int> &indexBufferData;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created primitive.
+     *   (Primitive *) - not-owning pointer to the created primitive.
      */
     Primitive *createPrimitive(
         uint shaderProgramId,
-        const ::std::vector<float> &vertexBufferData,
-        const ::std::string &vertexBufferFormat,
-        const ::std::vector<int> &indexBufferData
+        const std::vector<float> &vertexBufferData,
+        const std::string &vertexBufferFormat,
+        const std::vector<int> &indexBufferData
     );
 
     /* Create model function.
      * ARGUMENTS:
      *   - path to the model's shader:
-     *       const ::std::string &shaderPath;
+     *       const std::string &shaderPath;
      *   - models' file name:
-     *       const ::std::string &modelFileName;
+     *       const std::string &modelFileName;
      * RETURNS:
-     *   (model *) - not-owning pointer to the created model.
+     *   (Model *) - not-owning pointer to the created model.
      */
-    Model *createModel(
-        const ::std::string &shaderPath,
-        const ::std::string &modelFileName
-    );
+    Model *createModel(const std::string &shaderPath, const std::string &modelFileName);
 
     /* Create model function.
      * ARGUMENTS:
      *   - model's shader program id:
      *       uint shaderProgramId;
      *   - models' file name:
-     *       const ::std::string &modelFileName;
+     *       const std::string &modelFileName;
      * RETURNS:
-     *   (model *) - not-owning pointer to the created model.
+     *   (Model *) - not-owning pointer to the created model.
      */
-    Model *createModel(
-        uint shaderProgramId,
-        const ::std::string &modelFileName
-    );
+    Model *createModel(uint shaderProgramId, const std::string &modelFileName);
 
     /* Create sphere primitive function.
      * ARGUMENTS:
@@ -224,14 +227,9 @@ public:
      *   - sphere's slices:
      *       int slices;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created sphere primitive.
+     *   (Primitive *) - not-owning pointer to the created sphere primitive.
      */
-    Primitive *createSpherePrimitive(
-        float radius,
-        const math::vec3 &position,
-        int stacks = 20,
-        int slices = 20
-    );
+    Primitive *createSpherePrimitive(float radius, const math::vec3 &position, int stacks = 20, int slices = 20);
 
 private:
     /* Generate vertexes for plane primitive function.
@@ -272,13 +270,9 @@ public:
      *   - plane's position:
      *       const math::vec3 &position;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created plane primitive.
+     *   (Primitive *) - not-owning pointer to the created plane primitive.
      */
-    Primitive *createPlanePrimitive(
-        float width,
-        float height,
-        const math::vec3 &position
-    );
+    Primitive *createPlanePrimitive(float width, float height, const math::vec3 &position);
 
     /* Create cube primitive function.
      * ARGUMENTS:
@@ -291,14 +285,9 @@ public:
      *   - cube's position:
      *       const math::vec3 &position;
      * RETURNS:
-     *   (primitive *) - not-owning pointer to the created cube primitive.
+     *   (Primitive *) - not-owning pointer to the created cube primitive.
      */
-    Primitive *createCubePrimitive(
-        float length,
-        float width,
-        float height,
-        const math::vec3 &position
-    );
+    Primitive *createCubePrimitive(float length, float width, float height, const math::vec3 &position);
 };  // End of 'Scene' class
 }  // namespace hse
 

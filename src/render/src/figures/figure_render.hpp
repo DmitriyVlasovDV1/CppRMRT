@@ -1,6 +1,6 @@
 #ifndef FIGURE_RENDER_HPP
 #define FIGURE_RENDER_HPP
-#include "../buffers/buffer.hpp"
+#include "../resources/buffers/buffer.hpp"
 #include "figure_scene.hpp"
 #include "figure.hpp"
 

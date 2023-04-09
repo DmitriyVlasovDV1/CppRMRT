@@ -15,11 +15,11 @@ Primitive::Primitive()
  *   - primitive's shader program id:
  *       uint primitiveShaderProgramId_;
  *   - vertex buffer data:
- *       const ::std::vector<float> &vertexBuffer;
+ *       const std::vector<float> &vertexBuffer;
  *   - vertex buffer format:
- *       const ::std::string &vertexBufferFormat;
+ *       const std::string &vertexBufferFormat;
  *   - index buffer data:
- *       const ::std::vector<int> &indexBuffer;
+ *       const std::vector<int> &indexBuffer;
  *   - primitive's rendering type:
  *       VertexArray::renderType type_;
  * NOTE: vertexBufferFormat - use default type or "v3v3v3v2" == vertex
@@ -27,16 +27,13 @@ Primitive::Primitive()
  */
 Primitive::Primitive(
     uint primitiveShaderProgramId_,
-    const ::std::vector<float> &vertexBuffer,
-    const ::std::string &vertexBufferFormat,
-    const ::std::vector<int> &indexBuffer,
+    const std::vector<float> &vertexBuffer,
+    const std::string &vertexBufferFormat,
+    const std::vector<int> &indexBuffer,
     VertexArray::renderType type_
 )
-    : shaderProgramId(primitiveShaderProgramId_),
-      renderType(type_),
-      isVisible(true) {
-    vertexArrayInstance =
-        new VertexArray(vertexBuffer, vertexBufferFormat, indexBuffer);
+    : shaderProgramId(primitiveShaderProgramId_), renderType(type_), isVisible(true) {
+    vertexArrayInstance = new VertexArray(vertexBuffer, vertexBufferFormat, indexBuffer);
 }  // End of 'Primitive::Primitive' function
 
 /* Class constructor.
@@ -48,11 +45,7 @@ Primitive::Primitive(
  *   - primitive's rendering type:
  *       VertexArray::renderType type_.
  */
-Primitive::Primitive(
-    uint primitiveShaderProgramId_,
-    VertexArray *vertexArrayInstance_,
-    VertexArray::renderType type_
-)
+Primitive::Primitive(uint primitiveShaderProgramId_, VertexArray *vertexArrayInstance_, VertexArray::renderType type_)
     : shaderProgramId(primitiveShaderProgramId_),
       vertexArrayInstance(vertexArrayInstance_),
       renderType(type_),
@@ -71,60 +64,40 @@ void Primitive::onRender(const Camera &camera) const {
     // Handle all non-constant uniforms
     {
         for (auto &[uniformName, uniformValue] : shaderUniform1i) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniform1i(uniformLocation, *uniformValue);
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniform1i(uniformLocation, *uniformValue);
         }
         for (auto &[uniformName, uniformValue] : shaderUniform1f) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniform1f(uniformLocation, *uniformValue);
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniform1f(uniformLocation, *uniformValue);
         }
         for (auto &[uniformName, uniformValue] : shaderUniform3fv) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniform3fv(uniformLocation, 1, &(*uniformValue).x);
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniform3fv(uniformLocation, 1, &(*uniformValue).x);
         }
         for (auto &[uniformName, uniformPair] : shaderUniform4fv) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniformMatrix4fv(
-                    uniformLocation, 1, GL_FALSE, (float *)(*uniformPair).matrix
-                );
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, (float *)(*uniformPair).matrix);
         }
     }
 
     // Handle all constant uniforms
     {
         for (auto &[uniformName, uniformValue] : shaderUniform1iConstant) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniform1i(uniformLocation, uniformValue);
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniform1i(uniformLocation, uniformValue);
         }
         for (auto &[uniformName, uniformValue] : shaderUniform1fConstant) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniform1f(uniformLocation, uniformValue);
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniform1f(uniformLocation, uniformValue);
         }
         for (auto &[uniformName, uniformValue] : shaderUniform3fvConstant) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniform3fv(uniformLocation, 1, &uniformValue.x);
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniform3fv(uniformLocation, 1, &uniformValue.x);
         }
         for (auto &[uniformName, uniformPair] : shaderUniform4fvConstant) {
-            uniformLocation =
-                glGetUniformLocation(shaderProgramId, uniformName);
-            if (uniformLocation != -1)
-                glUniformMatrix4fv(
-                    uniformLocation, 1, GL_FALSE, (float *)uniformPair.matrix
-                );
+            uniformLocation = glGetUniformLocation(shaderProgramId, uniformName);
+            if (uniformLocation != -1) glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, (float *)uniformPair.matrix);
         }
     }
 
@@ -141,15 +114,9 @@ void Primitive::onRender(const Camera &camera) const {
     }
     uniformLocation = glGetUniformLocation(shaderProgramId, "viewProjection");
     if (uniformLocation != -1)
-        glUniformMatrix4fv(
-            uniformLocation, 1, GL_FALSE,
-            (float *)camera.getViewProjection().matrix
-        );
+        glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, (float *)camera.getViewProjection().matrix);
     uniformLocation = glGetUniformLocation(shaderProgramId, "transformMatrix");
-    if (uniformLocation != -1)
-        glUniformMatrix4fv(
-            uniformLocation, 1, GL_FALSE, (float *)transformMatrix.matrix
-        );
+    if (uniformLocation != -1) glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, (float *)transformMatrix.matrix);
 
     vertexArrayInstance->onRender(renderType);
     glUseProgram(0);
@@ -158,7 +125,7 @@ void Primitive::onRender(const Camera &camera) const {
 // Class destructor
 Primitive::~Primitive() {
     delete vertexArrayInstance;
-    ::std::cout << "Clear primitive" << ::std::endl;
+    std::cout << "Clear primitive" << std::endl;
 }  // End of 'Primitive::~Primitive' function
 
 /* Attach shader program id to the primitive function.
@@ -170,6 +137,25 @@ Primitive::~Primitive() {
 void Primitive::setShaderProgram(uint shaderProgramId_) {
     shaderProgramId = shaderProgramId_;
 }  // End of 'Primitive::setShaderProgram' function
+
+/* Get primitive's transform matrix function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (math::matr4) - primitive's transform matrix.
+ */
+math::matr4 Primitive::getTransformMatrix() const {
+    return transformMatrix;
+}  // End of 'Primitive::getTransformMatrix' function
+
+/* Set primitive's transform matrix function.
+ * ARGUMENTS:
+ *   - new primitive transform matrix:
+ *       const math::matr4 &transformMatrix_;
+ * RETURNS: None.
+ */
+void Primitive::setTransformMatrix(const math::matr4 &transformMatrix_) {
+    transformMatrix = transformMatrix_;
+}  // End of 'Primitive::setTransformMatrix' function
 
 /* Get primitive rendering type function.
  * ARGUMENTS: None.
@@ -277,10 +263,7 @@ void Primitive::addConstantUniform(int uniformValue, const char *uniformName) {
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Primitive::addConstantUniform(
-    float uniformValue,
-    const char *uniformName
-) {
+void Primitive::addConstantUniform(float uniformValue, const char *uniformName) {
     shaderUniform1fConstant[uniformName] = uniformValue;
 }  // End of 'Primitive::addConstantUniform' function
 
@@ -292,10 +275,7 @@ void Primitive::addConstantUniform(
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Primitive::addConstantUniform(
-    const math::vec3 &vector,
-    const char *uniformName
-) {
+void Primitive::addConstantUniform(const math::vec3 &vector, const char *uniformName) {
     shaderUniform3fvConstant[uniformName] = vector;
 }  // End of 'Primitive::addConstantUniform' function
 
@@ -307,10 +287,7 @@ void Primitive::addConstantUniform(
  *       const char *uniformName;
  * RETURNS: None.
  */
-void Primitive::addConstantUniform(
-    const math::matr4 &matrix,
-    const char *uniformName
-) {
+void Primitive::addConstantUniform(const math::matr4 &matrix, const char *uniformName) {
     shaderUniform4fvConstant[uniformName] = matrix;
 }  // End of 'Primitive::addConstantUniform' function
 }  // namespace hse

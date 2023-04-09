@@ -1,7 +1,7 @@
 #ifndef SHADER_HPP
 #define SHADER_HPP
 
-#include "../../../def.hpp"
+#include "../../../../def.hpp"
 
 // Project namespace
 namespace hse {
@@ -11,32 +11,30 @@ class Shader {
 
     // Shader program structure
     struct ShaderProgram {
-        const char *name;      // Shader name
-        int type;              // Shader type
-        int id;                // Shader id
-        ::std::string source;  // Shader source
+        const char *name;    // Shader name
+        int type;            // Shader type
+        int id;              // Shader id
+        std::string source;  // Shader source
     };
 
     // Shader's programs
-    ::std::vector<ShaderProgram> shaders = {
-        {"vertex", GL_VERTEX_SHADER, 0},
-        {"fragment", GL_FRAGMENT_SHADER, 0}};
+    std::vector<ShaderProgram> shaders = {{"vertex", GL_VERTEX_SHADER, 0}, {"fragment", GL_FRAGMENT_SHADER, 0}};
 
     /* Parse shader program from file function.
      * ARGUMENTS:
      *   - shader's program path:
-     *       const ::std::string &shaderPath;
+     *       const std::string &shaderPath;
      * RETURNS: None.
      */
-    void parseShaderFromFile(const ::std::string &shaderPath);
+    void parseShaderFromFile(const std::string &shaderPath);
 
-    /* Compile shader program function.
+    /* Create shader program with already initialized shaders source function.
      * ARGUMENTS:
-     *   - shader's program path:
-     *       const ::std::string &shaderPath;
+     *   - shader program debug name:
+     *       const std::string &shaderProgramDebugName;
      * RETURNS: None.
      */
-    void compileShaderProgram(const ::std::string &shaderPath);
+    void createShaderProgram(const std::string &shaderProgramDebugName);
 
 public:
     // Class default constructor
@@ -45,13 +43,22 @@ public:
     /* Class constructor.
      * ARGUMENTS:
      *   - shader's program path:
-     *       const ::std::string &shaderPath;
+     *       const std::string &shaderPath;
      * NOTE: In out project we have an agreement: shaders (vertex, fragment)
      * realization you should write in one directory in 'bin/shaders' - exactly
      * the name of this directory you have to pass in this constructor
      * (example: see the test unit in SK4 directory).
      */
-    explicit Shader(const ::std::string &shaderPath);
+    explicit Shader(const std::string &shaderPath);
+
+    /* Class constructor.
+     * ARGUMENTS:
+     *   - vertex shader source:
+     *       const std::string &vertexShaderSource;
+     *   - fragment shader source:
+     *       const std::string &fragmentShaderSource.
+     */
+    explicit Shader(const std::string &vertexShaderSource, const std::string &fragmentShaderSource);
 
     // Class destructor
     ~Shader();

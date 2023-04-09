@@ -5,8 +5,7 @@
 // Project namespace
 namespace hse {
 
-
-void rmShdUnit::onCreate() {
+void rmShdScene::onCreate() {
     using namespace math;
     FigureScene &scene = Render::scene;
     translateId = scene.createTranslation(math::vec3(0, 0, 0));
@@ -39,16 +38,13 @@ void rmShdUnit::onCreate() {
 
     stone << rotationId;
 
-
     auto pos = math::vec3(0, 0.2, 1) * 7;
-    scene.mainCamera.setPositionWithDirection(
-        pos, math::vec3(0) - pos
-    );
+    scene.mainCamera.setPositionWithDirection(pos, math::vec3(0) - pos);
 
-}  // End of 'testUnit::initUnit' function
+}
 
-//std::vector<uint> parseFigures(const std::string &str, )
-void rmShdUnit::onUpdate() {
+// std::vector<uint> parseFigures(const std::string &str, )
+void rmShdScene::onUpdate() {
     FigureScene &scene = Render::scene;
 
     if (keys[GLFW_KEY_C].action == GLFW_PRESS) {
@@ -59,8 +55,8 @@ void rmShdUnit::onUpdate() {
     }
 
     rotationId.set(math::matr4::rotate(time * 10, math::vec3(0, 1, 0)));
-    //translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
-    //rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
+    // translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
+    // rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
     /*
     auto pos = math::vec3(sin(time), 0, cos(time)) * 7;
     scene.mainCamera.setPositionWithDirection(
@@ -71,9 +67,10 @@ void rmShdUnit::onUpdate() {
 }  // End of 'testUnit::responseUnit' function
 
 // Class override destructor
-rmShdUnit::~rmShdUnit() {
+rmShdScene::~rmShdScene() {
 }  // End of 'testUnit::~testUnit' function
 }  // namespace hse
+
 /*
 
 struct alignas(16) Material {
@@ -158,7 +155,8 @@ public:
     }
 
 
-    Figure(const std::string &ser_deb, const std::vector<int> &ser, Builder *bldr, Type type) : serialized_debug(ser_deb), serialized(ser), bldr(bldr), type(type){
+    Figure(const std::string &ser_deb, const std::vector<int> &ser, Builder *bldr, Type type) :
+serialized_debug(ser_deb), serialized(ser), bldr(bldr), type(type){
     }
 
     Figure operator|(const Figure &fig) const {

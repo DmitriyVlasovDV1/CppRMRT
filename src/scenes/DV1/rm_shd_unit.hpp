@@ -1,28 +1,27 @@
 #ifndef RM_SHD_UNIT_HPP
 #define RM_SHD_UNIT_HPP
 
-#include <memory>
 #include "../../def.hpp"
 #include "../../render/render.hpp"
-#include "../../render/src/scenes/scene.hpp"
-//#include "rm_figures.hpp"
+#include "../../render/src/resources/scenes/scene.hpp"
+
+// #include "rm_figures.hpp"
 
 // Project namespace
 namespace hse {
-// Test unit class declaration
-class rmShdUnit final : public Scene {
+class rmShdScene final : public Scene {
 public:
     TransformationMatrixId translateId;
     TransformationMatrixId rotationId;
 
     // Class constructor
-    explicit rmShdUnit() = default;
+    explicit rmShdScene() = default;
 
     void onCreate() final;
 
     void onUpdate() final;
 
-    ~rmShdUnit() final;
+    ~rmShdScene() final;
 };  // End of 'rmShdUnit' class
 }  // namespace hse
 

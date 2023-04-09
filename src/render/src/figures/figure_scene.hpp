@@ -3,8 +3,8 @@
 
 #include <memory>
 #include "../../../def.hpp"
-#include "../buffers/buffer.hpp"
-#include "../scenes/scene.hpp"
+#include "../resources/buffers/buffer.hpp"
+#include "../resources/scenes/scene.hpp"
 #include "figure_transformation.hpp"
 #include "figure_render.hpp"
 #include "figure.hpp"

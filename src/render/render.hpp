@@ -2,21 +2,23 @@
 #define RENDER_HPP
 
 #include "../def.hpp"
-#include "src/scenes/scene.hpp"
+#include "src/resources/scenes/scene.hpp"
 #include "src/figures/figure_scene.hpp"
 
 // Project namespace
 namespace hse {
 // Render class declaration
 class Render {
-public: // TODO
     // Friend render instance factory
     friend void factory();
 
-    ::std::map<::std::string, Scene *> scenesArray;  // Scenes map
-    GLFWwindow *windowInstance;                      // Window instance
-    static FigureScene scene;
+    std::vector<Scene *> scenesArray;  // Scenes array
+    GLFWwindow *windowInstance;        // Window instance
 
+public:
+    static FigureScene scene;  // УНИВЕРСАЛЬНАЯ СЦЕНА
+
+private:
     /* Initializing glew/glfw function.
      * ARGUMENTS:
      *   - window width and height:
@@ -29,21 +31,21 @@ public: // TODO
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    void onUpdate();
+    void startRenderLoop();
 
+public:
     /* Add scene's instance to the scenes array function.
      * ARGUMENTS:
-     *   - scene name:
-     *       const ::std::string &sceneName;
      *   - scene instance:
      *       Scene *sceneInstance;
      * RETURNS: None.
      * NOTE:
-     *   Returns value may be changed to (scene *) - not-owning pointer to
+     *   Returns value may be changed to (Scene *) - not-owning pointer to
      * the scene, if we want to be able to copy scenes.
      */
-    void addScene(const ::std::string &sceneName, Scene *sceneInstance);
+    void addScene(Scene *sceneInstance);
 
+private:
     // Class default constructor
     explicit Render();
 

@@ -320,7 +320,8 @@ Material trace(vec3 org, vec3 dir)
         t += srf.sdf;
     }
     Material res;
-    res.color = vec4(vec3(176, 196, 222) / 255, 1);
+    //res.color = vec4(vec3(176, 196, 222) / 255, 1);
+    res.color = vec4(0, 0, 0, 1);
     return res;
 }
 

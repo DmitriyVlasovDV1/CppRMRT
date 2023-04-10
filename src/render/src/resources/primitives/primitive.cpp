@@ -125,7 +125,6 @@ void Primitive::onRender(const Camera &camera) const {
 // Class destructor
 Primitive::~Primitive() {
     delete vertexArrayInstance;
-    std::cout << "Clear primitive" << std::endl;
 }  // End of 'Primitive::~Primitive' function
 
 /* Attach shader program id to the primitive function.

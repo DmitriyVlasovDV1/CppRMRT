@@ -76,7 +76,7 @@ void TestScene::inputUpdate() {
  */
 void TestScene::onCreate() {
     unitModel = createModel("obj_model", "tea_cup/tea_cup.obj");
-    unitModel->setRenderType(VertexArray::renderType::TRIANGLES);
+    unitModel->setRenderType(VertexArray::renderType::LINES);
     unitModel->addConstantUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
     unitModel->setTransformMatrix(math::matr4::translate(math::vec3(0, -1, 0)) * math::matr4::scale(math::vec3(10)));
     spheresGeneration();
@@ -98,6 +98,5 @@ void TestScene::onUpdate() {
 
 // Class override destructor
 TestScene::~TestScene() {
-    std::cout << "Clear test unit" << std::endl;
 }  // End of 'TestScene::~TestScene' function
 }  // namespace hse

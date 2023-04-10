@@ -38,11 +38,11 @@ void rmShdScene::onCreate() {
 
     stone << rotationId;
 
-    math::vec3 newCameraLocation = math::vec3(8, 0, 8);
+    math::vec3 newCameraLocation = math::vec3(3, .3, 3);
     vec3 up = (newCameraLocation + math::vec3(0, 1, 0)).normalize();
     vec3 right = (up % newCameraLocation).normalize();
     up = (newCameraLocation % right).normalize();
-    scene.mainCamera.setAllAxis(newCameraLocation, math::vec3(0) - newCameraLocation, up, right);
+    scene.mainCamera.setAllAxis(newCameraLocation, math::vec3(0) - newCameraLocation - vec3(0, .3, 0), up, right);
 
 }
 

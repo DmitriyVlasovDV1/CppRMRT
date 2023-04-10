@@ -119,7 +119,7 @@ public:
      *       VertexArray::renderType renderType_:
      * RETURNS: None.
      */
-    void setRenderType(VertexArray::renderType renderType_);
+    virtual void setRenderType(VertexArray::renderType renderType_);
 
     /* Get primitive's visibility flag function.
      * ARGUMENTS: None.

@@ -72,7 +72,6 @@ uint VertexBuffer::getBufferId() const {
 VertexBuffer::~VertexBuffer() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDeleteBuffers(1, &bufferId);
-    std::cout << "Clear vertex buffer" << std::endl;
 }  // End of 'VertexBuffer::~vertexBuffer' function
 
 // Class default constructor
@@ -115,7 +114,6 @@ uint IndexBuffer::getBufferId() const {
 IndexBuffer::~IndexBuffer() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glDeleteBuffers(1, &bufferId);
-    std::cout << "Clear index buffer" << std::endl;
 }  // End of 'IndexBuffer::~IndexBuffer' function
 
 // Class default constructor
@@ -189,7 +187,6 @@ VertexArray::~VertexArray() {
     delete indexBufferObject;
     glBindVertexArray(0);
     glDeleteVertexArrays(1, &vertexArrayId);
-    std::cout << "Clear vertex array" << std::endl;
 }  // End of 'VertexArray::~VertexArray' function
 
 std::unordered_set<uint> ShaderStorageBuffer::usedBindings;
@@ -218,6 +215,5 @@ uint ShaderStorageBuffer::getBufferId() const {
 ShaderStorageBuffer::~ShaderStorageBuffer() {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     glDeleteBuffers(1, &bufferId);
-    std::cout << "Clear shader storage buffer" << std::endl;
 }  // End of 'ShaderStorageBuffer::~ShaderStorageBuffer' function
 }  // namespace hse

@@ -328,7 +328,6 @@ public:
 
     // Class destructor
     ~Camera() {
-        std::cout << "Clear camera" << std::endl;
     }  // End of '~Camera' function
 };     // End of 'Camera' class
 

@@ -191,8 +191,19 @@ void Model::onRender(const Camera &camera) const {
 Model::~Model() {
     for (auto &primitive : primitivesArray)
         primitive.reset();
-    std::cout << "Clear model" << std::endl;
 }  // End of 'Model::~Model' function
+
+/* Set primitive rendering type function.
+ * ARGUMENTS:
+ *   - new rendering type:
+ *       VertexArray::renderType renderType_:
+ * RETURNS: None.
+ */
+void Model::setRenderType(VertexArray::renderType renderType_) {
+    renderType = renderType_;
+    for (auto &primitive : primitivesArray)
+        primitive->setRenderType(renderType_);
+}  // End of 'Model::setRenderType' function
 
 /* Get number of primitives in model function.
  * ARGUMENTS: None.

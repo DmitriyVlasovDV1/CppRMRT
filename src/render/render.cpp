@@ -95,6 +95,7 @@ void Render::startRenderLoop() {
         unitInstance->onCreate();
     }
     scene.onCreate();
+    scene.setRenderType(RenderType::COMMON);
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
@@ -170,6 +171,5 @@ Render::~Render() {
     }
     glfwDestroyWindow(windowInstance);
     glfwTerminate();
-    std::cout << "Clear render" << std::endl;
 }  // End of 'Render::~Render' function
 }  // namespace hse

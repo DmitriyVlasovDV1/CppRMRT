@@ -118,6 +118,5 @@ Shader::~Shader() {
         }
     if (programId != 0) glDeleteProgram(programId);
     programId = 0;
-    ::std::cout << "Clear shader" << ::std::endl;
 }  // End of 'Shader::~shader' function
 }  // namespace hse

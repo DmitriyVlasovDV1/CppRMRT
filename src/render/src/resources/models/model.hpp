@@ -44,6 +44,14 @@ public:
     // Class destructor
     ~Model();
 
+    /* Set primitive rendering type function.
+     * ARGUMENTS:
+     *   - new rendering type:
+     *       VertexArray::renderType renderType_:
+     * RETURNS: None.
+     */
+    void setRenderType(VertexArray::renderType renderType_) final;
+
     /* Get number of primitives in model function.
      * ARGUMENTS: None.
      * RETURNS:

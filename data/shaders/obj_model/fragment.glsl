@@ -2,10 +2,10 @@
 
 in vec3 vertexPosition;
 in vec3 vertexNormal;
+in vec3 vertexColor;
 
 uniform vec3 cameraPosition;
 uniform vec3 cameraDirection;
-uniform vec3 vertexColor;
 uniform float time;
 
 vec3 lightColor = vec3(0.7);
@@ -33,6 +33,6 @@ vec3 lightResponse() {
 // Main shader program function
 void main() {
     float depth = 1 / length(cameraPosition - vertexPosition) * 50;
-    depth = min(pow(depth, 1.2), 1.0);
+    depth = min(pow(depth, 1.1), 1.0);
     outColor = vec4(lightResponse() * depth, 1);
 } // End of 'main' function

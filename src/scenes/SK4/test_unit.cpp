@@ -75,10 +75,18 @@ void TestScene::inputUpdate() {
  * RETURNS: None.
  */
 void TestScene::onCreate() {
-    unitModel = createModel("obj_model", "tea_cup/tea_cup.obj");
-    unitModel->setRenderType(VertexArray::renderType::LINES);
-    unitModel->addConstantUniform(math::vec3(0.3, 0.5, 0.7), "vertexColor");
-    unitModel->setTransformMatrix(math::matr4::translate(math::vec3(0, -1, 0)) * math::matr4::scale(math::vec3(10)));
+    // Models generation
+    unitModel = createModel("obj_model", "low_poly_tree/low_poly_tree.obj");
+    unitModel->setRenderType(VertexArray::renderType::TRIANGLES);
+    unitModel->setTransformMatrix(math::matr4::translate(math::vec3(0, 0, 0)) * math::matr4::scale(math::vec3(1.5)));
+    for (int count = 0; count < 15; count++) {
+        float x = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 100 - 50,
+              z = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 100 - 50,
+              scale = (static_cast<float>(rand()) / static_cast<float>(RAND_MAX) + 1) / 2;
+        unitModel = createModel("obj_model", "low_poly_tree/low_poly_tree.obj");
+        unitModel->setRenderType(VertexArray::renderType::TRIANGLES);
+        unitModel->setTransformMatrix(math::matr4::scale(math::vec3(scale)) * math::matr4::translate(math::vec3(x, 0, z)));
+    }
     spheresGeneration();
     cubesGeneration();
 }  // End of 'TestScene::onCreate' function
@@ -88,10 +96,10 @@ void TestScene::onCreate() {
  * RETURNS: None.
  */
 void TestScene::onUpdate() {
-    unitModel->setTransformMatrix(
-        math::matr4::translate(math::vec3(0, -1, 0)) * math::matr4::scale(math::vec3(10)) *
-        math::matr4::rotateY(time * 50) * math::matr4::rotateX(-time * 30) * math::matr4::rotateZ(time * 20)
-    );
+//    unitModel->setTransformMatrix(
+//        math::matr4::translate(math::vec3(0, -1, 0)) * math::matr4::scale(math::vec3(10)) *
+//        math::matr4::rotateY(time * 50) * math::matr4::rotateX(-time * 30) * math::matr4::rotateZ(time * 20)
+//    );
     cameraUpdate();
     inputUpdate();
 }  // End of 'TestScene::onUpdate' function

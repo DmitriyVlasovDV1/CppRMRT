@@ -15,14 +15,15 @@ void Model::parseObj(const std::string &fileName) {
     std::vector<math::vec2> vertexTextureCoordinates;
     std::vector<float> vertexBufferData;
     std::vector<int> indexBufferData;
+    std::map<std::string, material> materialArray;
 
-    std::string type, oldType;
+    std::string tag, oldTag, materialName;
     int numberOfVertexes = 0;
-    while (fileContent >> type) {
-        if (type == "o") {
-            if (oldType == "f" && !vertexBufferData.empty()) {
+    while (fileContent >> tag) {
+        if (tag == "o") {
+            if (oldTag == "f" && !vertexBufferData.empty()) {
                 primitivesArray.push_back(
-                    std::make_unique<Primitive>(shaderProgramId, vertexBufferData, "v3v2v3", indexBufferData)
+                    std::make_unique<Primitive>(shaderProgramId, vertexBufferData, "v3v3v2v3", indexBufferData)
                 );
                 primitivesArray.back()->setRenderType(renderType);
                 indexBufferData.clear();
@@ -31,29 +32,29 @@ void Model::parseObj(const std::string &fileName) {
                 vertexNormals.clear();
                 vertexTextureCoordinates.clear();
             }
-            ::std::string objectName;  // Just skip this
+            std::string objectName;  // Just skip this
             fileContent >> objectName;
-        } else if (type == "v") {
+        } else if (tag == "v") {
             math::vec3 vertexPosition;
             fileContent >> vertexPosition.x;
             fileContent >> vertexPosition.y;
             fileContent >> vertexPosition.z;
             vertexPositions.push_back(vertexPosition);
-        } else if (type == "vt") {
+        } else if (tag == "vt") {
             math::vec2 textureCoordinate;
             fileContent >> textureCoordinate.x;
             fileContent >> textureCoordinate.y;
             vertexTextureCoordinates.push_back(textureCoordinate);
-        } else if (type == "vn") {
+        } else if (tag == "vn") {
             math::vec3 vertexNormal;
             fileContent >> vertexNormal.x;
             fileContent >> vertexNormal.y;
             fileContent >> vertexNormal.z;
             vertexNormals.push_back(vertexNormal);
-        } else if (type == "f") {
-            ::std::string line;
-            ::std::getline(fileContent, line);
-            ::std::stringstream fileContentLine(line);
+        } else if (tag == "f") {
+            std::string line;
+            std::getline(fileContent, line);
+            std::stringstream fileContentLine(line);
 
             size_t index;
             char dummy;
@@ -63,6 +64,16 @@ void Model::parseObj(const std::string &fileName) {
                 if ((counter + 1) % 3 != 0 || counter == 0) fileContentLine >> dummy;
                 index--;
                 if (counter % 3 == 0) {
+                    if (materialArray.empty()) {
+                        vertexBufferData.push_back(0);
+                        vertexBufferData.push_back(0);
+                        vertexBufferData.push_back(0);
+                    } else {
+                        vertexBufferData.push_back(materialArray[materialName].color.x);
+                        vertexBufferData.push_back(materialArray[materialName].color.y);
+                        vertexBufferData.push_back(materialArray[materialName].color.z);
+                    }
+
                     vertexBufferData.push_back(vertexPositions[index].x);
                     vertexBufferData.push_back(vertexPositions[index].y);
                     vertexBufferData.push_back(vertexPositions[index].z);
@@ -90,6 +101,30 @@ void Model::parseObj(const std::string &fileName) {
                 indexBufferData.push_back(numberOfVertexes + 2);
                 numberOfVertexes += 3;
             }
+        } else if (tag == "mtllib") {
+            std::string materialFileName, tmp;
+            fileContent >> materialFileName;
+
+            for (auto &sign : fileName) {
+                if (sign == '/') break;
+                tmp += sign;
+            }
+            materialFileName = tmp + "/" + materialFileName;
+            std::ifstream materialFileContent("../data/models/" + materialFileName);
+            if (!materialFileContent.is_open())
+                EXCEPTION(("Do not found material model file: " + materialFileName).c_str());
+            std::string materialTag, name;
+            while (materialFileContent >> materialTag) {
+                if (materialTag == "newmtl") {
+                    materialFileContent >> name;
+                } else if (materialTag == "Kd") {
+                    materialFileContent >> materialArray[name].color.x;
+                    materialFileContent >> materialArray[name].color.y;
+                    materialFileContent >> materialArray[name].color.z;
+                }
+            }
+        } else if (tag == "usemtl") {
+            fileContent >> materialName;
         } else {
             // Not really sure that it's the best way
             // EXCEPTION(("Unknown tag in file: " + fileName).c_str());
@@ -98,11 +133,11 @@ void Model::parseObj(const std::string &fileName) {
             ::std::string line;
             ::std::getline(fileContent, line);
         }
-        oldType = type;
+        oldTag = tag;
     }
     if (!vertexBufferData.empty())
         primitivesArray.push_back(
-            std::make_unique<Primitive>(shaderProgramId, vertexBufferData, "v3v2v3", indexBufferData)
+            std::make_unique<Primitive>(shaderProgramId, vertexBufferData, "v3v3v2v3", indexBufferData)
         );
 }  // End of 'Model::parseObj' function
 

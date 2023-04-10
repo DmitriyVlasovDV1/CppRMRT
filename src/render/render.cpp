@@ -94,7 +94,7 @@ void Render::startRenderLoop() {
         unitInstance->mainCamera.setProjection(windowWidth, windowHeight);
         unitInstance->onCreate();
     }
-    scene.onCreate();
+//    scene.onCreate();
     scene.setRenderType(RenderType::COMMON);
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
@@ -123,8 +123,8 @@ void Render::startRenderLoop() {
                 sceneInstance->onUpdate();
                 sceneInstance->onRender();
             }
-        scene.onUpdate();
-        scene.onRender();
+//        scene.onUpdate();
+//        scene.onRender();
         glFinish();
         glDisable(GL_DEPTH_TEST);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

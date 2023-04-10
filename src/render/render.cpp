@@ -95,7 +95,6 @@ void Render::startRenderLoop() {
         unitInstance->onCreate();
     }
     scene.onCreate();
-    scene.setRenderType(RenderType::COMMON);
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer

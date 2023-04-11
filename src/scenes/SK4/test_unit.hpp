@@ -1,5 +1,5 @@
-#ifndef TEST_UNIT_HPP
-#define TEST_UNIT_HPP
+#ifndef TEST_SCENE_HPP
+#define TEST_SCENE_HPP
 
 #include "../../render/src/resources/scenes/scene.hpp"
 
@@ -103,4 +103,4 @@ public:
 };  // End of 'TestScene' class
 }  // namespace hse
 
-#endif  // TEST_UNIT_HPP
+#endif  // TEST_SCENE_HPP

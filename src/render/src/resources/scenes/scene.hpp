@@ -1,5 +1,5 @@
-#ifndef UNIT_HPP
-#define UNIT_HPP
+#ifndef SCENE_HPP
+#define SCENE_HPP
 
 #include "../../../../def.hpp"
 #include "../../../../utilities/camera/camera.hpp"
@@ -317,4 +317,4 @@ public:
 };  // End of 'Scene' class
 }  // namespace hse
 
-#endif  // UNIT_HPP
+#endif  // SCENE_HPP

@@ -104,13 +104,15 @@ void Render::startRenderLoop() {
             time += deltaTime;
         } else {
             glfwSetTime(time);
+            deltaTime = 0;
         }
         // Calculating current FPS
         glfwSetWindowTitle(
-            windowInstance, ("FPS: " + ::std::to_string(static_cast<int>(1 / deltaTime)) + " | Render type: " +
-                             (scene.getRenderType() == RenderType::COMMON ? "common" : "rm") + " (press " +
-                             (scene.getRenderType() == RenderType::COMMON ? "\"R\"" : "\"C\"") + " for change)")
-                                .c_str()
+            windowInstance,
+            ("FPS: " + ::std::to_string(static_cast<int>(deltaTime == 0 ? 0 : 1 / deltaTime)) +
+             " | Render type: " + (scene.getRenderType() == RenderType::COMMON ? "common" : "rm") + " (press " +
+             (scene.getRenderType() == RenderType::COMMON ? "\"R\"" : "\"C\"") + " for change)")
+                .c_str()
         );
 
         // Update/Render all units

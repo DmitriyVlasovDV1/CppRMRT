@@ -156,11 +156,6 @@ void TestScene::cameraUpdate() {
  * RETURNS: None.
  */
 void TestScene::inputUpdate() {
-    if (keys[GLFW_KEY_W].action == GLFW_PRESS) ::std::cout << 'w' << ::std::endl;
-    if (keys[GLFW_KEY_A].action == GLFW_PRESS) ::std::cout << 'a' << ::std::endl;
-    if (keys[GLFW_KEY_S].action == GLFW_PRESS) ::std::cout << 's' << ::std::endl;
-    if (keys[GLFW_KEY_D].action == GLFW_PRESS) ::std::cout << 'd' << ::std::endl;
-
     // Pause functional
     static int oldActionSpace, oldActionRight, oldActionLeft;
     if (keys[GLFW_KEY_SPACE].action == GLFW_PRESS && oldActionSpace == GLFW_RELEASE) {

@@ -1,5 +1,7 @@
 #include "scene.hpp"
 
+#include <utility>
+
 // Project namespace
 namespace hse {
 /* Class constructor.
@@ -7,10 +9,10 @@ namespace hse {
  *   - scene's name;
  *       const std::string &sceneName_.
  */
-Scene::Scene(const std::string &sceneName_)
+Scene::Scene(std::string sceneName_)
     : isVisible(true),
       mainCamera(math::vec3(0), math::vec3(1, 0, 0), math::vec3(0, 0, 1), math::vec3(0, 1, 0), 400, 400),
-      sceneName(sceneName_) {
+      sceneName(std::move(sceneName_)) {
 }  // End of 'Scene::Scene' function
 
 /* Render scene function.
@@ -219,14 +221,22 @@ Model *Scene::createModel(uint shaderProgramId, const std::string &modelFileName
  *       float radius;
  *   - sphere's position:
  *       const math::vec3 &position;
+ *   - sphere's color:
+ *       const math::vec3 &color;
  *   - sphere's stacks:
  *       int stacks;
  *   - sphere's slices:
  *       int slices;
  * RETURNS:
- *   (primitive *) - not-owning pointer to the created sphere primitive;
+ *   (Primitive *) - not-owning pointer to the created sphere primitive.
  */
-Primitive *Scene::createSpherePrimitive(float radius, const math::vec3 &position, int stacks, int slices) {
+Primitive *Scene::createSpherePrimitive(
+    float radius,
+    const math::vec3 &position,
+    const math::vec3 &color,
+    int stacks,
+    int slices
+) {
     std::vector<float> vertexBufferData;
     std::vector<int> indexBufferData;
 
@@ -234,6 +244,9 @@ Primitive *Scene::createSpherePrimitive(float radius, const math::vec3 &position
     vertexBufferData.reserve((3 + 3 + 2) * stacks * slices);
     indexBufferData.reserve(stacks * slices);
 
+    vertexBufferData.push_back(color.x);
+    vertexBufferData.push_back(color.y);
+    vertexBufferData.push_back(color.z);
     vertexBufferData.push_back(0);
     vertexBufferData.push_back(radius);
     vertexBufferData.push_back(0);
@@ -254,6 +267,9 @@ Primitive *Scene::createSpherePrimitive(float radius, const math::vec3 &position
             if (isNU) {
                 math::vec3 pointNormal = math::vec3(cos(beta) * sin(alpha), cos(alpha), sin(beta) * sin(alpha));
                 math::vec3 pointPosition = pointNormal * radius;
+                vertexBufferData.push_back(color.x);
+                vertexBufferData.push_back(color.y);
+                vertexBufferData.push_back(color.z);
                 vertexBufferData.push_back(pointPosition.x);
                 vertexBufferData.push_back(pointPosition.y);
                 vertexBufferData.push_back(pointPosition.z);
@@ -273,6 +289,9 @@ Primitive *Scene::createSpherePrimitive(float radius, const math::vec3 &position
         }
     }
 
+    vertexBufferData.push_back(color.x);
+    vertexBufferData.push_back(color.y);
+    vertexBufferData.push_back(color.z);
     vertexBufferData.push_back(0);
     vertexBufferData.push_back(-radius);
     vertexBufferData.push_back(0);
@@ -283,7 +302,7 @@ Primitive *Scene::createSpherePrimitive(float radius, const math::vec3 &position
     vertexBufferData.push_back(1);
 
     primitivesArray.emplace_back(std::make_unique<Primitive>(
-        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v2", indexBufferData
+        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v3v2", indexBufferData
     ));
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
@@ -306,6 +325,8 @@ Primitive *Scene::createSpherePrimitive(float radius, const math::vec3 &position
  *       const math::vec3 &position;
  *   - indexes offset (for cube primitive):
  *       int indexesOffset;
+ *   - plane's color:
+ *       const math::vec3 &color;
  * RETURNS: None.
  */
 void Scene::generatePlaneVertexData(
@@ -315,10 +336,14 @@ void Scene::generatePlaneVertexData(
     const math::vec3 &height,
     const math::vec3 &normal,
     const math::vec3 &position,
+    const math::vec3 &color,
     int indexesOffset
 ) {
     math::vec3 pointPosition(0);
     pointPosition = width / 2 + height / 2 + position;
+    vertexBufferData.push_back(color.x);
+    vertexBufferData.push_back(color.y);
+    vertexBufferData.push_back(color.z);
     vertexBufferData.push_back(pointPosition.x);
     vertexBufferData.push_back(pointPosition.y);
     vertexBufferData.push_back(pointPosition.z);
@@ -328,6 +353,9 @@ void Scene::generatePlaneVertexData(
     vertexBufferData.push_back(1);
     vertexBufferData.push_back(1);
     pointPosition = -width / 2 + height / 2 + position;
+    vertexBufferData.push_back(color.x);
+    vertexBufferData.push_back(color.y);
+    vertexBufferData.push_back(color.z);
     vertexBufferData.push_back(pointPosition.x);
     vertexBufferData.push_back(pointPosition.y);
     vertexBufferData.push_back(pointPosition.z);
@@ -337,6 +365,9 @@ void Scene::generatePlaneVertexData(
     vertexBufferData.push_back(0);
     vertexBufferData.push_back(1);
     pointPosition = -width / 2 - height / 2 + position;
+    vertexBufferData.push_back(color.x);
+    vertexBufferData.push_back(color.y);
+    vertexBufferData.push_back(color.z);
     vertexBufferData.push_back(pointPosition.x);
     vertexBufferData.push_back(pointPosition.y);
     vertexBufferData.push_back(pointPosition.z);
@@ -346,6 +377,9 @@ void Scene::generatePlaneVertexData(
     vertexBufferData.push_back(0);
     vertexBufferData.push_back(0);
     pointPosition = width / 2 - height / 2 + position;
+    vertexBufferData.push_back(color.x);
+    vertexBufferData.push_back(color.y);
+    vertexBufferData.push_back(color.z);
     vertexBufferData.push_back(pointPosition.x);
     vertexBufferData.push_back(pointPosition.y);
     vertexBufferData.push_back(pointPosition.z);
@@ -371,19 +405,21 @@ void Scene::generatePlaneVertexData(
  *       float height;
  *   - plane's position:
  *       const math::vec3 &position;
+ *   - plane's color:
+ *       const math::vec3 &color;
  * RETURNS:
- *   (primitive *) - not-owning pointer to the created plane primitive.
+ *   (Primitive *) - not-owning pointer to the created plane primitive.
  */
-Primitive *Scene::createPlanePrimitive(float width, float height, const math::vec3 &position) {
+Primitive *Scene::createPlanePrimitive(float width, float height, const math::vec3 &position, const math::vec3 &color) {
     std::vector<float> vertexBufferData;
     std::vector<int> indexBufferData;
 
     generatePlaneVertexData(
-        vertexBufferData, indexBufferData, math::vec3(width, 0, 0), math::vec3(0, 0, height), math::vec3(0),
-        math::vec3(0, 1, 0)
+        vertexBufferData, indexBufferData, math::vec3(width, 0, 0), math::vec3(0, 0, height), math::vec3(0, 1, 0),
+        math::vec3(0), color, 0
     );
     primitivesArray.emplace_back(std::make_unique<Primitive>(
-        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v2", indexBufferData
+        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v3v2", indexBufferData
     ));
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 
@@ -400,44 +436,52 @@ Primitive *Scene::createPlanePrimitive(float width, float height, const math::ve
  *       float height;
  *   - cube's position:
  *       const math::vec3 &position;
+ *   - cube's color:
+ *       const math::vec3 &color;
  * RETURNS:
- *   (primitive *) - not-owning pointer to the created cube primitive.
+ *   (Primitive *) - not-owning pointer to the created cube primitive.
  */
-Primitive *Scene::createCubePrimitive(float length, float width, float height, const math::vec3 &position) {
+Primitive *Scene::createCubePrimitive(
+    float length,
+    float width,
+    float height,
+    const math::vec3 &position,
+    const math::vec3 &color
+) {
     std::vector<float> vertexBufferData;
     std::vector<int> indexBufferData;
 
     generatePlaneVertexData(
         vertexBufferData, indexBufferData, math::vec3(length, 0, 0), math::vec3(0, 0, -width), math::vec3(0, 1, 0),
-        math::vec3(0, height / 2, 0), 0
+        math::vec3(0, height / 2, 0), color, 0
     );
     indexBufferData.push_back(-1);
     generatePlaneVertexData(
         vertexBufferData, indexBufferData, math::vec3(length, 0, 0), math::vec3(0, 0, width), math::vec3(0, -1, 0),
-        math::vec3(0, -height / 2, 0), 4
+        math::vec3(0, -height / 2, 0), color, 4
     );
     indexBufferData.push_back(-1);
     generatePlaneVertexData(
         vertexBufferData, indexBufferData, math::vec3(length, 0, 0), math::vec3(0, height, 0), math::vec3(0, 0, 1),
-        math::vec3(0, 0, width / 2), 8
+        math::vec3(0, 0, width / 2), color, 8
     );
     indexBufferData.push_back(-1);
     generatePlaneVertexData(
         vertexBufferData, indexBufferData, math::vec3(-length, 0, 0), math::vec3(0, height, 0), math::vec3(0, 0, -1),
-        math::vec3(0, 0, -width / 2), 12
+        math::vec3(0, 0, -width / 2), color, 12
     );
     indexBufferData.push_back(-1);
     generatePlaneVertexData(
         vertexBufferData, indexBufferData, math::vec3(0, 0, -width), math::vec3(0, height, 0), math::vec3(1, 0, 0),
-        math::vec3(length / 2, 0, 0), 16
+        math::vec3(length / 2, 0, 0), color, 16
     );
     indexBufferData.push_back(-1);
     generatePlaneVertexData(
         vertexBufferData, indexBufferData, math::vec3(0, 0, width), math::vec3(0, height, 0), math::vec3(-1, 0, 0),
-        math::vec3(-length / 2, 0, 0), 20
+        math::vec3(-length / 2, 0, 0), color, 20
     );
     primitivesArray.emplace_back(std::make_unique<Primitive>(
-        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v2", indexBufferData
+        createShader("shape")->getShaderProgramId(), vertexBufferData, "v3v3v3v2", indexBufferData
     ));
     primitivesArray.back()->transformMatrix = math::matr4::translate(position);
 

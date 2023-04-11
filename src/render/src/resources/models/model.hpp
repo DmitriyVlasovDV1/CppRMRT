@@ -14,9 +14,9 @@ class Model final : public Primitive {
     std::vector<std::unique_ptr<Primitive>> primitivesArray;  // Array of all model's primitives
 
     // Material struct definition
-    struct material {
+    struct Material {
         math::vec3 color;
-    }; // End of 'material' struct
+    }; // End of 'Material' struct
 
     /* Parse *.obj file function.
      * ARGUMENTS:

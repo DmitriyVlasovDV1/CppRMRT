@@ -1,5 +1,5 @@
-#ifndef UNIT_HPP
-#define UNIT_HPP
+#ifndef SCENE_HPP
+#define SCENE_HPP
 
 #include "../../../../def.hpp"
 #include "../../../../utilities/camera/camera.hpp"
@@ -38,7 +38,7 @@ protected:
      *   - scene's name;
      *       const std::string &sceneName_.
      */
-    explicit Scene(const std::string &sceneName_);
+    explicit Scene(std::string sceneName_);
 
     /* Scene initialization pure-virtual function.
      * ARGUMENTS: None.
@@ -222,6 +222,8 @@ public:
      *       float radius;
      *   - sphere's position:
      *       const math::vec3 &position;
+     *   - sphere's color:
+     *       const math::vec3 &color;
      *   - sphere's stacks:
      *       int stacks;
      *   - sphere's slices:
@@ -229,15 +231,21 @@ public:
      * RETURNS:
      *   (Primitive *) - not-owning pointer to the created sphere primitive.
      */
-    Primitive *createSpherePrimitive(float radius, const math::vec3 &position, int stacks = 20, int slices = 20);
+    Primitive *createSpherePrimitive(
+        float radius,
+        const math::vec3 &position,
+        const math::vec3 &color = math::vec3(0.6),
+        int stacks = 20,
+        int slices = 20
+    );
 
 private:
     /* Generate vertexes for plane primitive function.
      * ARGUMENTS:
      *   - vertex buffer data array:
-     *       ::std::vector<float> &vertexBufferData;
+     *       std::vector<float> &vertexBufferData;
      *   - index buffer data array:
-     *       ::std::vector<int> &indexBufferData;
+     *       std::vector<int> &indexBufferData;
      *   - plane's width:
      *       const math::vec3 &width;
      *   - plane's height:
@@ -248,15 +256,18 @@ private:
      *       const math::vec3 &position;
      *   - indexes offset (for cube primitive):
      *       int indexesOffset;
+     *   - plane's color:
+     *       const math::vec3 &color;
      * RETURNS: None.
      */
     static void generatePlaneVertexData(
-        ::std::vector<float> &vertexBufferData,
-        ::std::vector<int> &indexBufferData,
+        std::vector<float> &vertexBufferData,
+        std::vector<int> &indexBufferData,
         const math::vec3 &width,
         const math::vec3 &height,
         const math::vec3 &normal,
         const math::vec3 &position,
+        const math::vec3 &color,
         int indexesOffset = 0
     );
 
@@ -269,10 +280,17 @@ public:
      *       float height;
      *   - plane's position:
      *       const math::vec3 &position;
+     *   - plane's color:
+     *       const math::vec3 &color;
      * RETURNS:
      *   (Primitive *) - not-owning pointer to the created plane primitive.
      */
-    Primitive *createPlanePrimitive(float width, float height, const math::vec3 &position);
+    Primitive *createPlanePrimitive(
+        float width,
+        float height,
+        const math::vec3 &position,
+        const math::vec3 &color = math::vec3(0.6)
+    );
 
     /* Create cube primitive function.
      * ARGUMENTS:
@@ -284,11 +302,19 @@ public:
      *       float height;
      *   - cube's position:
      *       const math::vec3 &position;
+     *   - cube's color:
+     *       const math::vec3 &color;
      * RETURNS:
      *   (Primitive *) - not-owning pointer to the created cube primitive.
      */
-    Primitive *createCubePrimitive(float length, float width, float height, const math::vec3 &position);
+    Primitive *createCubePrimitive(
+        float length,
+        float width,
+        float height,
+        const math::vec3 &position,
+        const math::vec3 &color = math::vec3(0.6)
+    );
 };  // End of 'Scene' class
 }  // namespace hse
 
-#endif  // UNIT_HPP
+#endif  // SCENE_HPP

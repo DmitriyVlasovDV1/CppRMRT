@@ -1,5 +1,5 @@
-#ifndef TEST_UNIT_HPP
-#define TEST_UNIT_HPP
+#ifndef TEST_SCENE_HPP
+#define TEST_SCENE_HPP
 
 #include "../../render/src/resources/scenes/scene.hpp"
 
@@ -7,7 +7,8 @@
 namespace hse {
 // Test scene class declaration
 class TestScene final : public Scene {
-    Model *unitModel = nullptr;
+    Model *sceneModel = nullptr;
+    Primitive *scenePrimitive = nullptr;
 
     /* Spheres generation function.
      * ARGUMENTS: None.
@@ -15,11 +16,59 @@ class TestScene final : public Scene {
      */
     void spheresGeneration();
 
+    /* Spheres update function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void spheresUpdate();
+
     /* Cubes generation function.
      * ARGUMENTS: None.
      * RETURNS: None.
      */
     void cubesGeneration();
+
+    /* Cubes update function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void cubesUpdate();
+
+    /* Tree generation function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void treeGeneration();
+
+    /* Tree update function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void treeUpdate();
+
+    /* Cup generation function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void cupGeneration();
+
+    /* Cup update function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void cupUpdate();
+
+    /* Objects (primitives/models) generation function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void objectsGeneration();
+
+    /* Objects (primitives/models) update function.
+     * ARGUMENTS: None.
+     * RETURNS: None.
+     */
+    void objectsUpdate();
 
     /* Camera update function.
      * ARGUMENTS: None.
@@ -54,4 +103,4 @@ public:
 };  // End of 'TestScene' class
 }  // namespace hse
 
-#endif  // TEST_UNIT_HPP
+#endif  // TEST_SCENE_HPP

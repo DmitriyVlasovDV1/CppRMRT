@@ -6,14 +6,14 @@ namespace hse {
 void CommonRender::init() {
     FigureScene &scene = Render::scene;
     for (auto &box : scene.getBoxes()) {
-        auto *tmp = scene.createCubePrimitive(box.size, box.size, box.size, math::vec3(0));
+        auto *tmp = scene.createCubePrimitive(box.size, box.size, box.size, math::vec3(0), math::vec3(box.mtl.r, box.mtl.g, box.mtl.b));
         tmp->addUniform(&time, "time");
         math::vec3 color = math::vec3(1, 0, 0);
         tmp->addUniform(&color, "vertexColor");
         m_boxes.push_back(tmp);
     }
     for (auto &sphere : scene.getSpheres()) {
-        auto *tmp = scene.createSpherePrimitive(sphere.radius, math::vec3(0));
+        auto *tmp = scene.createSpherePrimitive(sphere.radius, math::vec3(0), math::vec3(sphere.mtl.r, sphere.mtl.g, sphere.mtl.b), 50, 50);
         tmp->addUniform(&time, "time");
         math::vec3 color = math::vec3(1, 0, 0);
         tmp->addUniform(&color, "vertexColor");

@@ -5,17 +5,20 @@
 // Project namespace
 namespace hse {
 
-#define EXAMPLE 1
+#define EXAMPLE 4
 void rmShdScene::onCreate() {
     using namespace math;
+    Material Goldenrod(vec3(218, 165, 32) / 255);
+    Material Crimson(vec3(220, 20, 60) / 255);
+    Material MediumAquamarine(vec3(102, 205, 170) / 255);
     FigureScene &scene = Render::scene;
     auto floor = scene.createBox(1);
     floor << matr4::scale(vec3(20, 1, 20));
     floor.draw();
 #if EXAMPLE == 1
     scaleId = scene.createScale(vec3(1, 2 + sin(time), 1));
-    auto box = scene.createBox(1, {vec3(1, 0, 0)});
-    auto sphere = scene.createSphere(1, {vec3(1, 1, 0)});
+    auto box = scene.createBox(1, Crimson);
+    auto sphere = scene.createSphere(1, Goldenrod);
     sphere << matr4::translate(vec3(-0.5, 1.5, 0.5));
     sphere.draw();
     box << matr4::translate(vec3(0.5, 1, -0.5));
@@ -26,15 +29,13 @@ void rmShdScene::onCreate() {
     translateId = scene.createTranslation(vec3(0, 0, 0));
     scaleId = scene.createScale(vec3(1, 1, 1));
 
-    auto stone = scene.createSphere(0.5, {vec3(1, 0, 0)});
+    auto stone = scene.createSphere(0.5, MediumAquamarine);
     auto pat = scene.createBox(0.1, vec3(0, 1, 0));
     auto bnd = scene.createBend(vec3(1, 0, 0), vec3(0, 0, 1), vec3(-1, 0, 0));
     auto tw = scene.createTwist(vec3(0, 0, 0), vec3(0, 1, 0), 1);
-    pat << matr4::scale(vec3(3, 10, 1)) << bnd << matr4::translate(vec3(-0.5, 0, 0)) << tw;
-    int n = 6;
-    for (int i = 0; i < n; i++) {
-        stone /= (pat.copy() << matr4::rotate(float(360) * i / n, vec3(0, 1, 0)));
-    }
+    pat << matr4::scale(vec3(13, 12, 1)) << tw;
+    //pat.draw();
+    stone /= pat;
     stone << translateId << scaleId;
     stone.draw();
 #elif EXAMPLE == 3
@@ -48,20 +49,18 @@ void rmShdScene::onCreate() {
     sphere.draw();
     //box &= sphere;
     box.draw();
-    floor.hide();
+    floor << matr4::translate(vec3(0, -1, 0));
 #elif EXAMPLE == 4
     floor.hide();
-    auto box = scene.createBox(2, {vec3(1, 0, 0)});
-    auto sphere = scene.createSphere(1.4, {vec3(1, 1, 0)});
+    auto box = scene.createBox(2, Crimson);
+    auto sphere = scene.createSphere(1.4, Goldenrod);
     box &= sphere;
-    auto handle = scene.createBox(0.3, vec3(1, 1, 1));
     auto hole = scene.createBox(0.3, vec3(1, 1, 1));
-    auto laser = scene.createBox(0.1, vec3(1, 0.5, 0));
+    auto laser = scene.createBox(0.1, vec3(1, 1, 1));
     translateId = scene.createTranslation(vec3(0, 0, 0));
     translateId2 = scene.createTranslation(vec3(0.4, 0, 0));
     rotationId = scene.createRotation(vec3(1, 0, 0), 0);
-    handle << matr4::scale(vec3(1, 10, 1)) << translateId << rotationId;
-    hole << matr4::scale(vec3(8, 20, 2)) << translateId2 << translateId << rotationId;
+    hole << matr4::scale(vec3(8, 25, 2)) << translateId2 << translateId << rotationId;
     laser << matr4::scale(vec3(1, 27, 1)) << translateId << rotationId;
     //handle /= hole;
     box /= hole;

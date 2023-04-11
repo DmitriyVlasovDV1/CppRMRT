@@ -18,7 +18,7 @@ uniform vec3 cam_right;
 
 float max_dist = 20; // max ray traversal distance
 float eps = 0.001;
-vec3 light_dir = vec3(0, 2, 1);
+vec3 light_dir = normalize(vec3(1, 3, 3));
 vec3 lightColor = vec3(0.7);
 
 
@@ -214,7 +214,7 @@ float softshadow( in vec3 ro, in vec3 rd, float mint, float maxt, float k )
 {
     float res = 1.0;
     float t = mint;
-    for( int i=0; i<256 && t<maxt; i++ )
+    for( int i=0; i < 256 && t<maxt; i++ )
     {
         float h = SDF_scene(ro + rd*t).sdf;
         if( h<0.001 )
@@ -223,7 +223,9 @@ float softshadow( in vec3 ro, in vec3 rd, float mint, float maxt, float k )
         t += h;
     }
     return res;
-}float SoftShadows( vec3 Org, vec3 Dir, float tmin, float tmax, float k )
+}
+
+float SoftShadows( vec3 Org, vec3 Dir, float tmin, float tmax, float k )
 {
     float res = 1, ph = 10000;
     float h, y, d;
@@ -276,12 +278,13 @@ float AmbientOc( vec3 Org, vec3 Dir, float tmax, float s )
 
 vec3 lightResponse(vec3 vertexPosition, vec3 vertexNormal, vec3 vertexColor) {
     vec3 lightDirection = -light_dir;
-    vec3 V = normalize(vertexPosition - cam_pos), L = normalize(lightDirection);
+    vec3 cameraPosition = cam_pos;
+    vec3 V = normalize(vertexPosition - cameraPosition), L = normalize(lightDirection);
     vec3 normal = normalize(vertexNormal);
     vec3 RV = normalize(reflect(V, normal)), H = normalize(V - L);
 
     vec3 ambientOcculusion = vec3((1 - abs(dot(RV, normal))) / 5);
-    float diffuse = pow((dot(normal, -L) + 1) / 1.7, 2) + 0.1;
+    float diffuse = max(pow((dot(normal, -L) + 1) / 1.7, 2), 0.08);
     float pointColorWeight = 2.5, lightColorWeight = 1;
     float summaryWeight = pointColorWeight + lightColorWeight;
     vec3 pointRawColor = vertexColor * pointColorWeight;
@@ -289,7 +292,7 @@ vec3 lightResponse(vec3 vertexPosition, vec3 vertexNormal, vec3 vertexColor) {
     vec3 pointNaturalColor = vec3(max(min((pointRawColor.x + lightRawColor.x) / summaryWeight, 1.0), 0.0),
     max(min((pointRawColor.y + lightRawColor.y) / summaryWeight, 1.0), 0.0),
     max(min((pointRawColor.z + lightRawColor.z) / summaryWeight, 1.0), 0.0));
-    return pointNaturalColor * diffuse - ambientOcculusion;
+    return pointNaturalColor * diffuse;
 }
 
 Material trace(vec3 org, vec3 dir)
@@ -307,18 +310,24 @@ Material trace(vec3 org, vec3 dir)
             //srf.mtl.color = vec4(1, 0, 0, 1);
             //srf.mtl.color *= 0.4 * abs(dot(light_dir, get_norm(pos, -dir))) + 0.4;
             vec3 nrm = get_norm(pos);
-            float shd = softshadow(pos + nrm * 0.2, light_dir, 0.1, 20, 0.5);
             //srf.mtl.color = vec4(lightResponse(pos, nrm, vec3(1, 0, 0)) * depth, 1);
             //srf.mtl.color = vec4(nrm.xyz, 1);
             //srf.mtl.color = vec4(get_norm(pos, -dir), 1);
             //srf.mtl.color = vec4(1, 0, 0, 1);
             //res.color = vec4(1, 0, 0, 1);
-            Material rf = reflection(pos + nrm * 0.1, reflect(dir, nrm));
-            srf.mtl.color += rf.color * 0.1;
-            srf.mtl.color *= min(max(AmbientOc(pos, nrm, 5, 1), 0.2), 1);
-            srf.mtl.color *= min(max(shd, 0.6), 1);
+            //srf.mtl.color += rf.color * 0.1;
+            //srf.mtl.color *= min(max(shd, 0.6), 1);
             //srf.mtl.color = vec4(nrm, 1);
             //srf.mtl.color = vec4(lightResponse(pos, nrm, srf.mtl.color.xyz) * depth, 1);
+            float shd = softshadow(pos + nrm * 0.2, light_dir, 0.1, 10, 10);
+            srf.mtl.color = vec4(lightResponse(pos, nrm, srf.mtl.color.xyz), 1);
+            srf.mtl.color *= min(max(AmbientOc(pos, nrm, 5, 0.3), 0.7), 1);
+            srf.mtl.color *= min(max(shd, 0.7), 1);
+
+            Material rf = reflection(pos + nrm * 0.1, reflect(dir, nrm));
+            srf.mtl.color = srf.mtl.color * 0.9 + rf.color * 0.1;
+            srf.mtl.color /= max(pow(t, 1.6), 25) / 20;
+
             return srf.mtl;
         }
         t += srf.sdf;

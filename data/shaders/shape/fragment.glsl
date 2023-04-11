@@ -19,7 +19,7 @@ vec3 lightResponse() {
     vec3 RV = normalize(reflect(V, normal)), H = normalize(V - L);
 
     vec3 ambientOcculusion = vec3((1 - abs(dot(RV, normal))) / 5);
-    float diffuse = max(pow((dot(normal, -L) + 1) / 1.7, 2), 0.08);
+    float diffuse = max(pow((dot(normal, -L) + 1) / 1.7, 2), 0.15);
     float pointColorWeight = 2.5, lightColorWeight = 1;
     float summaryWeight = pointColorWeight + lightColorWeight;
     vec3 pointRawColor = vertexColor * pointColorWeight;

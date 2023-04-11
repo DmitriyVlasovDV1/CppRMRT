@@ -4,15 +4,13 @@
 /*
  * Materials
  */
-class MaterialId {
-public:
-    MaterialId(int id) : m_id(id) {
-    }
-private:
-    const int m_id;
-}; // MaterialId
 
-class Material {
-    math::vec3 m_color;
+struct Material {
+    Material() : r(0.5), g(0.5), b(0.5), a(1) {
+    }
+    Material(const math::vec3 &color) :
+        r(color.x), g(color.y), b(color.z), a(1) {
+    }
+    float r, g, b, a;
 }; // Material
 #endif  // HSE_PROJECT_FIGURE_MATERIAL_HPP

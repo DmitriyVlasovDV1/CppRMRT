@@ -3,6 +3,7 @@
 
 #include <variant>
 #include "figure_transformation.hpp"
+#include "figure_material.hpp"
 
 namespace hse {
 enum class PrimitiveType { SPHERE, BOX };
@@ -20,17 +21,19 @@ private:
     int m_id;
 };
 
-struct SpherePrimitive {
-    SpherePrimitive(float radius) : radius(radius) {
+struct alignas(16) SpherePrimitive {
+    SpherePrimitive(float radius, Material mtl) : radius(radius), mtl(mtl) {
     }
 
+    Material mtl;
     float radius;
 };
 
-struct BoxPrimitive {
-    BoxPrimitive(float size) : size(size) {
+struct alignas(16) BoxPrimitive {
+    BoxPrimitive(float size, Material mtl) : size(size), mtl(mtl) {
     }
 
+    Material mtl;
     float size;
 };
 

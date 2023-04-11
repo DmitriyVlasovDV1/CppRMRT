@@ -5,49 +5,85 @@
 // Project namespace
 namespace hse {
 
+#define EXAMPLE 1
 void rmShdScene::onCreate() {
     using namespace math;
     FigureScene &scene = Render::scene;
-    translateId = scene.createTranslation(math::vec3(0, 0, 0));
+    auto floor = scene.createBox(1);
+    floor << matr4::scale(vec3(20, 1, 20));
+    floor.draw();
+#if EXAMPLE == 1
+    scaleId = scene.createScale(vec3(1, 2 + sin(time), 1));
+    auto box = scene.createBox(1, {vec3(1, 0, 0)});
+    auto sphere = scene.createSphere(1, {vec3(1, 1, 0)});
+    sphere << matr4::translate(vec3(-0.5, 1.5, 0.5));
+    sphere.draw();
+    box << matr4::translate(vec3(0.5, 1, -0.5));
+    //box &= sphere;
+    box.draw();
+#elif EXAMPLE == 2
     rotationId = scene.createRotation(math::vec3(0, 1, 0), 0);
+    translateId = scene.createTranslation(vec3(0, 0, 0));
+    scaleId = scene.createScale(vec3(1, 1, 1));
 
-    auto stone = scene.createSphere(0.5);
-    auto pat = scene.createBox(0.1);
-    auto box = scene.createBox(1);
-    auto handle = scene.createBox(0.3);
+    auto stone = scene.createSphere(0.5, {vec3(1, 0, 0)});
+    auto pat = scene.createBox(0.1, vec3(0, 1, 0));
     auto bnd = scene.createBend(vec3(1, 0, 0), vec3(0, 0, 1), vec3(-1, 0, 0));
-    auto tw = scene.createTwist(vec3(0, 0, 0), vec3(0, 1, 0), 8);
+    auto tw = scene.createTwist(vec3(0, 0, 0), vec3(0, 1, 0), 1);
     pat << matr4::scale(vec3(3, 10, 1)) << bnd << matr4::translate(vec3(-0.5, 0, 0)) << tw;
     int n = 6;
     for (int i = 0; i < n; i++) {
         stone /= (pat.copy() << matr4::rotate(float(360) * i / n, vec3(0, 1, 0)));
     }
-    stone << matr4::scale(vec3(1, 2.4, 1));
-    box << matr4::scale(vec3(0.5, 2, 0.5)) * matr4::translate(vec3(0.5, 0, 0));
+    stone << translateId << scaleId;
     stone.draw();
+#elif EXAMPLE == 3
+    auto box = scene.createBox(0.5, {vec3(1, 0, 0)});
+    auto sphere = scene.createSphere(0.1, vec3{0, 1, 0});
+    bendId = scene.createBend(vec3(10 * sin(time), 0, 0), vec3(0, 0, 1), vec3(1, 1, 0) - vec3(10 * sin(time), 0, 0));
+    twistId = scene.createTwist(vec3(0, 0, 0), vec3(0, 1, 0), 1);
+    translateId = scene.createTranslation(vec3(10 * sin(time), 0, 0));
+    box << matr4::scale(vec3(1, 5, 1)) << twistId << bendId;
+    sphere << translateId;
+    sphere.draw();
+    //box &= sphere;
+    box.draw();
+    floor.hide();
+#elif EXAMPLE == 4
+    floor.hide();
+    auto box = scene.createBox(2, {vec3(1, 0, 0)});
+    auto sphere = scene.createSphere(1.4, {vec3(1, 1, 0)});
+    box &= sphere;
+    auto handle = scene.createBox(0.3, vec3(1, 1, 1));
+    auto hole = scene.createBox(0.3, vec3(1, 1, 1));
+    auto laser = scene.createBox(0.1, vec3(1, 0.5, 0));
+    translateId = scene.createTranslation(vec3(0, 0, 0));
+    translateId2 = scene.createTranslation(vec3(0.4, 0, 0));
+    rotationId = scene.createRotation(vec3(1, 0, 0), 0);
+    handle << matr4::scale(vec3(1, 10, 1)) << translateId << rotationId;
+    hole << matr4::scale(vec3(8, 20, 2)) << translateId2 << translateId << rotationId;
+    laser << matr4::scale(vec3(1, 27, 1)) << translateId << rotationId;
+    //handle /= hole;
+    box /= hole;
+    box.draw();
+    //handle.draw();
+    laser.draw();
+    //hole.draw();
+#endif
 
-    auto bnd2 = scene.createBend(vec3(0, -2, 0), vec3(0, 0, 1), vec3(0, -1, 0));
-    auto hole = scene.createSphere(0.4);
-    handle << matr4::scale(vec3(3, 1, 0.7)) << bnd2 << matr4::translate(vec3(0, -1.2, 0));
-    handle |= handle.copy() << matr4::rotate(90, vec3(0, 1, 0));
-    handle << matr4::rotate(45, vec3(0, 1, 0));
-    hole << matr4::translate(vec3(0, -1.4, 0));
-    handle /= hole;
-
-    handle.draw();
-
-    stone << rotationId;
-
-    math::vec3 newCameraLocation = math::vec3(3, .3, 3);
-    vec3 up = (newCameraLocation + math::vec3(0, 1, 0)).normalize();
-    vec3 right = (up % newCameraLocation).normalize();
-    up = (newCameraLocation % right).normalize();
-    scene.mainCamera.setAllAxis(newCameraLocation, math::vec3(0) - newCameraLocation - vec3(0, .3, 0), up, right);
+    math::vec3 newCameraLocation = math::vec3(1, 0.7, 1) * 5;
+    vec3 at = vec3(0, 1, 0);
+    vec3 dir = (at - newCameraLocation).normalize();
+    vec3 right = dir % vec3(0, 1, 0);
+    vec3 up = (right % dir).normalize();
+    scene.mainCamera.setAllAxis(newCameraLocation, dir, up, right);
 
 }
 
 // std::vector<uint> parseFigures(const std::string &str, )
 void rmShdScene::onUpdate() {
+    using namespace math;
+    static float a = 0;
     FigureScene &scene = Render::scene;
 
     if (keys[GLFW_KEY_C].action == GLFW_PRESS) {
@@ -57,7 +93,41 @@ void rmShdScene::onUpdate() {
         scene.setRenderType(RenderType::RM);
     }
 
-    rotationId.set(math::matr4::rotate(time * 10, math::vec3(0, 1, 0)));
+#if EXAMPLE == 1
+#elif EXAMPLE == 2
+    float t = time * 2;
+    float m = abs(sin(t)) - 0.3;
+    translateId.set(matr4::translate(vec3(0, m + 1.3, 0)));
+    float k = fmax(-abs(sin(t - 0.2)) + 0.3, 0) * 0.3;
+    scaleId.set(matr4::scale(vec3(1 + k, 1 - k, 1 + k)));
+#elif EXAMPLE == 3
+    float t = time;
+    vec3 pos(7 / (1 - fmax(-sin(t), 0)), 0 * cos(t), 0);
+    //bendId.set(pos, vec3(0, 0, 1), vec3(0, 0, 0) - pos);
+    twistId.set(vec3(0, 0, 0), vec3(0, 1, 0), fmax(0, sin(t)));
+    bendId.set(pos, vec3(0, 0, 1), vec3(0) - pos);
+    translateId.set(matr4::translate(pos));
+#elif EXAMPLE == 4
+    float t = time * 0.8;
+    translateId.set(matr4::translate(vec3(sin(t) * 4, 0, 0)));
+    if (cos(t) > 0) {
+        translateId2.set(matr4::translate(vec3(-0.8, 0, 0)));
+    } else {
+        translateId2.set(matr4::translate(vec3(0.8, 0, 0)));
+    }
+    if (abs(cos(t)) < 0.2) {
+        a += 3 * deltaTime;
+        rotationId.set(matr4::rotate(10 * a, vec3(sin(a), 1, sin(a + 2))));
+    }
+#endif
+    math::vec3 newCameraLocation = math::vec3(sin(time), 0.7, cos(time)) * 5;
+    vec3 at = vec3(0, 1, 0);
+    vec3 dir = (at - newCameraLocation).normalize();
+    vec3 right = dir % vec3(0, 1, 0);
+    vec3 up = (right % dir).normalize();
+    scene.mainCamera.setAllAxis(newCameraLocation, dir, up, right);
+
+    //rotationId.set(math::matr4::rotate(time * 10, math::vec3(0, 1, 0)));
     // translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));
     // rotationId = math::matr4::rotate(time * 10, math::vec3(1, 0, 0));
     /*

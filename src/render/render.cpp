@@ -95,7 +95,6 @@ void Render::startRenderLoop() {
         unitInstance->onCreate();
     }
     scene.onCreate();
-    scene.setRenderType(RenderType::COMMON);
     // Render
     while (!glfwWindowShouldClose(windowInstance)) {
         // Our timer
@@ -123,6 +122,7 @@ void Render::startRenderLoop() {
                 sceneInstance->onUpdate();
                 sceneInstance->onRender();
             }
+        scene.mainCamera.setProjection(windowWidth, windowHeight);
         scene.onUpdate();
         scene.onRender();
         glFinish();

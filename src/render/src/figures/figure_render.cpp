@@ -1,5 +1,6 @@
 #include "../../render.hpp"
 #include "figure_render.hpp"
+#include "../resources/shaders/shader.hpp"
 
 namespace hse {
 void CommonRender::init() {
@@ -88,10 +89,12 @@ void RMRender::init() {
 
     for (int j = 0; j < 6; j++)
         indexBuffer[j] = j;
-    //TODO std::string vertexSource = createVertexSource("../data/shaders/rm/vertex.glsl", "../data/shaders/rm_render/vertex.glsl");
-    //TODO std::string fragmentSource = createFragmentSource("../data/shaders/rm/fragment_src.glsl", "../data/shaders/rm_render/fragment.glsl");
+
+    std::string vertexSource = createVertexSource("../data/shaders/rm/vertex.glsl", "../data/shaders/rm_render/vertex.glsl");
+    std::string fragmentSource = createFragmentSource("../data/shaders/rm/fragment_src.glsl", "../data/shaders/rm_render/fragment.glsl");
     // TODO uint shdId = scene.createShader(vertexSource, fragmentSource, "rm_render");
-    Shader *shd = scene.createShader("rm_render");
+    std::cout << fragmentSource;
+    shd = new Shader(vertexSource, fragmentSource);
     m_canvas = scene.createPrimitive(shd->getShaderProgramId(), vertexBuffer, "v3", indexBuffer);
     m_canvas->addConstantUniform((int)windowWidth, "frame_w");
     m_canvas->addConstantUniform((int)windowHeight, "frame_h");
@@ -117,6 +120,8 @@ void RMRender::render() {
     m_canvas->addConstantUniform(scene.mainCamera.getDirection(), "cam_dir");
     m_canvas->addConstantUniform(scene.mainCamera.getUp(), "cam_up");
     m_canvas->addConstantUniform(scene.mainCamera.getRight(), "cam_right");
+    m_canvas->addConstantUniform((int)windowWidth, "frame_w");
+    m_canvas->addConstantUniform((int)windowHeight, "frame_h");
 }
 
 void RMRender::hide() {
@@ -218,8 +223,10 @@ std::string RMRender::createFragmentSource(const std::string &filePath, const st
         }
     }
 
+    /*
     std::ofstream output(outPath);
     output << source;
+     */
 
     return source;
 }
@@ -236,8 +243,10 @@ std::string RMRender::createVertexSource(const std::string &filePath, const std:
         source += sourceLine + '\n';
     }
 
+    /*
     std::ofstream output(outPath);
     output << source;
+     */
 
     return source;
 }

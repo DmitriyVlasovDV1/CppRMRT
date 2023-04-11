@@ -12,7 +12,11 @@ namespace hse {
 class rmShdScene final : public Scene {
 public:
     TransformationMatrixId translateId;
+    TransformationMatrixId translateId2;
     TransformationMatrixId rotationId;
+    TransformationMatrixId scaleId;
+    TransformationBendId bendId;
+    TransformationTwistId twistId;
 
     // Class constructor
     explicit rmShdScene() = default;

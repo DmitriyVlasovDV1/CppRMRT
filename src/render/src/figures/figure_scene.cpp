@@ -99,17 +99,17 @@ FigureId FigureScene::createCopy(const FigureId &id) {
     return res;
 }
 
-FigureId FigureScene::createBox(float size) {
+FigureId FigureScene::createBox(float size, Material mtl) {
     int ind(static_cast<int>(m_boxes.size()));
-    m_boxes.emplace_back(size);
+    m_boxes.emplace_back(size, mtl);
     FigureId res(static_cast<int>(m_figures.size()));
     m_figures.push_back(Figure(PrimitiveType::BOX, ind));
     return res;
 }
 
-FigureId FigureScene::createSphere(float radius) {
+FigureId FigureScene::createSphere(float radius, Material mtl) {
     int ind(static_cast<int>(m_spheres.size()));
-    m_spheres.emplace_back(radius);
+    m_spheres.emplace_back(radius, mtl);
     FigureId res(static_cast<int>(m_figures.size()));
     m_figures.push_back(Figure(PrimitiveType::SPHERE, ind));
     return res;

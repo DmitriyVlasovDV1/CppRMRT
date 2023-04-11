@@ -40,12 +40,17 @@ public:
     ShaderStorageBuffer m_matricesSSBO;
     ShaderStorageBuffer m_twistsSSBO;
     ShaderStorageBuffer m_bendsSSBO;
+    Shader *shd;
 
     void init() final;
 
     void render() final;
 
     void hide() final;
+
+    ~RMRender() {
+        delete shd;
+    }
 
 private:
     std::string serializeOperation(const std::string &operationName, const std::vector<FigureId> &sources, const std::string &pos, const std::string &matr);

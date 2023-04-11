@@ -64,9 +64,9 @@ public:
 
     FigureId createCopy(const FigureId &id);
 
-    FigureId createBox(float size);
+    FigureId createBox(float size, Material mtl=Material{});
 
-    FigureId createSphere(float radius);
+    FigureId createSphere(float radius, Material mtl=Material{});
 
     TransformationMatrixId createTransformation(const math::matr4 &matr);
 

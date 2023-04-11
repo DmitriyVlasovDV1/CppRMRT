@@ -15,9 +15,9 @@ std::map<int, hse::Key> hse::keys;  // Keys map for input response
 void hse::factory() {
     hse::Render renderInstance;
 
-    renderInstance.onCreate(800, 600);
-    renderInstance.addScene(new hse::rmShdScene());
-    //renderInstance.addScene(new hse::TestScene());
+    renderInstance.onCreate(300, 300);
+//    renderInstance.addScene(new hse::rmShdScene());
+    renderInstance.addScene(new hse::TestScene());
     renderInstance.startRenderLoop();
 }  // End of 'hse::factory' function
 

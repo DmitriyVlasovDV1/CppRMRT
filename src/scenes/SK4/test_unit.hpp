@@ -7,8 +7,13 @@
 namespace hse {
 // Test scene class declaration
 class TestScene final : public Scene {
-    Model *sceneModel = nullptr;
-    Primitive *scenePrimitive = nullptr;
+    int numberOfDemo;
+    Model *cup = nullptr;
+    Model *tree = nullptr;
+    Primitive *cube = nullptr;
+    Primitive *sphere1 = nullptr;
+    Primitive *sphere2 = nullptr;
+    Primitive *plane = nullptr;
 
     /* Spheres generation function.
      * ARGUMENTS: None.
@@ -80,7 +85,7 @@ class TestScene final : public Scene {
      * ARGUMENTS: None.
      * RETURNS: None.
      */
-    static void inputUpdate();
+    void inputUpdate();
 
 public:
     // Class constructor

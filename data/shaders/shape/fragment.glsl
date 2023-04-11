@@ -7,6 +7,7 @@ in vec3 vertexColor;
 uniform vec3 cameraPosition;
 uniform vec3 cameraDirection;
 uniform float time;
+uniform int numberOfDemo;
 
 vec3 lightColor = vec3(0.7);
 vec3 lightDirection = -vec3(1, 3, 3);
@@ -34,5 +35,12 @@ vec3 lightResponse() {
 void main() {
     float depth = 1 / length(cameraPosition - vertexPosition) * 50;
     depth = min(pow(depth, 1.2), 1.0);
-    outColor = vec4(lightResponse() * depth, 1);
+    if (abs(numberOfDemo) == 0)
+        outColor = vec4(lightResponse() * depth, 1);
+    else if (abs(numberOfDemo) == 1)
+        outColor = vec4(normalize(vertexNormal), 1);
+    else if (abs(numberOfDemo) == 2)
+        outColor = vec4(vertexPosition, 1);
+    else if (abs(numberOfDemo) == 3)
+        outColor = vec4(vertexColor, 1);
 } // End of 'main' function

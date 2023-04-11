@@ -65,7 +65,7 @@ void TestScene::cubesGeneration() {
  */
 void TestScene::cubesUpdate() {
     cube->setVisibility(true);
-    cube->setTransformMatrix(cube->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
+//    cube->setTransformMatrix(cube->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
 }  // End of 'TestScene::cubesUpdate' function
 
 /* Tree generation function.
@@ -75,7 +75,7 @@ void TestScene::cubesUpdate() {
 void TestScene::treeGeneration() {
     plane = createPlanePrimitive(2, 2, math::vec3(0, 0, 0), math::vec3(0.256861, 0.440506, 0.110769));
     tree = createModel("obj_model", "low_poly_tree/low_poly_tree.obj");
-    tree->setTransformMatrix(math::matr4::scale(math::vec3(0.1)));
+    tree->setTransformMatrix(math::matr4::scale(math::vec3(0.1)) * math::matr4::rotateY(90));
     plane->setVisibility(false);
     tree->setVisibility(false);
 }  // End of 'TestScene::treeGeneration' function
@@ -87,8 +87,8 @@ void TestScene::treeGeneration() {
 void TestScene::treeUpdate() {
     tree->setVisibility(true);
     plane->setVisibility(true);
-    tree->setTransformMatrix(tree->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
-    plane->setTransformMatrix(plane->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
+//    tree->setTransformMatrix(tree->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
+//    plane->setTransformMatrix(plane->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
 }  // End of 'TestScene::treeUpdate' function
 
 /* Cup generation function.
@@ -109,7 +109,7 @@ void TestScene::cupGeneration() {
  */
 void TestScene::cupUpdate() {
     cup->setVisibility(true);
-    cup->setTransformMatrix(cup->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
+//    cup->setTransformMatrix(cup->getTransformMatrix() * math::matr4::rotateY(deltaTime * 100));
 }  // End of 'TestScene::cupUpdate' function
 
 /* Objects (primitives/models) generation function.
@@ -170,7 +170,7 @@ void TestScene::inputUpdate() {
     } else if (keys[GLFW_KEY_RIGHT].action == GLFW_RELEASE)
         oldActionRight = GLFW_RELEASE;
     if (keys[GLFW_KEY_LEFT].action == GLFW_PRESS && oldActionLeft == GLFW_RELEASE) {
-        numberOfDemo = (numberOfDemo - 1) % 4;
+        numberOfDemo = numberOfDemo == 0 ? numberOfDemo = 3 : (numberOfDemo - 1) % 4;
         oldActionLeft = GLFW_PRESS;
     } else if (keys[GLFW_KEY_LEFT].action == GLFW_RELEASE)
         oldActionLeft = GLFW_RELEASE;
@@ -186,6 +186,8 @@ void TestScene::onCreate() {
     treeGeneration();
     cubesGeneration();
     spheresGeneration();
+    tree->addUniform(&numberOfDemo, "numberOfDemo");
+    plane->addUniform(&numberOfDemo, "numberOfDemo");
 }  // End of 'TestScene::onCreate' function
 
 /* Unit update override function.
@@ -199,14 +201,14 @@ void TestScene::onUpdate() {
     tree->setVisibility(false);
     cube->setVisibility(false);
     cup->setVisibility(false);
-    if (abs(numberOfDemo) == 0)
-        cupUpdate();
-    else if (abs(numberOfDemo) == 1)
+//    if (abs(numberOfDemo) == 0)
+//        cupUpdate();
+//    else if (abs(numberOfDemo) == 1)
         treeUpdate();
-    else if (abs(numberOfDemo) == 2)
-        cubesUpdate();
-    else if (abs(numberOfDemo) == 3)
-        spheresUpdate();
+//    else if (abs(numberOfDemo) == 2)
+//        cubesUpdate();
+//    else if (abs(numberOfDemo) == 3)
+//        spheresUpdate();
     cameraUpdate();
     inputUpdate();
 }  // End of 'TestScene::onUpdate' function

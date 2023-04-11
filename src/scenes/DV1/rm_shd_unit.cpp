@@ -5,7 +5,7 @@
 // Project namespace
 namespace hse {
 
-#define EXAMPLE 4
+#define EXAMPLE 3
 void rmShdScene::onCreate() {
     using namespace math;
     Material Goldenrod(vec3(218, 165, 32) / 255);

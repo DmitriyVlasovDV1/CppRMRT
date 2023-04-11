@@ -15,7 +15,7 @@ void Model::parseObj(const std::string &fileName) {
     std::vector<math::vec2> vertexTextureCoordinates;
     std::vector<float> vertexBufferData;
     std::vector<int> indexBufferData;
-    std::map<std::string, material> materialArray;
+    std::map<std::string, Material> materialArray;
 
     std::string tag, oldTag, materialName;
     int numberOfVertexes = 0;

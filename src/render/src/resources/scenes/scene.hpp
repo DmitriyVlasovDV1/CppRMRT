@@ -38,7 +38,7 @@ protected:
      *   - scene's name;
      *       const std::string &sceneName_.
      */
-    explicit Scene(const std::string &sceneName_);
+    explicit Scene(std::string sceneName_);
 
     /* Scene initialization pure-virtual function.
      * ARGUMENTS: None.

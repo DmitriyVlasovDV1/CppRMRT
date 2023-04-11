@@ -1,5 +1,7 @@
 #include "scene.hpp"
 
+#include <utility>
+
 // Project namespace
 namespace hse {
 /* Class constructor.
@@ -7,10 +9,10 @@ namespace hse {
  *   - scene's name;
  *       const std::string &sceneName_.
  */
-Scene::Scene(const std::string &sceneName_)
+Scene::Scene(std::string sceneName_)
     : isVisible(true),
       mainCamera(math::vec3(0), math::vec3(1, 0, 0), math::vec3(0, 0, 1), math::vec3(0, 1, 0), 400, 400),
-      sceneName(sceneName_) {
+      sceneName(std::move(sceneName_)) {
 }  // End of 'Scene::Scene' function
 
 /* Render scene function.

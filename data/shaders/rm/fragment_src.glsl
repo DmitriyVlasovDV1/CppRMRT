@@ -101,12 +101,6 @@ layout(binding = 6, std430) buffer BendBuffer
  * SDF's
  *****/
 
-// power smooth min (k = 8);
-float smin( float a, float b, float k )
-{
-    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
-    return mix( b, a, h ) - k*h*(1.0-h);
-}
 
 Surface unite(Surface a, Surface b)
 {
@@ -321,8 +315,8 @@ Material trace(vec3 org, vec3 dir)
             //res.color = vec4(1, 0, 0, 1);
             Material rf = reflection(pos + nrm * 0.1, reflect(dir, nrm));
             srf.mtl.color += rf.color * 0.1;
-            srf.mtl.color *= clamp(AmbientOc(pos, nrm, 5, 1), 0.2, 1);
-            srf.mtl.color *= clamp(shd, 0.6, 1);
+            srf.mtl.color *= min(max(AmbientOc(pos, nrm, 5, 1), 0.2), 1);
+            srf.mtl.color *= min(max(shd, 0.6), 1);
             //srf.mtl.color = vec4(nrm, 1);
             //srf.mtl.color = vec4(lightResponse(pos, nrm, srf.mtl.color.xyz) * depth, 1);
             return srf.mtl;

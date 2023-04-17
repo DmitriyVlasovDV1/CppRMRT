@@ -107,6 +107,7 @@ void rmShdScene::onCreate() {
     vec3 bulb_pos = vec3(-0.5, 0.7, 0);
     //scene.setBulb(bulb_pos, vec3(1, 1, 1));
 
+
     floor << matr4::translate(vec3(0, -1, 0));
     floor.hide();
 
@@ -165,13 +166,13 @@ void rmShdScene::onUpdate() {
 
     float t = time * 20;
     float t1 = 1; // move
-    float t2 = 0.5; // pause
+    float t2 = 0.2; // pause
     float t3 = 1; // move
     float t4 = 0.2; // pause
     float t5 = 1; // move
     float t6 = 3; // pause
     float t7 = 1; // move
-    float t8 = 0.2; // pause
+    float t8 = 0.5; // pause
     static float start = time;
     float dlt = time - start;
     if (dlt < t1) { // move
@@ -186,12 +187,12 @@ void rmShdScene::onUpdate() {
         rotationId.set(matr4::rotate(0, vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3 + t4 + t5) { // move
         float x = (dlt - t1 - t2 - t3 - t4) / t5;
-        rotationId.set(matr4::rotate(-30 * x, vec3(0, 0, 1)) * matr4::rotate(90 * x, vec3(0, 1, 0)));
+        rotationId.set(matr4::rotate(-30 * x, vec3(0, 0, 1)) * matr4::rotate(85 * x, vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3 + t4 + t5 + t6) { // pause
-        rotationId.set(matr4::rotate(-30, vec3(0, 0, 1)) * matr4::rotate(90, vec3(0, 1, 0)));
+        rotationId.set(matr4::rotate(-30, vec3(0, 0, 1)) * matr4::rotate(85, vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3 + t4 + t5 + t6 + t7) { // move
         float x = (dlt - t1 - t2 - t3 - t4 - t5 - t6) / t7;
-        rotationId.set(matr4::rotate(-30 * (1 - x), vec3(0, 0, 1)) * matr4::rotate(90 * (1 - x), vec3(0, 1, 0)));
+        rotationId.set(matr4::rotate(-30 * (1 - x), vec3(0, 0, 1)) * matr4::rotate(85 * (1 - x), vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8) { // pause
         rotationId.set(matr4::identity());
     } else {

@@ -14,6 +14,7 @@ public:
     TransformationMatrixId translateId;
     TransformationMatrixId translateId2;
     TransformationMatrixId rotationId;
+    TransformationMatrixId rotationId2;
     TransformationMatrixId scaleId;
     TransformationBendId bendId;
     TransformationTwistId twistId;

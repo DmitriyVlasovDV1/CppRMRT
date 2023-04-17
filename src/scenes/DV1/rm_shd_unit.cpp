@@ -8,22 +8,28 @@ namespace hse {
 #define EXAMPLE 5
 void rmShdScene::onCreate() {
     using namespace math;
-    Material Goldenrod(vec3(218, 165, 32) / 255);
-    Material Crimson(vec3(220, 20, 60) / 255);
+    Material Goldenrod(vec3(106, 90, 205) / 255);
+    Material Crimson(vec3(238, 130, 238) / 255);
     Material MediumAquamarine(vec3(102, 205, 170) / 255);
+    Material White(vec3(1, 1, 1), true);
     FigureScene &scene = Render::scene;
     auto floor = scene.createBox(1);
     floor << matr4::scale(vec3(20, 1, 20));
     floor.draw();
 #if EXAMPLE == 1
     scaleId = scene.createScale(vec3(1, 2 + sin(time), 1));
+    translateId = scene.createTranslation(vec3(0));
+    rotationId = scene.createRotation(vec3(0, 1, 0), 0);
     auto box = scene.createBox(1, Crimson);
     auto sphere = scene.createSphere(1, Goldenrod);
+    auto bulb = scene.createBox(0.3, White);
     sphere << matr4::translate(vec3(-0.5, 1.5, 0.5));
-    sphere.draw();
     box << matr4::translate(vec3(0.5, 1, -0.5));
+    bulb << rotationId << translateId;
     //box &= sphere;
-    box.draw();
+    bulb.draw();
+    sphere %= box;
+    sphere.draw();
 #elif EXAMPLE == 2
     rotationId = scene.createRotation(math::vec3(0, 1, 0), 0);
     translateId = scene.createTranslation(vec3(0, 0, 0));
@@ -40,13 +46,10 @@ void rmShdScene::onCreate() {
     stone.draw();
 #elif EXAMPLE == 3
     auto box = scene.createBox(0.5, {vec3(1, 0, 0)});
-    auto sphere = scene.createSphere(0.1, vec3{0, 1, 0});
     bendId = scene.createBend(vec3(10 * sin(time), 0, 0), vec3(0, 0, 1), vec3(1, 1, 0) - vec3(10 * sin(time), 0, 0));
     twistId = scene.createTwist(vec3(0, 0, 0), vec3(0, 1, 0), 1);
     translateId = scene.createTranslation(vec3(10 * sin(time), 0, 0));
     box << matr4::scale(vec3(1, 5, 1)) << twistId << bendId;
-    sphere << translateId;
-    sphere.draw();
     //box &= sphere;
     box.draw();
     floor << matr4::translate(vec3(0, -1, 0));
@@ -71,7 +74,6 @@ void rmShdScene::onCreate() {
 #elif EXAMPLE == 5 // pixar lamp
 
     Material LightSteelBlue(vec3(176, 196, 222) / 255);
-    Material White(vec3(1, 1, 1), true);
     auto stick1 = scene.createBox(0.08, LightSteelBlue);
     auto stick2 = scene.createBox(0.08, LightSteelBlue);
     auto hole1 = scene.createBox(0.09);
@@ -87,8 +89,9 @@ void rmShdScene::onCreate() {
     auto stand = scene.createSphere(0.1, LightSteelBlue);
     stand << matr4::scale(vec3(5, 1, 5)) * matr4::translate(vec3(-0.2, -0.4, 0));
     stand.draw();
-    stick2.draw();
-    stick1.draw();
+    stick1 |= stick2;
+    rotationId2 = scene.createRotation(vec3(0, 1, 0), 0);
+    stick1 << rotationId2;
 
     auto lampshade = scene.createSphere(0.45, LightSteelBlue);
     auto knob = scene.createSphere(0.2, LightSteelBlue);
@@ -102,6 +105,7 @@ void rmShdScene::onCreate() {
     lampshade |= bulb;
     rotationId = scene.createRotation(math::vec3(0, 1, 0), 0);
     lampshade << matr4::translate(vec3(0, -0.5, 0)) * matr4::rotate(-60, vec3(0, 0, 1)) << rotationId << matr4::translate(vec3(-0.3, 1.35, 0));
+    lampshade |= stick1;
     lampshade.draw();
 
     vec3 bulb_pos = vec3(-0.5, 0.7, 0);
@@ -112,6 +116,7 @@ void rmShdScene::onCreate() {
     floor.hide();
 
 
+#elif EXAMPLE == 6
 #endif
 
     math::vec3 newCameraLocation = math::vec3(1, 0.7, 1) * 5;
@@ -137,6 +142,12 @@ void rmShdScene::onUpdate() {
     }
 
 #if EXAMPLE == 1
+    float t = time * 3;
+    vec3 pos(sin(t) * 3, 2 + sin(t) * 0.1, cos(t) * 3);
+    rotationId.set(matr4::rotate(t, vec3(sin(t), cos(t), sin(t) + cos(t)).normalize()));
+    translateId.set(matr4::translate(pos));
+    scene.setBulb(pos, vec3(1));
+
 #elif EXAMPLE == 2
     float t = time * 2;
     float m = abs(sin(t)) - 0.3;
@@ -177,12 +188,16 @@ void rmShdScene::onUpdate() {
     float dlt = time - start;
     if (dlt < t1) { // move
         float x = dlt / t1;
-        rotationId.set(matr4::rotate(110 * (-pow(x - 1, 6) + 1), vec3(0, 1, 0)));
+        float y = (-pow(x - 1, 6) + 1);
+        rotationId.set(matr4::rotate(110 * y, vec3(0, 1, 0)));
+        rotationId2.set(matr4::rotate(-15 * (-pow(x - 1, 6) + 1), vec3(0, 1, 0)));
     } else if (dlt < t1 + t2) { // pause
         rotationId.set(matr4::rotate(110, vec3(0, 1, 0)));
+        rotationId2.set(matr4::rotate(-15, vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3) { // move
         float x = (dlt - t1 - t2) / t3;
         rotationId.set(matr4::rotate(110 * pow(x - 1, 6), vec3(0, 1, 0)));
+        rotationId2.set(matr4::rotate(-15 * pow(x - 1, 6), vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3 + t4) { // pause
         rotationId.set(matr4::rotate(0, vec3(0, 1, 0)));
     } else if (dlt < t1 + t2 + t3 + t4 + t5) { // move

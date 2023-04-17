@@ -105,22 +105,22 @@ layout(binding = 6, std430) buffer BendBuffer
  * SDF's
  *****/
 
-float smin(float a, float b)
+Surface smin(Surface a, Surface b)
 {
-    float k = 0.1;
-    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
-    return mix( b, a, h ) - k*h*(1.0-h);
+    float k = 0.1; // for ex 5
+    //float k = 0.8; // for ex 1
+    float h = clamp( 0.5+0.5*(b.sdf-a.sdf)/k, 0.0, 1.0 );
+    Surface res;
+    res.sdf = mix( b.sdf, a.sdf, h ) - k*h*(1.0-h);
+    res.mtl.color = mix(b.mtl.color, a.mtl.color, h);
+    res.mtl.is_light_source = 0;
+    return res;
 }
 
 Surface sunite(Surface a, Surface b)
 {
     Surface res;
-    res.sdf = smin(a.sdf, b.sdf);
-    if (a.sdf < b.sdf) {
-        res.mtl = a.mtl;
-        return res;
-    }
-    res.mtl = b.mtl;
+    res = smin(a, b);
     return res;
 }
 
@@ -306,7 +306,7 @@ vec3 lightResponse(vec3 vertexPosition, vec3 vertexNormal, vec3 vertexColor) {
 
     vec3 ambientOcculusion = vec3((1 - abs(dot(RV, normal))) / 5);
     float diffuse = max(pow((dot(normal, -L) + 1) / 1.7, 2), 0.08);
-    float pointColorWeight = 2.5, lightColorWeight = 1;
+    float pointColorWeight = 5, lightColorWeight = 0.1;
     float summaryWeight = pointColorWeight + lightColorWeight;
     vec3 pointRawColor = vertexColor * pointColorWeight;
     vec3 lightRawColor = lightColor * lightColorWeight;

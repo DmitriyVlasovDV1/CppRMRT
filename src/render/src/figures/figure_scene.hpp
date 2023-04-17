@@ -32,7 +32,15 @@ public:
 
     void setRenderType(RenderType renderType);
 
+    void setBulb(const math::vec3 &pos, const math::vec3 &color);
+
     RenderType getRenderType() const;
+
+    bool isBulb() const;
+
+    const math::vec3 & getBulbPos() const;
+
+    const math::vec3 & getBulbColor() const;
 
     void draw(const FigureId &id);
 
@@ -82,6 +90,8 @@ public:
 
     FigureId createUnion(const FigureId &a, const FigureId &b);
 
+    FigureId createSUnion(const FigureId &a, const FigureId &b);
+
     FigureId createIntersection(const FigureId &a, const FigureId &b);
 
     FigureId createSubtraction(const FigureId &a, const FigureId &b);
@@ -100,6 +110,10 @@ private:
     std::set<FigureId, FigureIdHasher> m_scene;
     RenderType m_curRenderType;
     std::map<RenderType, std::shared_ptr<FigureRender>> m_renders;
+
+    bool m_is_bulb;
+    math::vec3 m_bulb_pos;
+    math::vec3 m_bulb_color;
 
 }; // FigureRender
 

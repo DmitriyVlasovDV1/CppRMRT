@@ -8,7 +8,7 @@ bool FigureIdHasher::operator() (const FigureId &a, const FigureId &b) const {
     return a.id() < b.id();
 }
 
-FigureScene::FigureScene() : m_curRenderType(RenderType::RM) {
+FigureScene::FigureScene() : m_curRenderType(RenderType::RM), m_is_bulb(false) {
     m_renders[RenderType::COMMON] = std::make_shared<CommonRender>();
     m_renders[RenderType::RM] = std::make_shared<RMRender>();
 }
@@ -30,8 +30,26 @@ void FigureScene::setRenderType(RenderType renderType) {
     m_curRenderType = renderType;
 }
 
+void FigureScene::setBulb(const math::vec3 &pos, const math::vec3 &color) {
+    m_is_bulb = true;
+    m_bulb_pos = pos;
+    m_bulb_color = color;
+}
+
 RenderType FigureScene::getRenderType() const {
     return m_curRenderType;
+}
+
+bool FigureScene::isBulb() const {
+    return m_is_bulb;
+}
+
+const math::vec3 & FigureScene::getBulbPos() const {
+    return m_bulb_pos;
+}
+
+const math::vec3 & FigureScene::getBulbColor() const {
+    return m_bulb_color;
 }
 
 void FigureScene::draw(const FigureId &id) {
@@ -168,6 +186,12 @@ FigureId FigureScene::createIntersection(const FigureId &a, const FigureId &b) {
 FigureId FigureScene::createSubtraction(const FigureId &a, const FigureId &b) {
     FigureId res(static_cast<int>(m_figures.size()));
     m_figures.push_back(Figure(CreationType::SUBTRACTION, {a, b}));
+    return res;
+}
+
+FigureId FigureScene::createSUnion(const FigureId &a, const FigureId &b) {
+    FigureId res(static_cast<int>(m_figures.size()));
+    m_figures.push_back(Figure(CreationType::SUNION, {a, b}));
     return res;
 }
 

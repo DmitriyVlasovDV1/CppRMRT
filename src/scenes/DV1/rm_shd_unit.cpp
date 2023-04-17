@@ -5,7 +5,7 @@
 // Project namespace
 namespace hse {
 
-#define EXAMPLE 3
+#define EXAMPLE 5
 void rmShdScene::onCreate() {
     using namespace math;
     Material Goldenrod(vec3(218, 165, 32) / 255);
@@ -68,6 +68,48 @@ void rmShdScene::onCreate() {
     //handle.draw();
     laser.draw();
     //hole.draw();
+#elif EXAMPLE == 5 // pixar lamp
+
+    Material LightSteelBlue(vec3(176, 196, 222) / 255);
+    Material White(vec3(1, 1, 1), true);
+    auto stick1 = scene.createBox(0.08, LightSteelBlue);
+    auto stick2 = scene.createBox(0.08, LightSteelBlue);
+    auto hole1 = scene.createBox(0.09);
+    auto hole2 = scene.createBox(0.09);
+    stick1 << matr4::scale(vec3(4, 10, 1));
+    hole1 << matr4::scale(vec3(2, 7, 1));
+    stick2 << matr4::scale(vec3(2, 9, 1)) << matr4::rotate(60, vec3(0, 0, 1)) << matr4::scale(vec3(1, 3, 1));
+    hole2 << matr4::scale(vec3(1, 7, 1)) << matr4::rotate(60, vec3(0, 0, 1)) << matr4::scale(vec3(1, 3, 1));
+    stick1 /= hole1 ;
+    stick2 /= hole2;
+    stick1 << matr4::rotate(-60, vec3(0, 0, 1));
+    stick2 << matr4::translate(vec3(0.155, 0.818, 0));
+    auto stand = scene.createSphere(0.1, LightSteelBlue);
+    stand << matr4::scale(vec3(5, 1, 5)) * matr4::translate(vec3(-0.2, -0.4, 0));
+    stand.draw();
+    stick2.draw();
+    stick1.draw();
+
+    auto lampshade = scene.createSphere(0.45, LightSteelBlue);
+    auto knob = scene.createSphere(0.2, LightSteelBlue);
+    auto hole3 = scene.createSphere(0.45);
+    hole3 << matr4::translate(vec3(0, -0.1, 0));
+    knob << matr4::translate(vec3(0, 0.5, 0));
+    lampshade /= hole3;
+    lampshade %= knob;
+
+    auto bulb = scene.createSphere(0.2, White);
+    lampshade |= bulb;
+    lampshade << matr4::rotate(-60, vec3(0, 0, 1)) * matr4::translate(vec3(-0.7, 1.1, 0));
+    lampshade.draw();
+
+    vec3 bulb_pos = vec3(-0.9, 1, 0);
+    scene.setBulb(bulb_pos, vec3(1, 1, 1));
+
+    floor << matr4::translate(vec3(0, -1, 0));
+    floor.hide();
+
+
 #endif
 
     math::vec3 newCameraLocation = math::vec3(1, 0.7, 1) * 5;
@@ -118,8 +160,10 @@ void rmShdScene::onUpdate() {
         a += 3 * deltaTime;
         rotationId.set(matr4::rotate(10 * a, vec3(sin(a), 1, sin(a + 2))));
     }
+#elif EXAMPLE == 5
+
 #endif
-    math::vec3 newCameraLocation = math::vec3(sin(time), 0.7, cos(time)) * 5;
+    math::vec3 newCameraLocation = math::vec3(sin(time * 2), 0.7, cos(time * 2)) * 5;
     vec3 at = vec3(0, 1, 0);
     vec3 dir = (at - newCameraLocation).normalize();
     vec3 right = dir % vec3(0, 1, 0);

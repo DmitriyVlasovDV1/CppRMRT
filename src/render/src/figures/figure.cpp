@@ -31,6 +31,10 @@ FigureId FigureId::operator/(const FigureId &other) const {
     return Render::scene.createSubtraction(*this, other);
 }
 
+FigureId FigureId::operator%(const FigureId &other) const {
+    return Render::scene.createSUnion(*this, other);
+}
+
 FigureId & FigureId::operator&=(const FigureId &other) {
     *this = Render::scene.createIntersection(*this, other);
     return *this;
@@ -43,6 +47,11 @@ FigureId & FigureId::operator|=(const FigureId &other) {
 
 FigureId & FigureId::operator/=(const FigureId &other) {
     *this = Render::scene.createSubtraction(*this, other);
+    return *this;
+}
+
+FigureId & FigureId::operator%=(const FigureId &other) {
+    *this = Render::scene.createSUnion(*this, other);
     return *this;
 }
 

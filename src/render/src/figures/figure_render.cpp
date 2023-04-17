@@ -93,7 +93,6 @@ void RMRender::init() {
     std::string vertexSource = createVertexSource("../data/shaders/rm/vertex.glsl", "../data/shaders/rm_render/vertex.glsl");
     std::string fragmentSource = createFragmentSource("../data/shaders/rm/fragment_src.glsl", "../data/shaders/rm_render/fragment.glsl");
     // TODO uint shdId = scene.createShader(vertexSource, fragmentSource, "rm_render");
-    std::cout << fragmentSource;
     shd = new Shader(vertexSource, fragmentSource);
     m_canvas = scene.createPrimitive(shd->getShaderProgramId(), vertexBuffer, "v3", indexBuffer);
     m_canvas->addConstantUniform((int)windowWidth, "frame_w");
@@ -122,6 +121,9 @@ void RMRender::render() {
     m_canvas->addConstantUniform(scene.mainCamera.getRight(), "cam_right");
     m_canvas->addConstantUniform((int)windowWidth, "frame_w");
     m_canvas->addConstantUniform((int)windowHeight, "frame_h");
+    m_canvas->addConstantUniform((int)scene.isBulb(), "is_bulb");
+    m_canvas->addConstantUniform(scene.getBulbPos(), "bulb_pos");
+    m_canvas->addConstantUniform(scene.getBulbColor(), "bulb_color");
 }
 
 void RMRender::hide() {
@@ -182,6 +184,9 @@ std::string RMRender::serializeFigureId(const FigureId &id, std::string pos, std
     } else if (figure.creationType() == CreationType::SUBTRACTION) {
         std::vector<FigureId> sources = figure.getSourceFigures();
         return serializeOperation("sub", sources, pos, matr);
+    } else if (figure.creationType() == CreationType::SUNION) {
+        std::vector<FigureId> sources = figure.getSourceFigures();
+        return serializeOperation("sunite", sources, pos, matr);
     }
     return "0";
 

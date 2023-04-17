@@ -52,11 +52,15 @@ public:
 
     FigureId operator/(const FigureId &other) const;
 
+    FigureId operator%(const FigureId &other) const;
+
     FigureId &operator&=(const FigureId &other);
 
     FigureId &operator|=(const FigureId &other);
 
     FigureId &operator/=(const FigureId &other);
+
+    FigureId &operator%=(const FigureId &other);
 
     FigureId &operator<<(const TransformationMatrixId &trId);
 
@@ -74,7 +78,7 @@ private:
     int m_id;
 };
 
-enum class CreationType { PRIMITIVE, INTERSECTION, UNION, SUBTRACTION };
+enum class CreationType { PRIMITIVE, INTERSECTION, UNION, SUBTRACTION, SUNION };
 
 class Figure {
 public:

@@ -11,6 +11,9 @@ uniform vec3 cam_pos;
 uniform vec3 cam_dir;
 uniform vec3 cam_up;
 uniform vec3 cam_right;
+uniform int is_bulb;
+uniform vec3 bulb_pos;
+uniform vec3 bulb_color;
 
 /*****
  * Globals
@@ -29,6 +32,7 @@ vec3 lightColor = vec3(0.7);
 struct Material
 {
     vec4 color;
+    int is_light_source;
 };
 
 struct Trace
@@ -101,6 +105,24 @@ layout(binding = 6, std430) buffer BendBuffer
  * SDF's
  *****/
 
+float smin(float a, float b)
+{
+    float k = 0.1;
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+
+Surface sunite(Surface a, Surface b)
+{
+    Surface res;
+    res.sdf = smin(a.sdf, b.sdf);
+    if (a.sdf < b.sdf) {
+        res.mtl = a.mtl;
+        return res;
+    }
+    res.mtl = b.mtl;
+    return res;
+}
 
 Surface unite(Surface a, Surface b)
 {
@@ -225,25 +247,24 @@ float softshadow( in vec3 ro, in vec3 rd, float mint, float maxt, float k )
     return res;
 }
 
-float SoftShadows( vec3 Org, vec3 Dir, float tmin, float tmax, float k )
+float bulblight( in vec3 ro, float mint, float maxt, float k )
 {
-    float res = 1, ph = 10000;
-    float h, y, d;
-
-    for (float t = tmin; t < tmax;)
+    vec3 rd = normalize(bulb_pos - ro);
+    float res = 1.0;
+    float t = mint;
+    for( int i=0; i < 256 && t<maxt; i++ )
     {
-        h = SDF_scene(Org + Dir * t).sdf;
-        if (h < 0.0001)
-        return 0;
-        y = h * h / (2 * ph);
-        d = sqrt(h * h - y * y);
-        res = min(res, k * d / max(0, t - y));
-        ph = h;
-        t += h;
+        Surface srf = SDF_scene(ro + rd*t);
+        if (srf.sdf < 0.001) {
+            if (srf.mtl.is_light_source == 1) {
+                return exp(1 - t);
+            }
+            return 0;
+        }
+        t += srf.sdf;
     }
-    return res;
+    return 0;
 }
-
 Material reflection(vec3 org, vec3 dir) {
     float t = 0;
     while (t < max_dist)
@@ -319,14 +340,22 @@ Material trace(vec3 org, vec3 dir)
             //srf.mtl.color *= min(max(shd, 0.6), 1);
             //srf.mtl.color = vec4(nrm, 1);
             //srf.mtl.color = vec4(lightResponse(pos, nrm, srf.mtl.color.xyz) * depth, 1);
-            float shd = softshadow(pos + nrm * 0.2, light_dir, 0.1, 10, 10);
-            srf.mtl.color = vec4(lightResponse(pos, nrm, srf.mtl.color.xyz), 1);
-            srf.mtl.color *= min(max(AmbientOc(pos, nrm, 5, 0.3), 0.7), 1);
-            srf.mtl.color *= min(max(shd, 0.7), 1);
+            if (srf.mtl.is_light_source == 0) {
+                float shd = softshadow(pos + nrm * 0.2, light_dir, 0.1, 10, 10);
+                srf.mtl.color = vec4(lightResponse(pos, nrm, srf.mtl.color.xyz), 1);
+                srf.mtl.color *= min(max(AmbientOc(pos, nrm, 5, 0.3), 0.7), 1);
+                srf.mtl.color *= min(max(shd, 0.7), 1);
 
-            Material rf = reflection(pos + nrm * 0.1, reflect(dir, nrm));
-            srf.mtl.color = srf.mtl.color * 0.9 + rf.color * 0.1;
-            srf.mtl.color /= max(pow(t, 1.6), 25) / 20;
+                Material rf = reflection(pos + nrm * 0.1, reflect(dir, nrm));
+                srf.mtl.color = srf.mtl.color * 0.9 + rf.color * 0.1;
+                srf.mtl.color /= max(pow(t, 1.6), 25) / 20;
+                if (is_bulb == 1) {
+                    float lgh = bulblight(pos + nrm * 0.1, 0, 10, 20);
+                    srf.mtl.color += vec4(bulb_color, 1) * lgh * 0.3;
+                }
+                //srf.mtl.color = vec4(nrm, 1);
+            }
+
 
             return srf.mtl;
         }
@@ -376,7 +405,6 @@ void main() {
     //v = figure_buffer.matr * v;
     //outColor = sphere_buffer.spheres[0].mtl.color;
     //Material res = trace()''
-    //outColor = vec4(1, 0, 0, 1);
     //outColor = vec4(1, 0, 0, 1);
 
 } // End of 'main' function

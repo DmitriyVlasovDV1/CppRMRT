@@ -5,7 +5,7 @@
 // Project namespace
 namespace hse {
 
-#define EXAMPLE 5
+#define EXAMPLE 6
 void rmShdScene::onCreate() {
     using namespace math;
     Material Goldenrod(vec3(106, 90, 205) / 255);
@@ -113,10 +113,24 @@ void rmShdScene::onCreate() {
 
 
     floor << matr4::translate(vec3(0, -1, 0));
-    floor.hide();
+    //floor.hide();
 
 
 #elif EXAMPLE == 6
+    int n = 7;
+    auto liquid = scene.createSphere(0.7, Goldenrod);
+    auto box = scene.createBox(3, {vec3(0), 0});
+    for (int i = 0; i < n; i++) {
+        auto sph = scene.createSphere(1, (i % 3 == 0 ? Crimson : i % 3 == 1 ? Goldenrod : MediumAquamarine));
+        trIds.push_back(scene.createTranslation(vec3(0, 0, 0)));
+        sph << trIds.back();
+        liquid %= sph;
+    }
+
+    liquid &= box;
+    liquid.draw();
+
+    floor.hide();
 #endif
 
     math::vec3 newCameraLocation = math::vec3(1, 0.7, 1) * 5;
@@ -234,8 +248,19 @@ void rmShdScene::onUpdate() {
     vec3 right = dir % vec3(0, 1, 0);
     vec3 up = (right % dir).normalize();
     scene.mainCamera.setAllAxis(newCameraLocation, dir, up, right);
+#elif EXAMPLE == 6
+    srand(30);
+    float t = time * 0.3;
+    for (int i = 0; i < trIds.size(); i++) {
+
+        float x = sin(t * (i % 3 + 1) + 12 * i);
+        float y = sin(t * (i % 3 + 1) + 23 + 344 * i);
+        float z = sin(t * (i % 3 + 1) + 3445 + 32 * i);
+        trIds[i].set(matr4::translate(vec3(x, y, z)));
+    }
 #endif
-#if EXAMPLE != 5
+
+#if EXAMPLE != 5 && EXAMPLE != 6
     math::vec3 newCameraLocation = math::vec3(sin(time * 2), 0.7, cos(time * 2)) * 5;
     vec3 at = vec3(0, 1, 0);
     vec3 dir = (at - newCameraLocation).normalize();

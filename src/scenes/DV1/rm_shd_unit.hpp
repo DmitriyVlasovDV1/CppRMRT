@@ -18,6 +18,7 @@ public:
     TransformationMatrixId scaleId;
     TransformationBendId bendId;
     TransformationTwistId twistId;
+    std::vector<TransformationMatrixId> trIds;
 
     // Class constructor
     explicit rmShdScene() = default;

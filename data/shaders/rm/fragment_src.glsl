@@ -107,8 +107,9 @@ layout(binding = 6, std430) buffer BendBuffer
 
 Surface smin(Surface a, Surface b)
 {
-    float k = 0.1; // for ex 5
+    //float k = 0.1; // for ex 5
     //float k = 0.8; // for ex 1
+    float k = 0.7; // for ex 6
     float h = clamp( 0.5+0.5*(b.sdf-a.sdf)/k, 0.0, 1.0 );
     Surface res;
     res.sdf = mix( b.sdf, a.sdf, h ) - k*h*(1.0-h);
@@ -138,10 +139,22 @@ Surface unite(Surface a, Surface b)
 
 Surface inter( Surface a, Surface b )
 {
+    Surface res;
     if (a.sdf < b.sdf) {
-        return b;
+        res.sdf = b.sdf;
+        res.mtl = b.mtl;
+    } else {
+        res.sdf = a.sdf;
+        res.mtl = a.mtl;
     }
-    return a;
+
+    if (a.mtl.color.xyz == vec3(0)) {
+        res.mtl = b.mtl;
+    }
+    else if (b.mtl.color.xyz == vec3(0)){
+        res.mtl = a.mtl;
+    }
+    return res;
 }
 
 Surface sub( Surface a, Surface b )

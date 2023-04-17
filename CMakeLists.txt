@@ -79,6 +79,6 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/scenes/DV1/rm_shd_unit.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

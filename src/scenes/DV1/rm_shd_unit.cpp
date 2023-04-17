@@ -100,11 +100,12 @@ void rmShdScene::onCreate() {
 
     auto bulb = scene.createSphere(0.2, White);
     lampshade |= bulb;
-    lampshade << matr4::rotate(-60, vec3(0, 0, 1)) * matr4::translate(vec3(-0.7, 1.1, 0));
+    rotationId = scene.createRotation(math::vec3(0, 1, 0), 0);
+    lampshade << matr4::translate(vec3(0, -0.5, 0)) * matr4::rotate(-60, vec3(0, 0, 1)) << rotationId << matr4::translate(vec3(-0.3, 1.35, 0));
     lampshade.draw();
 
-    vec3 bulb_pos = vec3(-0.9, 1, 0);
-    scene.setBulb(bulb_pos, vec3(1, 1, 1));
+    vec3 bulb_pos = vec3(-0.5, 0.7, 0);
+    //scene.setBulb(bulb_pos, vec3(1, 1, 1));
 
     floor << matr4::translate(vec3(0, -1, 0));
     floor.hide();
@@ -162,13 +163,70 @@ void rmShdScene::onUpdate() {
     }
 #elif EXAMPLE == 5
 
+    float t = time * 20;
+    float t1 = 1; // move
+    float t2 = 0.5; // pause
+    float t3 = 1; // move
+    float t4 = 0.2; // pause
+    float t5 = 1; // move
+    float t6 = 3; // pause
+    float t7 = 1; // move
+    float t8 = 0.2; // pause
+    static float start = time;
+    float dlt = time - start;
+    if (dlt < t1) { // move
+        float x = dlt / t1;
+        rotationId.set(matr4::rotate(110 * (-pow(x - 1, 6) + 1), vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2) { // pause
+        rotationId.set(matr4::rotate(110, vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3) { // move
+        float x = (dlt - t1 - t2) / t3;
+        rotationId.set(matr4::rotate(110 * pow(x - 1, 6), vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3 + t4) { // pause
+        rotationId.set(matr4::rotate(0, vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3 + t4 + t5) { // move
+        float x = (dlt - t1 - t2 - t3 - t4) / t5;
+        rotationId.set(matr4::rotate(-30 * x, vec3(0, 0, 1)) * matr4::rotate(90 * x, vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3 + t4 + t5 + t6) { // pause
+        rotationId.set(matr4::rotate(-30, vec3(0, 0, 1)) * matr4::rotate(90, vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3 + t4 + t5 + t6 + t7) { // move
+        float x = (dlt - t1 - t2 - t3 - t4 - t5 - t6) / t7;
+        rotationId.set(matr4::rotate(-30 * (1 - x), vec3(0, 0, 1)) * matr4::rotate(90 * (1 - x), vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8) { // pause
+        rotationId.set(matr4::identity());
+    } else {
+        start = time;
+    } /*else if (dlt < t1 + t2 + t3) {
+        float x = (dlt - t1 - t2) / t3;
+        rotationId.set(matr4::rotate(110 * pow(x - 1, 4), vec3(0, 1, 0)));
+    } else if (dlt < t1 + t2 + t3 + t4) {
+        float x = (dlt - t1 - t2 - t3) / t4;
+        rotationId.set(matr4::rotate(90 * x, vec3(0, 1, 0)) * matr4::rotate(90 * x, vec3(0, 0, 1)));
+    } else if (dlt < t1 + t2 + t3 + t4 + t5) {
+        rotationId.set(matr4::rotate(90, vec3(0, 1, 0)) * matr4::rotate(30, vec3(0, 0, 1)));
+    } else if (dlt < t1 + t2 + t3 + t4 + t5) {
+        float x = (dlt - t1 - t2 - t3 - t4 - t5) / t6;
+        rotationId.set(matr4::rotate(90 * (1 - x), vec3(0, 1, 0)) * matr4::rotate(30 * (1 - x), vec3(0, 0, 1)));
+    } else {
+        start = time;
+    } */
+
+
+    math::vec3 newCameraLocation = math::vec3(0, 0.3, 1) * 5;
+    vec3 at = vec3(0, 1, 0);
+    vec3 dir = (at - newCameraLocation).normalize();
+    vec3 right = dir % vec3(0, 1, 0);
+    vec3 up = (right % dir).normalize();
+    scene.mainCamera.setAllAxis(newCameraLocation, dir, up, right);
 #endif
+#if EXAMPLE != 5
     math::vec3 newCameraLocation = math::vec3(sin(time * 2), 0.7, cos(time * 2)) * 5;
     vec3 at = vec3(0, 1, 0);
     vec3 dir = (at - newCameraLocation).normalize();
     vec3 right = dir % vec3(0, 1, 0);
     vec3 up = (right % dir).normalize();
     scene.mainCamera.setAllAxis(newCameraLocation, dir, up, right);
+#endif
 
     //rotationId.set(math::matr4::rotate(time * 10, math::vec3(0, 1, 0)));
     // translateId = math::matr4::translate(math::vec3(sin(time) * 4, 0, 0));

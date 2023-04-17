@@ -117,18 +117,47 @@ void rmShdScene::onCreate() {
 
 
 #elif EXAMPLE == 6
-    int n = 7;
-    auto liquid = scene.createSphere(0.7, Goldenrod);
+    int n = 5;
+    FigureId cube(-1);
     auto box = scene.createBox(3, {vec3(0), 0});
+    int cnt = 0;
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            for (int k = 0; k < 2; k++) {
+                cnt++;
+                auto sph = scene.createSphere(
+                    1.3, (cnt % 3 == 0   ? Crimson
+                          : cnt % 3 == 1 ? Goldenrod
+                                         : MediumAquamarine)
+                );
+                float x = (i - 0.5) * 1.5;
+                float y = (j - 0.5) * 1.5;
+                float z = (k - 0.5) * 1.5;
+                sph << matr4::translate(vec3(x, y, z));
+                if (cnt == 1) {
+                    cube = sph;
+                } else {
+                    cube %= sph;
+                }
+            }
+        }
+    }
+    FigureId liquid(-1);
     for (int i = 0; i < n; i++) {
-        auto sph = scene.createSphere(1, (i % 3 == 0 ? Crimson : i % 3 == 1 ? Goldenrod : MediumAquamarine));
+        auto sph = scene.createSphere(1.4, (i % 3 == 0 ? Crimson : i % 3 == 1 ? Goldenrod : MediumAquamarine));
         trIds.push_back(scene.createTranslation(vec3(0, 0, 0)));
         sph << trIds.back();
-        liquid %= sph;
+        if (i == 0) {
+            liquid = sph;
+        } else {
+            liquid %= sph;
+        }
     }
 
-    liquid &= box;
-    liquid.draw();
+    liquid << matr4::translate(vec3(0, 1, 0));
+    cube &= box;
+    cube /= liquid;
+    cube.draw();
 
     floor.hide();
 #endif
@@ -253,9 +282,9 @@ void rmShdScene::onUpdate() {
     float t = time * 0.3;
     for (int i = 0; i < trIds.size(); i++) {
 
-        float x = sin(t * (i % 3 + 1) + 12 * i);
+        float x = 2 * sin(t * (i % 3 + 1) + 12 * i);
         float y = sin(t * (i % 3 + 1) + 23 + 344 * i);
-        float z = sin(t * (i % 3 + 1) + 3445 + 32 * i);
+        float z = 2 * sin(t * (i % 3 + 1) + 3445 + 32 * i);
         trIds[i].set(matr4::translate(vec3(x, y, z)));
     }
 #endif

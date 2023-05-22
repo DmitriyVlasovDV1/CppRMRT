@@ -79,6 +79,8 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/scenes/DV1/rm_shd_unit.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+add_executable(all-tests tests/doctest_main.cpp tests/math/matrices_test.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

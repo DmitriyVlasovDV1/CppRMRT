@@ -198,8 +198,9 @@ TEST_CASE("Test methods") {
         CHECK(is_equal(constructed_from_zeros.transpose(), get_zeros()));
         CHECK(is_equal(constructed_from_elements.transpose(), tr));
     }
+
 }
 
-/// TODO TEST_CASE("Test functions with vectors") {
+/// TODO make testes for matrices plus vectors
 
 }

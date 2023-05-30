@@ -7,9 +7,11 @@
 
 namespace matr_test {
 
-#define MUTEBUGS /// TODO remove
 using Matr = math::matr4;
 using Vec = math::vec3;
+
+
+/// TODO make operator[] for matrix
 
 const float EPS = 0.001;
 
@@ -211,8 +213,6 @@ TEST_CASE("Test methods") {
 
 }
 
-/// TODO: rename or delete operator$
-
 TEST_CASE("Test transformation matrices") {
     SUBCASE("Translate") {
         Matr tr0 = Matr::translate(Vec(0, 0, 0));
@@ -223,21 +223,7 @@ TEST_CASE("Test transformation matrices") {
         CHECK(is_equal((tr1 * tr1).getPosition(), {2, 4, 6}));
     }
 
-    SUBCASE("Rotate") {
-#ifndef MUTEBUGS
-        Matr rot0 = Matr::rotate(90, Vec(0, 1, 0));
-        Matr rot1 = Matr::rotate(90, Vec(0, 0, 1));
-        Matr rot2 = Matr::rotate(90, Vec(0, 1, 0));
-
-        Matr res = rot0 * rot1 * rot2;
-        CHECK(is_equal(res, get_identity(), EPS));
-#endif
-    }
-
-    SUBCASE("Scale") {
-
-    }
-
+    ///TODO make tests for scale and rotate and getView
 
 }
 

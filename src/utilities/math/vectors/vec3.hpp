@@ -56,9 +56,9 @@ public:
      * RETURNS:
      *   (float) - vector's length squared.
      */
-    inline constexpr float operator$() const {
+    inline constexpr float squaredLength() const {
         return x * x + y * y + z * z;
-    }  // End of 'operator!' function
+    }  // End of 'squaredLength!' function
 
     /* Print vector function.
      * ARGUMENTS: None.

@@ -1,7 +1,6 @@
 #include "math_test_utils.hpp"
 
 namespace math_test {
-// TODO: Make move constructors
     TEST_CASE("Rule of three") {
         CHECK(std::is_copy_constructible<Vec>());
         CHECK(std::is_copy_assignable<Vec>());

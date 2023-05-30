@@ -145,8 +145,8 @@ TEST_CASE("Test transformation matrices") {
         Matr tr1 = Matr::translate(Vec(1, 2, 3));
 
         CHECK(is_equal(tr0, get_identity()));
-        CHECK(is_equal(tr1.getPosition(), {1, 2, 3}));
-        CHECK(is_equal((tr1 * tr1).getPosition(), {2, 4, 6}));
+        CHECK(is_equal(tr1.getPosition(), std::vector<float>{1, 2, 3}));
+        CHECK(is_equal((tr1 * tr1).getPosition(), std::vector<float>{2, 4, 6}));
     }
 
     ///TODO make tests for scale and rotate and getView

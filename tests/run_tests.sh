@@ -19,8 +19,8 @@ echo -e "===== \033[1mRunning math module tests\033[0m ====="
 }
 
 if [[ "$FAIL" == "0" ]]; then
-    echo -e "\n===== \033[32;1;5mALL PASS\033[0m ====="
+    echo -e "\n===== \033[32;1mALL PASS\033[0m ====="
 else
-    echo -e "\n===== \033[31;1;5mSOME FAIL\033[0m ====="
+    echo -e "\n===== \033[31;1mSOME FAIL\033[0m ====="
 fi
 

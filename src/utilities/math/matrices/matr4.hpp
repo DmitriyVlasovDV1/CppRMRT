@@ -290,6 +290,28 @@ public:
         return tmp;
     }  // End of 'operator+' function
 
+    /* Getter matrix line function.
+     * ARGUMENTS:
+     *   - index:
+     *       int i;
+     * RETURNS:
+     *   (const float *) - pointer for matrix line
+     */
+    inline float* operator[](int i) {
+        return matrix[i];
+    }
+
+    /* Getter matrix line function.
+     * ARGUMENTS:
+     *   - index:
+     *       int i;
+     * RETURNS:
+     *   (const float *) - const pointer for matrix line
+     */
+    inline const float* operator[](int i) const {
+        return matrix[i];
+    }
+
     /* Adding of two matrices function.
      * ARGUMENTS:
      *   - other matrix:
@@ -338,7 +360,7 @@ public:
         matr4 res;
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                res.matrix[i][j] = -matrix[i][j]; /// TODO change for operator[]
+                res[i][j] = -matrix[i][j];
         return res;
     }  // End of 'operator-' function
 

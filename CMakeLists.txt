@@ -85,7 +85,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} )
 
 
 # Build tests
-add_executable(matrices-test tests/doctest_main.cpp tests/math/matrices_test.cpp)
-add_executable(vectors-test tests/doctest_main.cpp tests/math/vectors_test.cpp)
+add_executable(matrices-test tests/math/math_test_utils.hpp tests/doctest_main.cpp tests/math/matrices_test.cpp)
+add_executable(vectors-test tests/math/math_test_utils.hpp tests/doctest_main.cpp tests/math/vectors_test.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

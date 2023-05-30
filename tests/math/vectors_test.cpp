@@ -1,80 +1,6 @@
-#include <type_traits>
-#include <vector>
-#include <assert.h>
-#include <algorithm>
-#include "../doctest/doctest.h"
-#include "../src/utilities/math/math.hpp"
+#include "math_test_utils.hpp"
 
-namespace vec_test {
-
-#define MUTEBUGS /// TODO remove
-    using Matr = math::matr4;
-    using Vec = math::vec3;
-
-    const float EPS = 0.001;
-
-    bool is_equal(const Matr &m, const std::vector<std::vector<float>> &model, float eps=0) {
-        REQUIRE(model.size() == 4);
-        REQUIRE(model[0].size() == 4);
-        for (int j = 0; j < 4; j++) {
-            for (int i = 0; i < 4; i++) {
-                if (fabs(m.matrix[j][i] - model[j][i]) > eps) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    bool is_equal(const Matr &m1, const Matr &m2, float eps=0) {
-        for (int j = 0; j < 4; j++) {
-            for (int i = 0; i < 4; i++) {
-                if (fabs(m1.matrix[j][i] - m2.matrix[j][i]) > eps) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    bool is_equal(const Vec &v1, const std::vector<float> &v2, float eps=0) {
-        REQUIRE(v2.size() == 3);
-        REQUIRE(eps >= 0);
-
-        return fabs(v1.x - v2[0]) <= eps &&
-               fabs(v1.y - v2[1]) <= eps &&
-               fabs(v1.z - v2[2]) <= eps;
-    }
-    std::vector<std::vector<float>> get_zeros() {
-        return std::vector<std::vector<float>> (4, std::vector<float>(4, 0));
-    }
-
-    std::vector<std::vector<float>> get_identity() {
-        std::vector<std::vector<float>> res(4, std::vector<float>(4, 0));
-        for (int i = 0; i < 4; i++) {
-            res[i][i] = 1;
-        }
-        return res;
-    }
-
-    std::vector<std::vector<float>> get_numbers(bool reversed = false) {
-        std::vector<std::vector<float>> res(4, std::vector<float>(4, 0));
-        for (int j = 0; j < 4; j++) {
-            for (int i = 0; i < 4; i++) {
-                auto y = static_cast<float>(j);
-                auto x = static_cast<float>(i);
-                res[j][i] = (reversed ? 15 - y * 4 + x : y * 4 + x);
-            }
-        }
-        return res;
-    }
-
-    auto apply = [](std::vector<std::vector<float>> &m, const auto &functor) {
-        std::for_each(m.begin(), m.end(), [&](std::vector<float> &line) {
-            std::for_each(line.begin(), line.end(), [&](float &el) { functor(el); });
-        });
-        return m;
-    };
-
+namespace math_test {
 // TODO: Make move constructors
     TEST_CASE("Rule of three") {
         CHECK(std::is_copy_constructible<Vec>());
@@ -126,10 +52,72 @@ namespace vec_test {
             CHECK(is_equal(constructed_from_elements_rev + constructed_from_elements, std::vector<float>{2, 2, 2}));
         }
 
+        SUBCASE("Scalar multiplication") {
+            Vec v1{1, 2, 4};
+            Vec v2{4, 0, 9};
+            Vec v3;
+            Vec v4;
 
-        /// TODO dot, cross
+            CHECK((v1 & v2) == 1 * 4 + 4 * 9);
+            CHECK((v3 & v4) == 0);
+        }
+
+        SUBCASE("Cross multiplication") {
+            Vec forward{1, 0, 0};
+            Vec right{0, 0, 1};
+            Vec up{0, 1, 0};
+
+            CHECK(is_equal((right % forward), up));
+        }
+
     }
 
-    /// TODO methods
+    TEST_CASE("Test methods") {
+        SUBCASE("Length") {
+            Vec v0;
+            Vec v1{2, 6, 9};
+            Vec v2{34, 21, 89};
+
+            CHECK((!v0) == 0);
+            CHECK((!v1) == 11);
+            CHECK(is_equal((!v2), 97.560238, EPS));
+        }
+
+        SUBCASE("Normalize") {
+            Vec v1{2, 6, 9};
+            Vec v2{34, 21, 89};
+
+            float len1 = !v1;
+            float len2 = !v2;
+            CHECK(is_equal(!(v1.normalizing()), 1, EPS));
+            CHECK(is_equal(!(v2.normalizing()), 1, EPS));
+            CHECK(is_equal(v1.normalizing() * len1, v1, EPS));
+            CHECK(is_equal(v2.normalizing() * len2, v2, EPS));
+            v1.normalize();
+            v2.normalize();
+            CHECK(is_equal(!v1, 1, EPS));
+            CHECK(is_equal(!v2, 1, EPS));
+            Vec vtmp = v1 * len1;
+            CHECK(is_equal(v1 * len1, std::vector<float>{2, 6, 9}, EPS));
+            CHECK(is_equal(v2 * len2, std::vector<float>{34, 21, 89}, EPS));
+        }
+
+        SUBCASE("Angle between") {
+            Vec v1{0, 1, 0};
+            Vec v2{1, 0, 0};
+
+            CHECK(is_equal(math::vec3::getAngleBetween(v1, v2), math::PI / 2, EPS));
+        }
+
+        SUBCASE("Max and min") {
+            Vec v1{2, -3, -3};
+            Vec v2{1, -3, -2};
+
+            CHECK(is_equal(math::vec3::min(v1, v2), std::vector<float>{1, -3, -3}));
+            CHECK(is_equal(math::vec3::max(v1, v2), std::vector<float>{2, -3, -2}));
+
+        }
+
+    }
 
 }

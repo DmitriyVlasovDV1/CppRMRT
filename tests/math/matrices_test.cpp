@@ -8,8 +8,10 @@
 namespace matr_test {
 
 #define MUTEBUGS /// TODO remove
-
 using Matr = math::matr4;
+using Vec = math::vec3;
+
+const float EPS = 0.001;
 
 bool is_equal(const Matr &m, const std::vector<std::vector<float>> &model, float eps=0) {
     REQUIRE(model.size() == 4);
@@ -34,6 +36,14 @@ bool is_equal(const Matr &m1, const Matr &m2, float eps=0) {
     return true;
 }
 
+bool is_equal(const Vec &v1, const std::vector<float> &v2, float eps=0) {
+    REQUIRE(v2.size() == 3);
+    REQUIRE(eps >= 0);
+
+    return fabs(v1.x - v2[0]) <= eps &&
+        fabs(v1.y - v2[1]) <= eps &&
+        fabs(v1.z - v2[2]) <= eps;
+}
 std::vector<std::vector<float>> get_zeros() {
     return std::vector<std::vector<float>> (4, std::vector<float>(4, 0));
 }
@@ -176,11 +186,11 @@ TEST_CASE("Test methods") {
 
         CHECK(is_equal(identity, identity.inverting()));
         CHECK(is_equal(constructed_from_zeros.inverting(), get_identity()));
-        CHECK(is_equal(constructed_from_elements.inverting() * constructed_from_elements, get_identity(), 0.0001));
+        CHECK(is_equal(constructed_from_elements.inverting() * constructed_from_elements, get_identity(), EPS));
         CHECK(is_equal(identity, identity.inverse()));
         CHECK(is_equal(constructed_from_zeros.inverse(), get_identity()));
         constructed_from_elements.inverse();
-        CHECK(is_equal(constructed_from_elements.inverting() * constructed_from_elements , get_identity(), 0.0001));
+        CHECK(is_equal(constructed_from_elements.inverting() * constructed_from_elements , get_identity(), EPS));
     }
 
     SUBCASE("Transpose") {
@@ -201,6 +211,34 @@ TEST_CASE("Test methods") {
 
 }
 
-/// TODO make testes for matrices plus vectors
+/// TODO: rename or delete operator$
+
+TEST_CASE("Test transformation matrices") {
+    SUBCASE("Translate") {
+        Matr tr0 = Matr::translate(Vec(0, 0, 0));
+        Matr tr1 = Matr::translate(Vec(1, 2, 3));
+
+        CHECK(is_equal(tr0, get_identity()));
+        CHECK(is_equal(tr1.getPosition(), {1, 2, 3}));
+        CHECK(is_equal((tr1 * tr1).getPosition(), {2, 4, 6}));
+    }
+
+    SUBCASE("Rotate") {
+#ifndef MUTEBUGS
+        Matr rot0 = Matr::rotate(90, Vec(0, 1, 0));
+        Matr rot1 = Matr::rotate(90, Vec(0, 0, 1));
+        Matr rot2 = Matr::rotate(90, Vec(0, 1, 0));
+
+        Matr res = rot0 * rot1 * rot2;
+        CHECK(is_equal(res, get_identity(), EPS));
+#endif
+    }
+
+    SUBCASE("Scale") {
+
+    }
+
+
+}
 
 }

@@ -20,7 +20,8 @@ file(GLOB SOURCE_FILES
         src/render/src/figures/figure_transformation.cpp
         src/render/src/figures/figure_material.cpp
         src/Scenes/SK4/test_unit.cpp
-        src/Scenes/DV1/rm_shd_unit.cpp)
+        src/Scenes/DV1/rm_shd_unit.cpp
+        src/scenes/DV1/rm_shd_unit.cpp)
 
 file(GLOB HEADER_FILES
         src/utilities/math/math.hpp
@@ -52,6 +53,7 @@ if (APPLE)
     link_directories(bin/GLFW/macos)
     set(GLFW_LIBRARIES libglfw.3.dylib libglfw3.a)
     set(GLEW_LIBRARIES GLEW::GLEW)
+    message($OSX_ARCHITECTURES)
 
 elseif (MSVC OR MSYS OR MINGW)
     message(STATUS ">>> Windows detected")
@@ -79,8 +81,11 @@ add_compile_definitions(GLEW_STATIC)
 #add_link_options(-fsanitize=address)
 #add_link_options(-fsanitize=undefined)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/scenes/DV1/rm_shd_unit.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} )
 
-add_executable(all-tests tests/doctest_main.cpp tests/math/matrices_test.cpp)
+
+# Build tests
+add_executable(matrices-test tests/doctest_main.cpp tests/math/matrices_test.cpp)
+add_executable(vectors-test tests/doctest_main.cpp tests/math/vectors_test.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

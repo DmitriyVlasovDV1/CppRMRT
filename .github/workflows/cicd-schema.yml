@@ -63,4 +63,4 @@ jobs:
           cd build
           cmake --build .
       - name: Run tests
-        run: bash tests/run_tests.sh build
+        run: bash tests/run_tests.sh ../build

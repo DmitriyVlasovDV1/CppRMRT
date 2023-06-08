@@ -34,7 +34,7 @@ jobs:
       - name: Build with make
         run: |
           cd build
-          make .
+          cmake --build .
 
   tests:
     needs: build
@@ -61,6 +61,6 @@ jobs:
       - name: Build with make
         run: |
           cd build
-          make .
+          cmake --build .
       - name: Run tests
-        run: bash tests/run_tests.sh ../build
+        run: bash tests/run_tests.sh build

@@ -42,5 +42,25 @@ jobs:
     steps:
       - name: Download solution
         uses: actions/checkout@v3
+      - name: Print cmake version
+        run: cmake --version
+      - name: Print compiler version
+        run: ${{matrix.compiler.command}} ${{matrix.compiler.version-flags}}
+      - run: |
+          sudo apt update
+          sudo apt install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
+          sudo apt install libglew-dev libglfw3 libglfw3-dev
+      - name: Setup build directories
+        run: |
+          mkdir build
+          cd build 
+      - name: Create Makefiles
+        run: |
+          cd build
+          cmake ..
+      - name: Build with make
+        run: |
+          cd build
+          make .
       - name: Run tests
         run: bash tests/run_tests.sh build

@@ -1,0 +1,46 @@
+name: hse-project
+run-name: Build and tests
+on: [push]
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - name: Download solution
+        uses: actions/checkout@v3
+      - name: Print cmake version
+        run: cmake --version
+      - name: Print compiler version
+        run: ${{matrix.compiler.command}} ${{matrix.compiler.version-flags}}
+      - run: |
+          sudo apt update
+          sudo apt install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
+          sudo apt install libglew-dev libglfw3 libglfw3-dev
+        if: matrix.os == 'ubuntu-latest'
+      - run: |
+          brew update
+          brew install glew
+        if: matrix.os == 'macos-latest'
+      - name: Setup build directories
+        run: |
+          mkdir build
+          cd build 
+      - name: Create Makefiles
+        run: |
+          cd build
+          cmake ..
+      - name: Build with make
+        run: |
+          cd build
+          make .
+
+  tests:
+    needs: build
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Download solution
+        uses: actions/checkout@v3
+      - name: Run tests
+        run: bash tests/run_tests.sh build

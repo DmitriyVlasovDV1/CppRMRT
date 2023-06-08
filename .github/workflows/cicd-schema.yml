@@ -1,6 +1,6 @@
 name: hse-project
 run-name: Build and tests
-on: [push]
+on: [pull_request]
 jobs:
   build:
     strategy:

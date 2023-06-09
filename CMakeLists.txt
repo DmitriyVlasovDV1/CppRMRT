@@ -19,8 +19,7 @@ file(GLOB SOURCE_FILES
         src/render/src/figures/figure_render.cpp
         src/render/src/figures/figure_transformation.cpp
         src/render/src/figures/figure_material.cpp
-        src/Scenes/SK4/test_unit.cpp
-        src/Scenes/DV1/rm_shd_unit.cpp
+        src/scenes/SK4/test_unit.cpp
         src/scenes/DV1/rm_shd_unit.cpp)
 
 file(GLOB HEADER_FILES
@@ -42,23 +41,22 @@ file(GLOB HEADER_FILES
         src/render/src/figures/figure_render.hpp
         src/render/src/figures/figure_transformation.hpp
         src/render/src/figures/figure_material.hpp
-        src/Scenes/SK4/test_unit.hpp
-        src/Scenes/DV1/rm_shd_unit.hpp)
+        src/scenes/SK4/test_unit.hpp
+        src/scenes/DV1/rm_shd_unit.hpp)
 
 find_package(OpenGL REQUIRED)
 
 if (APPLE)
     message(STATUS ">>> Apple detected")
     find_package(GLEW REQUIRED)
-    link_directories(bin/GLFW/macos)
-    set(GLFW_LIBRARIES libglfw.3.dylib libglfw3.a)
+    add_subdirectory(bin/glfw)
+    set(GLFW_LIBRARIES glfw)
     set(GLEW_LIBRARIES GLEW::GLEW)
-    message($OSX_ARCHITECTURES)
 
 elseif (MSVC OR MSYS OR MINGW)
     message(STATUS ">>> Windows detected")
-    link_directories(bin/GLFW/windows)
-    set(GLFW_LIBRARIES libglfw3.a)
+    add_subdirectory(bin/glfw)
+    set(GLFW_LIBRARIES glfw)
     link_directories(bin/GLEW/windows)
     set(GLEW_LIBRARIES glew32s glew32 opengl32)
 
@@ -85,7 +83,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} )
 
 
 # Build tests
-add_executable(matrices-test tests/math/math_test_utils.hpp tests/doctest_main.cpp tests/math/matrices_test.cpp)
-add_executable(vectors-test tests/math/math_test_utils.hpp tests/doctest_main.cpp tests/math/vectors_test.cpp)
+add_executable(matrices-test tests/doctest_main.cpp tests/math/matrices_test.cpp)
+add_executable(vectors-test tests/doctest_main.cpp tests/math/vectors_test.cpp)
 
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

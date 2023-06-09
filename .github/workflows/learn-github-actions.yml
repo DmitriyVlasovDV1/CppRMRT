@@ -1,6 +1,6 @@
-name: hse-project
+name: learn-github-actions
 run-name: Build and tests
-on: [pull_request]
+on: [push]
 jobs:
   build:
     strategy:
@@ -34,7 +34,7 @@ jobs:
       - name: Build with make
         run: |
           cd build
-          make .
+          cmake --build .
 
   tests:
     needs: build
